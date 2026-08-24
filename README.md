@@ -9,6 +9,7 @@ Everything you would change day to day lives in **`config.json`** in this
 folder. A Google Sheet front end exists and is optional; it is off.
 
 ```
+python site.py                     # builds the 8-day app into output/site/
 python sports_daily.py                    # writes output/today.html
 python sports_daily.py --text             # print to the console instead
 python sports_daily.py --date tomorrow    # or 2026-09-05, 09/05, yesterday
@@ -19,6 +20,23 @@ python sports_daily.py --open             # open the page when done
 
 Python is not on PATH. Use the full interpreter path:
 `C:\Users\kyleh\AppData\Local\Programs\Python\Python312-arm64\python.exe`
+
+## The app
+
+`site.py` builds an installable web app into `output/site/`: eight days in one
+page with a sticky day picker, plus a manifest, icons and a service worker.
+Every day is inlined, so switching days is instant and works offline — no fetch,
+no JSON round trip, ~24KB for the lot.
+
+GitHub Actions rebuilds and publishes it to GitHub Pages twice a day
+(`.github/workflows/build.yml`), which is what makes it work when this machine
+is off. On a phone, open the Pages URL and **Add to Home Screen** for an icon
+and a full-screen launch.
+
+Verified from a bare clone: the build needs nothing but Python and `requests`.
+
+The local scheduled task still writes the single-day `output/today.html`, and
+`output/history/` stays local — both are gitignored.
 
 ## Editing your teams
 
