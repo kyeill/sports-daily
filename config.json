@@ -1,0 +1,707 @@
+{
+  "timezone": "America/New_York",
+  "output": "output/today.html",
+  "_comment_sheet": "Optional. Leave sheet_id empty to run entirely from this file, which is the normal case. Setting it makes a Google Sheet override the three team lists and the per-league options.",
+  "control_sheet": {
+    "sheet_id": "",
+    "teams_tab": "Teams",
+    "options_tab": "Options",
+    "cache_minutes": 120
+  },
+  "leagues": [
+    {
+      "key": "nfl",
+      "path": "football/nfl",
+      "label": "NFL",
+      "sport": "Football",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "standalone_only": true,
+        "include_postseason": true,
+        "all": false
+      },
+      "playoff_spots": 7,
+      "playoff_race": true,
+      "race_from_month": 11,
+      "race_until_month": 2,
+      "race_min_odds": 20
+    },
+    {
+      "key": "nba",
+      "path": "basketball/nba",
+      "label": "NBA",
+      "sport": "Basketball",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "all": false
+      },
+      "playoff_spots": 10,
+      "playoff_race": true,
+      "race_only_last_spot": true,
+      "race_until_settled": true,
+      "race_spot_label": "Playoff Spot Chase",
+      "race_from_month": 3,
+      "race_until_season_end": true
+    },
+    {
+      "key": "mlb",
+      "path": "baseball/mlb",
+      "label": "MLB",
+      "sport": "Baseball",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "all": false
+      },
+      "playoff_spots": 6,
+      "playoff_race": true,
+      "race_from_month": 7,
+      "race_until_month": 10,
+      "race_min_odds": 20
+    },
+    {
+      "key": "nhl",
+      "path": "hockey/nhl",
+      "label": "NHL",
+      "sport": "Hockey",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "all": false
+      },
+      "playoff_spots": 8,
+      "playoff_race": true,
+      "race_only_last_spot": true,
+      "race_until_settled": true,
+      "race_from_month": 3,
+      "race_until_season_end": true
+    },
+    {
+      "key": "college-football",
+      "path": "football/college-football",
+      "label": "College Football",
+      "sport": "Football",
+      "enabled": true,
+      "params_variants": [
+        {
+          "label": "FBS",
+          "params": {
+            "groups": "80",
+            "limit": "400"
+          }
+        },
+        {
+          "label": "FCS",
+          "params": {
+            "groups": "81",
+            "limit": "400"
+          }
+        }
+      ],
+      "include": {
+        "favorites": true,
+        "all": false,
+        "conferences": [
+          "Big Ten"
+        ],
+        "ranked_within": 25,
+        "power_conferences": [
+          "Big Ten",
+          "SEC",
+          "ACC",
+          "Big 12"
+        ],
+        "power_conference_days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sun"
+        ],
+        "include_postseason": true,
+        "rules": [
+          {
+            "days": [
+              "Sat"
+            ],
+            "networks": [
+              "FOX",
+              "CBS",
+              "NBC",
+              "ABC"
+            ],
+            "source": "FBS",
+            "note": "National Game"
+          }
+        ]
+      }
+    },
+    {
+      "key": "mens-college-basketball",
+      "path": "basketball/mens-college-basketball",
+      "label": "College Basketball",
+      "sport": "Basketball",
+      "enabled": true,
+      "params": {
+        "groups": "50",
+        "limit": "400"
+      },
+      "include": {
+        "favorites": true,
+        "all": false,
+        "conferences": [
+          "Big Ten"
+        ],
+        "ranked_within": 25,
+        "major_networks": [
+          "FOX",
+          "CBS",
+          "NBC",
+          "ABC"
+        ],
+        "major_network_days": [
+          "Fri",
+          "Sat",
+          "Sun"
+        ],
+        "postseason_rules": [
+          {
+            "match": [
+              "first four",
+              "1st round",
+              "2nd round"
+            ],
+            "require": "NCAA Men's Basketball Championship",
+            "conferences": [
+              "Big Ten"
+            ],
+            "teams": [
+              "Notre Dame Fighting Irish",
+              "Syracuse Orange"
+            ]
+          },
+          {
+            "match": [
+              "sweet 16",
+              "elite 8",
+              "final four",
+              "national championship"
+            ],
+            "require": "NCAA Men's Basketball Championship",
+            "all": true
+          },
+          {
+            "match": [
+              "nit -",
+              "crown"
+            ],
+            "conferences": [
+              "Big Ten"
+            ],
+            "teams": [
+              "Notre Dame Fighting Irish",
+              "Syracuse Orange"
+            ],
+            "tag": "prefix"
+          }
+        ]
+      }
+    },
+    {
+      "key": "mens-college-hockey",
+      "path": "hockey/mens-college-hockey",
+      "label": "College Hockey",
+      "sport": "Hockey",
+      "enabled": true,
+      "params": {
+        "limit": "200"
+      },
+      "include": {
+        "favorites": true,
+        "all": false,
+        "include_postseason": true,
+        "note_matches": [
+          "tournament",
+          "semifinal",
+          "quarterfinal",
+          "final",
+          "championship"
+        ]
+      }
+    },
+    {
+      "key": "mls",
+      "path": "soccer/usa.1",
+      "label": "MLS",
+      "sport": "Soccer",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "round": [
+              "*playoffs*",
+              "mls-cup"
+            ],
+            "note": "Playoffs"
+          }
+        ]
+      }
+    },
+    {
+      "key": "usopen",
+      "path": "soccer/usa.open",
+      "label": "U.S. Open Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "mls",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    },
+    {
+      "key": "leaguescup",
+      "path": "soccer/concacaf.leagues.cup",
+      "label": "Leagues Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "mls",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "round": [
+              "quarterfinals",
+              "semifinals",
+              "final",
+              "3rd-place-match"
+            ],
+            "clubs_from": "soccer/usa.1",
+            "note": "Knockout"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ccc",
+      "path": "soccer/concacaf.champions",
+      "label": "Concacaf Champions Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "mls",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    },
+    {
+      "key": "epl",
+      "path": "soccer/eng.1",
+      "label": "Premier League",
+      "sport": "Soccer",
+      "enabled": true,
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "days": [
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri"
+            ],
+            "note": "Midweek"
+          }
+        ],
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          },
+          {
+            "teams": [
+              "Manchester City",
+              "Manchester United",
+              "Liverpool"
+            ],
+            "days": [
+              "Sat",
+              "Sun"
+            ],
+            "note": "Top Six"
+          },
+          {
+            "table_top": {
+              "path": "soccer/eng.1",
+              "n": 5
+            },
+            "days": [
+              "Sat",
+              "Sun"
+            ],
+            "months": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "note": "Top 5"
+          }
+        ]
+      }
+    },
+    {
+      "key": "facup",
+      "path": "soccer/eng.fa",
+      "label": "FA Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "epl",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          },
+          {
+            "round": [
+              "semifinals",
+              "final"
+            ],
+            "note": "Cup Semi/Final"
+          }
+        ]
+      }
+    },
+    {
+      "key": "eflcup",
+      "path": "soccer/eng.league_cup",
+      "label": "Carabao Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "epl",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          },
+          {
+            "round": [
+              "semifinals",
+              "final"
+            ],
+            "note": "Cup Semi/Final"
+          }
+        ]
+      }
+    },
+    {
+      "key": "ucl",
+      "path": "soccer/uefa.champions",
+      "label": "Champions League",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "epl",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "round": [
+              "knockout-round-playoffs",
+              "round-of-16",
+              "quarterfinals",
+              "semifinals",
+              "final"
+            ],
+            "note": "Knockout"
+          },
+          {
+            "round": [
+              "league-phase"
+            ],
+            "clubs_from": "soccer/eng.1",
+            "note": "English side"
+          }
+        ],
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "key": "uel",
+      "path": "soccer/uefa.europa",
+      "label": "Europa League",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "epl",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "round": [
+              "knockout-round-playoffs",
+              "round-of-16",
+              "quarterfinals",
+              "semifinals",
+              "final"
+            ],
+            "clubs_from": "soccer/eng.1",
+            "note": "Knockout"
+          }
+        ],
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "key": "uecl",
+      "path": "soccer/uefa.europa.conf",
+      "label": "Conference League",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "epl",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "rules": [
+          {
+            "round": [
+              "knockout-round-playoffs",
+              "round-of-16",
+              "quarterfinals",
+              "semifinals",
+              "final"
+            ],
+            "clubs_from": "soccer/eng.1",
+            "note": "Knockout"
+          }
+        ],
+        "tier3_rules": [
+          {
+            "teams": [
+              "Arsenal",
+              "Chelsea"
+            ],
+            "note": "Arsenal/Chelsea"
+          }
+        ]
+      }
+    },
+    {
+      "key": "wcq",
+      "path": "soccer/fifa.worldq.concacaf",
+      "label": "World Cup Qualifying",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "usmnt",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    },
+    {
+      "key": "worldcup",
+      "path": "soccer/fifa.world",
+      "label": "World Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "usmnt",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    },
+    {
+      "key": "goldcup",
+      "path": "soccer/concacaf.gold",
+      "label": "Gold Cup",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "usmnt",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    },
+    {
+      "key": "nations",
+      "path": "soccer/concacaf.nations.league",
+      "label": "Concacaf Nations League",
+      "sport": "Soccer",
+      "enabled": true,
+      "team_group": "usmnt",
+      "include": {
+        "favorites": true,
+        "all": false
+      }
+    }
+  ],
+  "national_networks": [
+    "ESPN",
+    "ESPN2",
+    "ESPNU",
+    "ESPNEWS",
+    "ABC",
+    "FOX",
+    "FS1",
+    "FS2",
+    "CBS",
+    "CBSSN",
+    "CBS Sports Network",
+    "NBC",
+    "USA Network",
+    "USA Net",
+    "TNT",
+    "TBS",
+    "truTV",
+    "Peacock",
+    "Paramount+",
+    "Netflix",
+    "Prime Video",
+    "Apple TV+",
+    "NFL Network",
+    "NFL Net",
+    "NBA TV",
+    "MLB Network",
+    "MLB Net",
+    "NHL Network",
+    "NHL Net",
+    "The CW",
+    "ION"
+  ],
+  "hide_networks": [
+    "MLB.TV",
+    "NBA League Pass",
+    "NHL Power Play",
+    "ESPN Deportes"
+  ],
+  "cache_minutes": 30,
+  "exclude_exhibitions": true,
+  "_comment_teams": "Your teams live here. favorites = pinned and drive the playoff race; following = pinned only; watchlist = Other highlights, with the note shown as the badge. Run --check after editing.",
+  "favorites": {
+    "nfl": [
+      "Detroit Lions"
+    ],
+    "nba": [
+      "Detroit Pistons"
+    ],
+    "mlb": [
+      "Detroit Tigers"
+    ],
+    "nhl": [
+      "Detroit Red Wings"
+    ],
+    "epl": [
+      "Tottenham Hotspur"
+    ],
+    "college-football": [
+      "Michigan Wolverines",
+      "Cornell Big Red"
+    ],
+    "mens-college-basketball": [
+      "Michigan Wolverines",
+      "Cornell Big Red"
+    ],
+    "mens-college-hockey": [
+      "Michigan Wolverines",
+      "Cornell Big Red"
+    ],
+    "mls": [
+      "Atlanta United"
+    ],
+    "usmnt": [
+      "United States"
+    ]
+  },
+  "following": {
+    "nfl": [],
+    "nba": [
+      "Cleveland Cavaliers"
+    ],
+    "mlb": [],
+    "nhl": [],
+    "epl": [],
+    "college-football": [],
+    "mens-college-basketball": [],
+    "mens-college-hockey": []
+  },
+  "watchlist": {
+    "college-football": [
+      {
+        "team": "Ohio State Buckeyes",
+        "note": "Rival"
+      },
+      {
+        "team": "Michigan State Spartans",
+        "note": "Rival"
+      },
+      {
+        "team": "Notre Dame Fighting Irish",
+        "note": "Rival"
+      },
+      {
+        "team": "Syracuse Orange",
+        "note": "Other"
+      }
+    ],
+    "mens-college-basketball": [
+      {
+        "team": "Ohio State Buckeyes",
+        "note": "Rival"
+      },
+      {
+        "team": "Michigan State Spartans",
+        "note": "Rival"
+      },
+      {
+        "team": "Notre Dame Fighting Irish",
+        "note": "Rival"
+      },
+      {
+        "team": "Syracuse Orange",
+        "note": "Other"
+      }
+    ]
+  },
+  "show_logos": true,
+  "show_colors": true
+}

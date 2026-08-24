@@ -1,0 +1,45 @@
+name: Build and publish
+
+on:
+  schedule:
+    # UTC. 11:15 is 7:15am Eastern in summer, 6:15am in winter -- GitHub cron
+    # has no timezone, so the second run keeps the page fresh either way.
+    - cron: "15 11 * * *"
+    - cron: "15 22 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Build the eight-day app
+        run: python site.py --days 8
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: output/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,9 @@
+# Generated output: the app is rebuilt in CI, history stays local in Drive
+output/
+cache/
+run.log
+__pycache__/
+*.pyc
+
+# The optional Sheet template; regenerate with make_template.py
+sports-daily-control.xlsx
