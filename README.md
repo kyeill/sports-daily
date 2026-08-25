@@ -1,8 +1,8 @@
 # Sports Daily — the day's games, filtered
 
 Builds a single self-contained HTML page listing the day's games across NFL,
-NBA, MLB, NHL and the Premier League, in three buckets: **your teams**, **other
-highlights**, and **everything else worth watching**. Data comes from ESPN's
+NBA, MLB, NHL and the Premier League, with **your teams** pinned at the top and everything
+else grouped by sport. Data comes from ESPN's
 public scoreboard API — no key, no account, no scraping.
 
 Everything you would change day to day lives in **`config.json`** in this
@@ -318,7 +318,18 @@ to set — whatever you type is what appears on the page. In practice the Teams
 tab holds favorites and little else: Key opponents fills itself from the
 standings, and manual rows are for things the standings cannot know.
 
-## The playoff race (derived Other highlights)
+## Section order
+
+Your teams first, then one section per sport **ordered by when that sport's
+first game starts**, so a 7:30am Premier League match leads and a 10pm West
+Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
+football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
+NHL, college hockey.
+
+Highlighted teams sit in their own sport rather than a separate block — the tag
+on the row already says why the game is there.
+
+## The playoff race (derived highlights)
 
 With `playoff_race` on, up to two teams are added to Other highlights each day
 from live standings, so tier 3 maintains itself:
@@ -488,10 +499,12 @@ comes back — add a league entry with a `path` and those rules work again.
 
 ## Automation
 
-GitHub Actions runs `site.py` at **11:15 and 22:15 UTC**, publishes the app to
-GitHub Pages, and commits any new `output/history/` row back to the repo. Two
-schedules because GitHub cron has no timezone, so the morning build drifts an
-hour with daylight saving.
+GitHub Actions runs `site.py` **once a day at 6am Eastern**, publishes the app
+to GitHub Pages, and commits any new `output/history/` row back to the repo.
+
+GitHub cron is UTC only, so two schedules fire (10:00 and 11:00 UTC) and a gate
+job lets exactly one through by checking the Eastern hour. That keeps it at 6am
+year-round instead of drifting an hour with daylight saving.
 
 The history commit carries **`[skip ci]`**: without it, the push retriggers the
 workflow, which commits again, forever.

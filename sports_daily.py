@@ -227,22 +227,24 @@ def as_text(day, games, config, notes=None):
         return "  %-9s %s at %s%s" % (when, side(game["away"]), side(game["home"]), suffix)
 
     by_time = sorted(games, key=lambda g: g["start_local"])
-    for title, tier in (("YOUR TEAMS", "favorite"), ("OTHER HIGHLIGHTS", "watch")):
-        block = [g for g in by_time if g.get("tier") == tier]
-        if block:
-            lines.append(title)
-            lines += [line(g) for g in block]
-            lines.append("")
+    pinned = [g for g in by_time if g.get("tier") == "favorite"]
+    if pinned:
+        lines.append("YOUR TEAMS")
+        lines += [line(g) for g in pinned]
+        lines.append("")
 
-    order = {lg["label"]: i for i, lg in enumerate(config.get("leagues", []))}
-    rest = sorted([g for g in games if g.get("tier") == "interest"],
-                  key=lambda g: (order.get(g["league_label"], 99), g["start_local"]))
-    current = None
-    for game in rest:
-        if game["league_label"] != current:
-            current = game["league_label"]
-            lines.append(current.upper())
-        lines.append(line(game, with_league=False))
+    rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
+    by_league = {}
+    for game in by_time:
+        if game.get("tier") != "favorite":
+            by_league.setdefault(game["league_label"], []).append(game)
+    order = sorted(by_league,
+                   key=lambda label: (min(g["start_local"] for g in by_league[label]),
+                                      rank.get(label, 99), label))
+    for label in order:
+        lines.append(label.upper())
+        lines += [line(g, with_league=False) for g in by_league[label]]
+        lines.append("")
 
     if not games:
         lines.append("  (nothing matches your filters today)")

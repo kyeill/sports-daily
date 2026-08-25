@@ -2,10 +2,11 @@ name: Build and publish
 
 on:
   schedule:
-    # UTC. 11:15 is 7:15am Eastern in summer, 6:15am in winter -- GitHub cron
-    # has no timezone, so the second run keeps the page fresh either way.
-    - cron: "15 11 * * *"
-    - cron: "15 22 * * *"
+    # GitHub cron is UTC only, so 6am Eastern is 10:00 UTC in summer and 11:00
+    # in winter. Both fire; the gate below lets exactly one of them through,
+    # so this really is once a day at 6am Eastern all year.
+    - cron: "0 10 * * *"
+    - cron: "0 11 * * *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -20,7 +21,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - id: check
+        run: |
+          hour=$(TZ=America/New_York date +%H)
+          if [ "${{ github.event_name }}" != "schedule" ] || [ "$hour" = "06" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "building (Eastern hour is $hour)"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "skipping: Eastern hour is $hour, not 06"
+          fi
+
   build:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +48,7 @@ jobs:
           python-version: "3.12"
       - run: pip install requests
 
-      - name: Build the eight-day app
+      - name: Build the app
         run: python site.py --days 15
 
       - name: Commit the games-back history

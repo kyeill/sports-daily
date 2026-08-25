@@ -175,16 +175,14 @@ def summary(games):
     if pinned:
         counts += " &middot; %d for your teams" % len(pinned)
     if watching:
-        counts += " &middot; %d other highlight%s" % (
-            len(watching), "" if len(watching) == 1 else "s")
+        counts += " &middot; %d highlighted" % len(watching)
     return counts
 
 
 def _body(games, config, notes=None, info=None):
     games = sorted(games, key=lambda g: (g["start_local"], g["league_label"]))
     pinned = [g for g in games if g.get("tier") == "favorite"]
-    watching = [g for g in games if g.get("tier") == "watch"]
-    rest = [g for g in games if g.get("tier") == "interest"]
+    rest = [g for g in games if g.get("tier") != "favorite"]
 
     parts = []
     for note in notes or []:
@@ -194,17 +192,21 @@ def _body(games, config, notes=None, info=None):
     if pinned:
         parts.append('<div class="pinned">%s</div>' %
                      _section("Your teams", pinned, True, config))
-    if watching:
-        parts.append('<div class="watching">%s</div>' %
-                     _section("Other highlights", watching, True, config))
 
+    # Everything else sits in its own sport, highlights included -- the tag on
+    # the row already says why it is there, so a separate section was just an
+    # extra heading to scroll past.
+    rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
     by_league = {}
     for game in rest:
         by_league.setdefault(game["league_label"], []).append(game)
-    for league in config.get("leagues", []):
-        label = league["label"]
-        if label in by_league:
-            parts.append(_section(label, by_league[label], False, config))
+    # Sports come in the order their first game starts; the configured rank
+    # only breaks ties between sports starting at the same minute.
+    order = sorted(by_league,
+                   key=lambda label: (min(g["start_local"] for g in by_league[label]),
+                                      rank.get(label, 99), label))
+    for label in order:
+        parts.append(_section(label, by_league[label], False, config))
 
     if not games:
         parts.append('<div class="card"><div class="empty">'

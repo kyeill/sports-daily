@@ -25,7 +25,8 @@
       "playoff_race": true,
       "race_from_month": 11,
       "race_until_month": 2,
-      "race_min_odds": 20
+      "race_min_odds": 20,
+      "sort_rank": 5
     },
     {
       "key": "nba",
@@ -44,7 +45,8 @@
       "race_until_settled": true,
       "race_spot_label": "Playoff Spot Chase",
       "race_from_month": 3,
-      "race_until_season_end": true
+      "race_until_season_end": true,
+      "sort_rank": 7
     },
     {
       "key": "mlb",
@@ -61,7 +63,8 @@
       "playoff_race": true,
       "race_from_month": 7,
       "race_until_month": 10,
-      "race_min_odds": 20
+      "race_min_odds": 20,
+      "sort_rank": 6
     },
     {
       "key": "nhl",
@@ -79,7 +82,8 @@
       "race_only_last_spot": true,
       "race_until_settled": true,
       "race_from_month": 3,
-      "race_until_season_end": true
+      "race_until_season_end": true,
+      "sort_rank": 8
     },
     {
       "key": "college-football",
@@ -140,7 +144,8 @@
             "note": "National Game"
           }
         ]
-      }
+      },
+      "sort_rank": 1
     },
     {
       "key": "mens-college-basketball",
@@ -211,7 +216,8 @@
             "tag": "prefix"
           }
         ]
-      }
+      },
+      "sort_rank": 2
     },
     {
       "key": "mens-college-hockey",
@@ -233,7 +239,8 @@
           "final",
           "championship"
         ]
-      }
+      },
+      "sort_rank": 9
     },
     {
       "key": "mls",
@@ -253,7 +260,8 @@
             "note": "Playoffs"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "usopen",
@@ -265,7 +273,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "leaguescup",
@@ -289,7 +298,8 @@
             "note": "Knockout"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "ccc",
@@ -301,7 +311,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "epl",
@@ -363,7 +374,8 @@
             "note": "Top 5"
           }
         ]
-      }
+      },
+      "sort_rank": 3
     },
     {
       "key": "facup",
@@ -391,7 +403,8 @@
             "note": "Cup Semi/Final"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "eflcup",
@@ -419,7 +432,8 @@
             "note": "Cup Semi/Final"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "ucl",
@@ -459,7 +473,8 @@
             "note": "Arsenal/Chelsea"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "uel",
@@ -493,7 +508,8 @@
             "note": "Arsenal/Chelsea"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "uecl",
@@ -527,7 +543,8 @@
             "note": "Arsenal/Chelsea"
           }
         ]
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "wcq",
@@ -539,7 +556,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "worldcup",
@@ -551,7 +569,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "goldcup",
@@ -563,7 +582,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     },
     {
       "key": "nations",
@@ -575,7 +595,8 @@
       "include": {
         "favorites": true,
         "all": false
-      }
+      },
+      "sort_rank": 4
     }
   ],
   "national_networks": [
