@@ -358,7 +358,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           },
           {
             "teams": [
@@ -411,7 +412,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           },
           {
             "round": [
@@ -441,7 +443,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           },
           {
             "round": [
@@ -490,7 +493,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           }
         ]
       },
@@ -526,7 +530,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           }
         ]
       },
@@ -562,7 +567,8 @@
               "Arsenal",
               "Chelsea"
             ],
-            "note": "Arsenal/Chelsea"
+            "note": "Rival",
+            "rival": true
           }
         ]
       },
@@ -665,7 +671,9 @@
     "NHL Power Play",
     "ESPN Deportes",
     "Universo",
-    "Telemundo Deportes"
+    "Telemundo Deportes",
+    "TUDN",
+    "TUDN USA"
   ],
   "cache_minutes": 30,
   "exclude_exhibitions": true,
@@ -759,7 +767,8 @@
   "show_colors": true,
   "team_colors": {
     "Syracuse": "f76900",
-    "Michigan Wolverines": "ffcb05"
+    "Michigan Wolverines": "ffcb05",
+    "Detroit Tigers": "fa4616"
   },
   "streaming_networks": [
     "Peacock",

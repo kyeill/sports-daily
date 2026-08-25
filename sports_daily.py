@@ -242,10 +242,16 @@ def as_text(day, games, config, notes=None):
         lines += [line(g) for g in pinned]
         lines.append("")
 
+    rivals = [g for g in by_time if g.get("tier") != "favorite" and g.get("rival")]
+    if rivals:
+        lines.append("RIVALS")
+        lines += [line(g) for g in rivals]
+        lines.append("")
+
     rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
     by_league = {}
     for game in by_time:
-        if game.get("tier") != "favorite":
+        if game.get("tier") != "favorite" and not game.get("rival"):
             by_league.setdefault(game["league_label"], []).append(game)
     order = sorted(by_league,
                    key=lambda label: (min(g["start_local"] for g in by_league[label]),

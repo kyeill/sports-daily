@@ -215,9 +215,8 @@ def status(league):
         return ""
     if state.get("active"):
         return "%s %.0f%% to make the playoffs" % (team, percent)
-    floor = league.get("race_min_odds")
-    return "%s race hidden - %s at %.0f%% to make the playoffs (floor %d%%)" % (
-        league["label"], team, percent, floor or 0)
+    # A suppressed race says nothing worth reading every day for months.
+    return ""
 
 
 def merge_into(config, today=None):

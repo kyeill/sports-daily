@@ -395,8 +395,10 @@ def evaluate(game, league, config):
     for rule in rules.get("tier3_rules") or []:
         if rule_matches(game, rule):
             for name in rule.get("teams") or []:
-                notable.extend(t for t in sides
-                               if _matches(t, name) and t not in notable)
+                hits = [t for t in sides if _matches(t, name)]
+                notable.extend(t for t in hits if t not in notable)
+                if rule.get("rival"):
+                    rivals.extend(t for t in hits if t not in rivals)
             note = rule.get("note") or "watchlist"
             if note not in watch_notes:
                 watch_notes.append(note)
@@ -473,14 +475,17 @@ def evaluate(game, league, config):
     if config.get("exclude_exhibitions", True) and is_exhibition(game):
         keep = False
 
+    # Only a true favourite gets its regional feed; a "follow" team is pinned
+    # but stays national-only.
     mine_side = ""
     for side_name in ("home", "away"):
-        if any(_matches(game[side_name], f) for f in pinned):
+        if any(_matches(game[side_name], f) for f in favorites_for(config, league["key"])):
             mine_side = side_name
             break
     game["my_side"] = mine_side
     stamp_details(game, league)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
+    game["rival"] = bool(rivals)
     game["tier"] = tier
     game["is_favorite"] = fav_hit
     game["watch_note"] = watch_note
@@ -523,6 +528,7 @@ def _round_tag(game):
     # worth showing.
     slug = slug.split("---")[-1]
     words = [w for w in slug.replace("-", " ").split() if w]
+    words = [w for w in words if w != "proper"]      # "Third Round Proper"
     small = ("of", "the", "and")
     pretty = " ".join(
         w.upper() if w in ("mls", "nit")

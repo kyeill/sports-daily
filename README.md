@@ -364,9 +364,10 @@ NBA and MLB show the national feed only (`national_only_display`). A game
 carried solely on regional networks shows no network at all, which is the
 honest answer — the regional feed is only useful if you happen to get it.
 
-A favourite's **own regional feed** is always named -- Tigers.TV, FanDuel SN
+A **favourite's** own regional feed is always named -- Tigers.TV, FanDuel SN
 Detroit -- even where the national-only rule hides every other regional
-network. The opponent's feed stays hidden.
+network. The opponent's feed stays hidden, and a `follow` team (the Cavaliers)
+stays national-only while still appearing in My Teams.
 
 **Streaming is listed only when it is the only way to watch.** Anything in
 `streaming_networks` -- Peacock, Paramount+, ESPN+, Apple TV and the rest -- is
@@ -384,6 +385,10 @@ first game starts**, so a 7:30am Premier League match leads and a 10pm West
 Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
 football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
 NHL, college hockey.
+
+**Rivals** sit in their own block directly under My Teams: Ohio State,
+Michigan State, Notre Dame, Arsenal and Chelsea. A rival playing one of your
+teams is already in My Teams and is not repeated.
 
 In **My Teams** the league is not named, since the team implies it -- except in
 soccer, where Tottenham and Atlanta United appear across half a dozen
@@ -435,7 +440,7 @@ MoneyPuck is the obvious NHL source and **explicitly asks not to be scraped**,
 so it is not used. Odds are cached for 12 hours — they move once a day at most,
 and FanGraphs is somebody else's bandwidth.
 
-The page reports the odds either way, in one quiet line: **"Detroit Lions 68% to
+The page reports the odds only while a race is live, in one quiet line: **"Detroit Lions 68% to
 make the playoffs"** when the race is live, or **"MLB race hidden - Detroit
 Tigers at 5% to make the playoffs (floor 20%)"** when it is not — so a blank Key
 opponents section never reads as a breakage. Leagues without a source say

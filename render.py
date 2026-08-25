@@ -196,7 +196,10 @@ def summary(games):
 def _body(games, config, notes=None, info=None):
     games = sorted(games, key=lambda g: (g["start_local"], g["league_label"]))
     pinned = [g for g in games if g.get("tier") == "favorite"]
-    rest = [g for g in games if g.get("tier") != "favorite"]
+    # Rivals get their own block under My Teams -- but a rival playing one of
+    # your teams is already up there, so it is not repeated.
+    rivals = [g for g in games if g.get("tier") != "favorite" and g.get("rival")]
+    rest = [g for g in games if g.get("tier") != "favorite" and not g.get("rival")]
 
     parts = []
     for note in notes or []:
@@ -206,6 +209,9 @@ def _body(games, config, notes=None, info=None):
     if pinned:
         parts.append('<div class="pinned">%s</div>' %
                      _section("My Teams", pinned, True, config))
+    if rivals:
+        parts.append('<div class="watching">%s</div>' %
+                     _section("Rivals", rivals, True, config))
 
     # Everything else sits in its own sport, highlights included -- the tag on
     # the row already says why it is there, so a separate section was just an
