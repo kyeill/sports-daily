@@ -119,7 +119,11 @@ self.addEventListener('fetch', function (e) {
   e.respondWith(
     fetch(e.request).then(function (res) {
       var copy = res.clone();
-      caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+      // Cross-origin font responses are opaque and cache.put rejects them;
+      // swallowing that keeps the fetch handler from logging on every load.
+      caches.open(CACHE)
+        .then(function (c) { return c.put(e.request, copy); })
+        .catch(function () {});
       return res;
     }).catch(function () { return caches.match(e.request); })
   );
@@ -197,7 +201,7 @@ def build(config, days=8, out=SITE):
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1,'
         'viewport-fit=cover">'
-        '<title>Games</title>'
+        '<title>Games</title>' + render.FONT_LINK +
         '<link rel="manifest" href="manifest.webmanifest">'
         '<meta name="theme-color" content="#16161a">'
         '<meta name="apple-mobile-web-app-capable" content="yes">'

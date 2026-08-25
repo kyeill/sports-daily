@@ -5,6 +5,15 @@ from datetime import datetime
 
 import filters
 
+# Source Sans 3, with the system stack behind it so a cold offline load still
+# looks right. Only the two weights the page actually uses are requested.
+FONT_LINK = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+    'family=Source+Sans+3:wght@400;600&display=swap">'
+)
+
 CSS = """
 /* Dark only, deliberately: the page is read at a glance and should look the
    same on every device, rather than following each one's system setting. */
@@ -17,7 +26,8 @@ html { color-scheme: dark; }
 * { box-sizing: border-box; }
 body {
   margin: 0; padding: 24px 16px 64px; background: var(--bg); color: var(--ink);
-  font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font: 15px/1.5 "Source Sans 3", -apple-system, "Segoe UI", Roboto, Helvetica,
+        Arial, sans-serif;
 }
 .wrap { max-width: 860px; margin: 0 auto; }
 h1 { font-size: 26px; margin: 0 0 2px; letter-spacing: -0.01em; }
@@ -256,7 +266,7 @@ def render(day, games, config, generated=None, notes=None, info=None):
     counts = summary(games)
 
     return (
-        '<title>Games &middot; %s</title>\n<style>%s</style>\n'
+        '<title>Games &middot; %s</title>' + FONT_LINK + '\n<style>%s</style>\n'
         '<div class="wrap"><h1>%s</h1>%s'
         '<footer>Generated %s from ESPN. Times shown in %s.</footer></div>'
     ) % (
