@@ -28,7 +28,7 @@
       "race_min_odds": 20,
       "sort_rank": 6,
       "national_only_display": true,
-      "team_detail": "record"
+      "team_detail": "conference_place"
     },
     {
       "key": "nba",
@@ -50,7 +50,7 @@
       "race_until_season_end": true,
       "sort_rank": 8,
       "national_only_display": true,
-      "team_detail": "division_place",
+      "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Pistons",
         "Cleveland Cavaliers"
@@ -74,7 +74,7 @@
       "race_min_odds": 20,
       "sort_rank": 7,
       "national_only_display": true,
-      "team_detail": "division_place",
+      "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Tigers"
       ]
@@ -97,7 +97,7 @@
       "race_from_month": 3,
       "race_until_season_end": true,
       "sort_rank": 9,
-      "team_detail": "division_place",
+      "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Red Wings"
       ]
@@ -865,7 +865,8 @@
   "team_colors": {
     "Syracuse": "f76900",
     "Michigan Wolverines": "ffcb05",
-    "Detroit Tigers": "fa4616"
+    "Detroit Tigers": "fa4616",
+    "Tottenham Hotspur": "132257"
   },
   "streaming_networks": [
     "Peacock",

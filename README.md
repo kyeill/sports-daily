@@ -347,10 +347,14 @@ season `2025-26-english-premier-league`, which a blacklist turned into a tag.
 
 ## What sits next to a team name
 
-`team_detail` per league: `record` for the NFL and all three college sports,
-`division_place` for MLB, the NBA and the NHL ("2nd"), `table_place` for the
-Premier League and MLS ("3rd"), and `none` for every other soccer competition,
-where a cup has no table to place anyone in.
+`team_detail` per league: `record` for the three college sports,
+`conference_place` for the NFL, MLB, NBA and NHL -- place within the conference
+or league, which is the same number ESPN calls a playoff seed -- `table_place`
+for the Premier League and MLS ("3rd"), and `none` for every other soccer
+competition, where a cup has no table to place anyone in.
+
+**In the postseason that place is printed as a seed** ("2 seed"), since a
+regular-season standing means nothing once the bracket starts.
 
 Places come from the **current** standings, so a team that has since been
 relegated has no place at all when you browse an old date.

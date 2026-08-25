@@ -268,6 +268,26 @@ def _division_places(league):
     return _place_cache[key]
 
 
+def _conference_places(league):
+    """{team name: rank within its conference or league}.
+
+    The same number ESPN calls a playoff seed, which is why the postseason can
+    print it as a seed instead of a standings place.
+    """
+    key = ("conference", league["key"])
+    if key not in _place_cache:
+        groups = {}
+        for row in espn.standings(league):
+            if row.get("seed"):
+                groups.setdefault(row["conference"], []).append(row)
+        places = {}
+        for rows in groups.values():
+            for spot, row in enumerate(sorted(rows, key=lambda r: r["seed"]), 1):
+                places[row["team"].lower()] = spot
+        _place_cache[key] = places
+    return _place_cache[key]
+
+
 def _table_places(league):
     """{club name: '3rd'} from a league table."""
     key = ("table", league["key"])
@@ -296,7 +316,16 @@ def stamp_details(game, league, config):
     mode = league.get("team_detail", "record")
     for side in (game["home"], game["away"]):
         side["label"] = _label(side, config)
-        if mode == "division_place":
+        if mode == "conference_place":
+            spot = _conference_places(league).get((side.get("name") or "").lower())
+            if not spot:
+                side["detail"] = ""
+            elif game.get("postseason"):
+                # A regular-season place means nothing once the bracket starts.
+                side["detail"] = "%d seed" % spot
+            else:
+                side["detail"] = _ordinal(spot)
+        elif mode == "division_place":
             side["detail"] = _division_places(league).get((side.get("name") or "").lower(), "")
         elif mode == "table_place":
             side["detail"] = _table_places(league).get((side.get("name") or "").lower(), "")

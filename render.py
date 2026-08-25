@@ -98,6 +98,9 @@ h2 {
   /* The detail line lives inside .match, so that container's own 6px gap was
      costing as much as the text itself. */
   .match { row-gap: 0; }
+  /* A game with no network and no line would otherwise sit shorter than its
+     neighbours; the empty row still holds its place. */
+  .meta { min-height: 20px; }
   .note { margin-top: 0; line-height: 1.35; }
 }
 footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
