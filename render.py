@@ -57,6 +57,12 @@ h2 {
 .side img { width: 20px; height: 20px; object-fit: contain; flex: 0 0 20px; }
 .at { display: inline-block; vertical-align: middle;
   color: var(--muted); font-size: 12px; }
+.venue { color: var(--muted); font-size: 12px; vertical-align: middle; }
+@media (max-width: 640px) {
+  /* On a phone the venue belongs under the matchup, not squeezed beside it. */
+  .venue { display: block; margin-left: 0; }
+  .venue::before { content: ""; }
+}
 .game { border-left: 3px solid transparent; }
 .game.tinted { border-left-color: var(--tint); }
 .match a { color: inherit; text-decoration: none; }
@@ -126,10 +132,12 @@ def _game_html(game, show_league, config):
         _team_html(first, show_records, config), joiner,
         _team_html(second, show_records, config))
     if game.get("neutral") and game.get("venue"):
-        matchup += ' <span class="rec">&middot; %s</span>' % _esc(game["venue"])
+        matchup += ' <span class="venue">&middot; %s</span>' % _esc(game["venue"])
 
     meta = []
-    if show_league:
+    # In My Teams the sport is obvious from the team -- except in soccer, where
+    # Tottenham and Atlanta United turn up in half a dozen competitions.
+    if show_league and (game.get("sport") or "") == "Soccer":
         meta.append('<span class="chip lg">%s</span>' % _esc(game["league_label"]))
     for tag in game.get("tags") or []:
         meta.append('<span class="chip why">%s</span>' % _esc(tag))

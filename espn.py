@@ -290,13 +290,17 @@ def _broadcasts(comp):
     being a streaming service, so the hide list still matters.
     """
     names, national_names, national = [], [], False
+    by_market = {"home": [], "away": []}
     for entry in comp.get("broadcasts") or []:
-        is_nat = (entry.get("market") or "").lower() == "national"
+        market = (entry.get("market") or "").lower()
+        is_nat = market == "national"
         for name in entry.get("names") or []:
             if name not in names:
                 names.append(name)
             if is_nat and name not in national_names:
                 national_names.append(name)
+            if market in by_market and name not in by_market[market]:
+                by_market[market].append(name)
         if is_nat:
             national = True
     if not names:
@@ -308,7 +312,7 @@ def _broadcasts(comp):
                 national = True
                 if name and name not in national_names:
                     national_names.append(name)
-    return names, national_names, national
+    return names, national_names, national, by_market
 
 
 def _odds(comp):
@@ -387,7 +391,7 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             found = {conf_names.get(t["conference_id"], "") for t in (home, away)}
             conference = " / ".join(sorted(found - {""}))
 
-        tv, tv_national, national = _broadcasts(comp)
+        tv, tv_national, national, tv_market = _broadcasts(comp)
         spread, over_under = _odds(comp)
         status = (comp.get("status") or {}).get("type") or {}
         notes = [n.get("headline") for n in comp.get("notes") or [] if n.get("headline")]
@@ -413,6 +417,9 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "away": away,
             "tv": tv,
             "tv_national": tv_national,
+            # The regional feed for each side, so a favourite can show its own.
+            "tv_home": tv_market["home"],
+            "tv_away": tv_market["away"],
             "national": national,
             # Series state for a playoff tie: "LAD lead series 2-1".
             "series": ((comp.get("series") or {}).get("summary") or ""),

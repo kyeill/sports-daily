@@ -346,12 +346,12 @@ The stripe down the left of each row is:
    (Syracuse, Arsenal, the last-spot holder)
 4. **black** when both sides are rivals
 
-When none of that applies, two rooting rules decide (`tint_rules`): back the
-**unranked** side in a ranked-vs-unranked game, then back the **Big Ten** side
-against an outsider -- never Ohio State or Michigan State. Those two can
-disagree, a ranked Big Ten team against an unranked outsider, and **ranked
-wins**, on the grounds that the upset is the more interesting outcome. Failing
-all of it, the home team.
+When none of that applies, two rooting rules decide (`tint_rules`), conference
+first: back the **Big Ten** side against an outsider -- never Ohio State or
+Michigan State -- and only when both or neither are Big Ten does the
+**unranked** side win. So a ranked Big Ten team against an unranked outsider
+takes the Big Ten colour, while two Big Ten teams fall through to the underdog.
+Failing all of it, the home team.
 
 `team_colors` in `config.json` overrides ESPN where its idea of a team's colour
 is not the one people picture -- Syracuse comes back navy rather than orange,
@@ -363,6 +363,10 @@ ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,
 NBA and MLB show the national feed only (`national_only_display`). A game
 carried solely on regional networks shows no network at all, which is the
 honest answer — the regional feed is only useful if you happen to get it.
+
+A favourite's **own regional feed** is always named -- Tigers.TV, FanDuel SN
+Detroit -- even where the national-only rule hides every other regional
+network. The opponent's feed stays hidden.
 
 **Streaming is listed only when it is the only way to watch.** Anything in
 `streaming_networks` -- Peacock, Paramount+, ESPN+, Apple TV and the rest -- is
@@ -380,6 +384,11 @@ first game starts**, so a 7:30am Premier League match leads and a 10pm West
 Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
 football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
 NHL, college hockey.
+
+In **My Teams** the league is not named, since the team implies it -- except in
+soccer, where Tottenham and Atlanta United appear across half a dozen
+competitions and the badge is the only way to tell the Carabao Cup from the
+league.
 
 College football and basketball each split into **Ranked** and **Other**
 (`split_ranked`), since a top-25 game is a different proposition from the rest

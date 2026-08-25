@@ -215,7 +215,9 @@ def as_text(day, games, config, notes=None):
             return "%s%s%s" % (rank, team["short"] or team["name"], rec)
 
         tail = []
-        if with_league:
+        # The sport is obvious from the team except in soccer, where the same
+        # club turns up across half a dozen competitions.
+        if with_league and (game.get("sport") or "") == "Soccer":
             tail.append(game["league_label"])
         tail += game.get("tags") or []
         tail += filters.display_networks(game, config)

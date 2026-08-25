@@ -77,7 +77,14 @@ def display_networks(game, config, limit=2):
     # Some leagues only want the national feed: a regional sports network tells
     # you nothing useful unless it happens to be the one you get.
     pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
-    names = [n for n in (pool or []) if _flat(n) not in hidden]
+    pool = list(pool or [])
+    # Your own team's regional feed is worth naming even when the national
+    # rule would hide every regional network.
+    if game.get("national_only") and game.get("my_side"):
+        for name in game.get("tv_%s" % game["my_side"]) or []:
+            if name not in pool:
+                pool.append(name)
+    names = [n for n in pool if _flat(n) not in hidden]
     # Streaming only earns a mention when it is the only way to watch: if a
     # game is on NBC there is no point also saying Peacock.
     streaming = {_flat(n) for n in (config.get("streaming_networks") or [])}
@@ -314,17 +321,11 @@ def _conference_of(league, team):
 def _tint_fallback(game, sides, league, config):
     """Which side to colour when nobody involved is yours or notable.
 
-    Two rooting rules, in this order: back the unranked side in a
-    ranked-vs-unranked game, then back the conference side. They can disagree
-    -- a ranked Big Ten team against an unranked outsider -- and ranked wins,
-    because an upset is the more interesting outcome.
+    Two rooting rules. Conference comes FIRST: a ranked Big Ten team against an
+    unranked outsider takes the Big Ten side. Only when both or neither are in
+    the conference does the underdog rule decide.
     """
     rules = config.get("tint_rules") or {}
-
-    if rules.get("prefer_unranked"):
-        ranked = [bool(t.get("rank")) for t in sides]
-        if ranked[0] != ranked[1]:
-            return sides[0] if not ranked[0] else sides[1]
 
     wanted = [c.lower() for c in (rules.get("prefer_conference") or [])]
     if wanted:
@@ -335,6 +336,11 @@ def _tint_fallback(game, sides, league, config):
             pick = sides[0] if in_conf[0] else sides[1]
             if not any(e in (pick.get("name") or "").lower() for e in excluded):
                 return pick
+
+    if rules.get("prefer_unranked"):
+        ranked = [bool(t.get("rank")) for t in sides]
+        if ranked[0] != ranked[1]:
+            return sides[0] if not ranked[0] else sides[1]
 
     return game["home"]
 
@@ -467,6 +473,12 @@ def evaluate(game, league, config):
     if config.get("exclude_exhibitions", True) and is_exhibition(game):
         keep = False
 
+    mine_side = ""
+    for side_name in ("home", "away"):
+        if any(_matches(game[side_name], f) for f in pinned):
+            mine_side = side_name
+            break
+    game["my_side"] = mine_side
     stamp_details(game, league)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
     game["tier"] = tier
@@ -494,8 +506,8 @@ def _postseason_tag(game):
 # Whitelisted, not blacklisted: league slugs are unpredictable -- the Premier
 # League calls its regular season "2025-26-english-premier-league", which a
 # blacklist happily turned into a tag.
-KNOCKOUT_WORDS = ("final", "semifinal", "quarterfinal", "round-of", "playoff",
-                  "cup", "knockout", "3rd-place", "round-one", "round-two")
+KNOCKOUT_WORDS = ("final", "semifinal", "quarterfinal", "round", "playoff",
+                  "cup", "knockout", "3rd-place")
 
 
 def _round_tag(game):
