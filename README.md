@@ -436,12 +436,22 @@ soccer, where Tottenham and Atlanta United appear across half a dozen
 competitions and the badge is the only way to tell the Carabao Cup from the
 league.
 
-**Lopsided college football games are dropped** (`max_spread: 30`): a line over
-30 points means nobody expects a contest. Three things survive it -- Syracuse
-always (`spread_exempt_teams`), the four Saturday marquee windows, FOX at noon,
-CBS at 3:30, NBC and ABC at 7:30 (`spread_exempt_windows`), and anything in
-Main Slate or Highlights, which the rule never touches. On the 2026 opening
-Saturday that took college football from 26 games to 14.
+**Lopsided games are dropped** from the ordinary sections: college football
+over **30** points, college basketball over **15** (`max_spread`). Three things
+survive it -- Syracuse always (`spread_exempt_teams`), college football's four
+Saturday marquee windows, FOX at noon, CBS at 3:30, NBC and ABC at 7:30
+(`spread_exempt_windows`), and anything in Main Slate or Highlights, which the
+rule never touches. On the 2026 opening Saturday that took college football
+from 26 games to 14.
+
+Window times allow an hour either side (`spread_window_minutes`): the slots
+drift a quarter-hour week to week, ABC's primetime moves between 7:30 and 8,
+and a weather delay can push a start further still. Each network has one game
+in its window, so the tolerance costs nothing.
+
+**Odds only exist for upcoming games.** ESPN strips them from completed ones,
+so the rule shapes the fortnight the app actually shows and quietly does
+nothing when you browse a past date. A game with no spread is always kept.
 
 College football and basketball each split in two (`split_ranked`): **Ranked
 College Football** for anything with a top-25 team, then **College Football**

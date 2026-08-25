@@ -202,7 +202,8 @@
           "time": "19:30",
           "network": "ABC"
         }
-      ]
+      ],
+      "spread_window_minutes": 60
     },
     {
       "key": "mens-college-basketball",
@@ -279,6 +280,10 @@
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
+      ],
+      "max_spread": 15,
+      "spread_exempt_teams": [
+        "Syracuse Orange"
       ]
     },
     {

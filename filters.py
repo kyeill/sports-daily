@@ -399,10 +399,17 @@ def is_blowout(game, league):
     for name in league.get("spread_exempt_teams") or []:
         if any(_matches(t, name) for t in sides):
             return False
-    # The marquee windows are worth having on whatever the line says.
+    # The marquee windows are worth having on whatever the line says. The time
+    # is matched with an hour of slack: these slots drift by a quarter-hour
+    # from week to week, ABC's primetime moves between 7:30 and 8, and a
+    # weather delay can push a start further still. Each network has only one
+    # game in the window anyway, so the tolerance costs nothing.
+    slack = league.get("spread_window_minutes", 60)
+    start = game["start_local"].hour * 60 + game["start_local"].minute
     for slot in league.get("spread_exempt_windows") or []:
-        if (_on_day(game, slot.get("days"))
-                and game["start_local"].strftime("%H:%M") == slot.get("time")
+        hours, minutes = (slot.get("time") or "0:0").split(":")
+        target = int(hours) * 60 + int(minutes)
+        if (_on_day(game, slot.get("days")) and abs(start - target) <= slack
                 and on_networks(game, [slot.get("network")])):
             return False
     return True
