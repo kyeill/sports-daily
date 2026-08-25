@@ -106,7 +106,7 @@ def _team_html(team, show_records, config):
     bits = [_logo(team, config)]
     if team.get("rank"):
         bits.append('<span class="rank">#%d</span>' % team["rank"])
-    bits.append(_esc(team.get("short") or team.get("name")))
+    bits.append(_esc(team.get("label") or team.get("short") or team.get("name")))
     detail = team.get("detail") if show_records else ""
     if detail:
         bits.append('<span class="rec">(%s)</span>' % _esc(detail))

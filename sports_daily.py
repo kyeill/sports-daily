@@ -212,7 +212,7 @@ def as_text(day, games, config, notes=None):
             rank = "#%d " % team["rank"] if team["rank"] else ""
             rec = " (%s)" % team["detail"] if (
                 team.get("detail") and config.get("show_records", True)) else ""
-            return "%s%s%s" % (rank, team["short"] or team["name"], rec)
+            return "%s%s%s" % (rank, team.get("label") or team["short"] or team["name"], rec)
 
         tail = []
         # The sport is obvious from the team except in soccer, where the same

@@ -276,10 +276,25 @@ def _table_places(league):
     return _place_cache[key]
 
 
-def stamp_details(game, league):
+def _label(team, config):
+    """The name to print, honouring any override.
+
+    ESPN's short name is not always what people say: Tottenham comes back as
+    "Spurs".
+    """
+    overrides = config.get("team_names") or {}
+    name = (team.get("name") or "").lower()
+    for match, label in overrides.items():
+        if match.lower() in name:
+            return label
+    return team.get("short") or team.get("name") or ""
+
+
+def stamp_details(game, league, config):
     """What shows next to each team name: record, place, or nothing."""
     mode = league.get("team_detail", "record")
     for side in (game["home"], game["away"]):
+        side["label"] = _label(side, config)
         if mode == "division_place":
             side["detail"] = _division_places(league).get((side.get("name") or "").lower(), "")
         elif mode == "table_place":
@@ -476,7 +491,7 @@ def evaluate(game, league, config):
             mine_side = side_name
             break
     game["my_side"] = mine_side
-    stamp_details(game, league)
+    stamp_details(game, league, config)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
     game["rival"] = bool(rivals)
     game["tier"] = tier

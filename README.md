@@ -355,6 +355,9 @@ Michigan State -- and only when both or neither are Big Ten does the
 takes the Big Ten colour, while two Big Ten teams fall through to the underdog.
 Failing all of it, the home team.
 
+`team_names` does the same for names ESPN writes differently from how people
+say them -- Tottenham comes back as "Spurs".
+
 `team_colors` in `config.json` overrides ESPN where its idea of a team's colour
 is not the one people picture -- Syracuse comes back navy rather than orange,
 and Michigan blue rather than maize.

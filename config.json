@@ -798,5 +798,8 @@
       "Ohio State",
       "Michigan State"
     ]
+  },
+  "team_names": {
+    "Tottenham Hotspur": "Tottenham"
   }
 }
