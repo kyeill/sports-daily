@@ -695,10 +695,14 @@ GitHub cron is UTC only, so two schedules fire (10:00 and 11:00 UTC) and a gate
 job lets exactly one through by checking the Eastern hour. That keeps it at 6am
 year-round instead of drifting an hour with daylight saving.
 
-Both UTC slots fire, and a gate job lets exactly one through: 6am Eastern
-normally, with the 7am slot acting as a **catch-up** when GitHub delays the
-earlier run past the hour. It knows whether the day already built from
-`output/history/_last_build.txt`, which the build itself commits.
+Three UTC slots fire and a gate job lets exactly one through: 6am Eastern
+normally, with the 7am and 8am slots acting as **catch-ups**. They are needed:
+GitHub queues scheduled runs rather than guaranteeing them, and on the first
+real morning the 6am cron ran **64 minutes late**. A catch-up only builds if
+`output/history/_last_build.txt` -- committed by the build itself -- does not
+already show today, so the page is still built exactly once a day.
+
+In practice the page updates between 6 and 8am Eastern, usually nearer 6.
 
 If a league or the odds feed cannot be reached, the page says so in a quiet
 line at the top of today rather than looking like a quiet day.

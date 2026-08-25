@@ -7,6 +7,7 @@ on:
     # so this really is once a day at 6am Eastern all year.
     - cron: "0 10 * * *"
     - cron: "0 11 * * *"
+    - cron: "0 12 * * *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -41,8 +42,16 @@ jobs:
             reason="manual or push"; go=yes
           elif [ "$hour" = "06" ]; then
             reason="the 6am slot"; go=yes
-          elif [ "$hour" = "07" ] && [ "$built" != "$today" ]; then
-            reason="catch-up: no build recorded for $today"; go=yes
+          elif [ "$hour" = "07" ] || [ "$hour" = "08" ]; then
+            # Catch-up slots. GitHub queues scheduled runs rather than
+            # guaranteeing them -- the 6am cron ran 64 minutes late on its
+            # first real morning -- so later slots build only if the day has
+            # not already been done.
+            if [ "$built" != "$today" ]; then
+              reason="catch-up at $hour: nothing built for $today yet"; go=yes
+            else
+              reason="already built for $today"; go=no
+            fi
           else
             reason="Eastern hour $hour, last build $built"; go=no
           fi
