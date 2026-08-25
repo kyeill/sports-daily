@@ -335,6 +335,7 @@
       "sort_rank": 5,
       "team_detail": "table_place",
       "round_overrides": {
+        "regular-season": "MLS Regular Season",
         "*conference-playoffs*": "MLS Playoffs {round}",
         "mls-cup": "MLS Cup Final"
       },
