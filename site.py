@@ -72,6 +72,31 @@ APP_JS = """
   // land on today, which is the whole point of it.
   var first = document.querySelector('.day');
   if (first) { show(first.id); }
+  // Swipe between days. Only horizontal gestures count, so a normal vertical
+  // scroll never changes the day by accident.
+  var x0 = null, y0 = null;
+  document.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { x0 = null; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (x0 === null) { return; }
+    var dx = e.changedTouches[0].clientX - x0;
+    var dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) { return; }
+    var ids = days.map(function (d) { return d.id; });
+    var at = ids.indexOf(document.querySelector('.day.on').id);
+    var next = at + (dx < 0 ? 1 : -1);
+    if (next >= 0 && next < ids.length) {
+      show(ids[next]);
+      var btn = bar.children[next];
+      if (btn && btn.scrollIntoView) {
+        btn.scrollIntoView({ inline: 'center', block: 'nearest' });
+      }
+    }
+  }, { passive: true });
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }

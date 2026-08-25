@@ -210,16 +210,14 @@ def as_text(day, games, config, notes=None):
 
         def side(team):
             rank = "#%d " % team["rank"] if team["rank"] else ""
-            rec = " (%s)" % team["record"] if (
-                team["record"] and config.get("show_records", True)) else ""
+            rec = " (%s)" % team["detail"] if (
+                team.get("detail") and config.get("show_records", True)) else ""
             return "%s%s%s" % (rank, team["short"] or team["name"], rec)
 
         tail = []
         if with_league:
             tail.append(game["league_label"])
         tail += game.get("tags") or []
-        if game.get("watch_context"):
-            tail.append(game["watch_context"])
         tail += filters.display_networks(game, config)
         if config.get("show_odds", True) and game["spread"]:
             tail.append(game["spread"])

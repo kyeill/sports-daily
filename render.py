@@ -91,8 +91,9 @@ def _team_html(team, show_records, config):
     if team.get("rank"):
         bits.append('<span class="rank">#%d</span>' % team["rank"])
     bits.append(_esc(team.get("short") or team.get("name")))
-    if show_records and team.get("record"):
-        bits.append('<span class="rec">(%s)</span>' % _esc(team["record"]))
+    detail = team.get("detail") if show_records else ""
+    if detail:
+        bits.append('<span class="rec">(%s)</span>' % _esc(detail))
     return '<span class="side">%s</span>' % " ".join(b for b in bits if b)
 
 
@@ -135,8 +136,9 @@ def _game_html(game, show_league, config):
     detail = filters.detail_of(game)
     note = ('<div class="note">%s</div>' % _esc(detail)) if detail else ""
 
-    # A thin accent in the home team's colour; muted enough for both themes.
-    tint = (game["home"].get("color") or "").strip()
+    # Your team's colour when you are involved, otherwise whichever team makes
+    # the game interesting; black when both sides do.
+    tint = (game.get("tint") or "").strip()
     attrs = (' class="game tinted" style="--tint:#%s"' % _esc(tint)) \
         if tint and config.get("show_colors", True) else ' class="game"'
 

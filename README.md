@@ -325,6 +325,24 @@ puts them in `season.slug`. The slug check is a **whitelist** of knockout words,
 because league slugs are unpredictable — the Premier League calls its regular
 season `2025-26-english-premier-league`, which a blacklist turned into a tag.
 
+## What sits next to a team name
+
+`team_detail` per league: `record` for the NFL and all three college sports,
+`division_place` for MLB, the NBA and the NHL ("2nd"), `table_place` for the
+Premier League and MLS ("3rd"), and `none` for every other soccer competition,
+where a cup has no table to place anyone in.
+
+Places come from the **current** standings, so a team that has since been
+relegated has no place at all when you browse an old date.
+
+## The colour stripe
+
+The stripe down the left of each row is **your team's colour when you are
+involved**, otherwise the colour of whichever team makes the game interesting
+-- a rival, Arsenal or Chelsea, the team holding the last playoff spot. When
+both sides qualify (Ohio State vs Michigan State) it goes black, and when
+neither does it falls back to the home team.
+
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,

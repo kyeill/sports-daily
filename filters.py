@@ -236,6 +236,70 @@ def is_exhibition(game):
     return "preseason" in marker.lower() or "friendly" in marker.lower()
 
 
+_place_cache = {}
+
+
+def _ordinal(n):
+    if 10 <= n % 100 <= 20:
+        return "%dth" % n
+    return "%d%s" % (n, {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th"))
+
+
+def _division_places(league):
+    """{team name: '2nd'} within its own division."""
+    key = ("division", league["key"])
+    if key not in _place_cache:
+        groups = {}
+        for row in espn.standings(league):
+            if row.get("seed"):
+                groups.setdefault(row["division"], []).append(row)
+        places = {}
+        for rows in groups.values():
+            for spot, row in enumerate(sorted(rows, key=lambda r: r["seed"]), 1):
+                places[row["team"].lower()] = _ordinal(spot)
+        _place_cache[key] = places
+    return _place_cache[key]
+
+
+def _table_places(league):
+    """{club name: '3rd'} from a league table."""
+    key = ("table", league["key"])
+    if key not in _place_cache:
+        _place_cache[key] = {name: _ordinal(rank)
+                             for name, rank in espn.soccer_table(league["path"]).items()}
+    return _place_cache[key]
+
+
+def stamp_details(game, league):
+    """What shows next to each team name: record, place, or nothing."""
+    mode = league.get("team_detail", "record")
+    for side in (game["home"], game["away"]):
+        if mode == "division_place":
+            side["detail"] = _division_places(league).get((side.get("name") or "").lower(), "")
+        elif mode == "table_place":
+            side["detail"] = _table_places(league).get((side.get("name") or "").lower(), "")
+        elif mode == "none":
+            side["detail"] = ""
+        else:
+            side["detail"] = side.get("record") or ""
+
+
+def _tint(game, sides, pinned, notable):
+    """The colour stripe: your team if involved, else the notable one.
+
+    Both notable (Ohio State vs Michigan State, Arsenal vs Chelsea) has no
+    honest answer, so it goes black.
+    """
+    mine = [t for t in sides if any(_matches(t, f) for f in pinned)]
+    if mine:
+        return mine[0].get("color") or ""
+    if len(notable) > 1:
+        return "000000"
+    if notable:
+        return notable[0].get("color") or ""
+    return game["home"].get("color") or ""
+
+
 def evaluate(game, league, config):
     """Returns (keep, tier, reasons). Also stamps the game dict."""
     rules = league.get("include") or {}
@@ -247,9 +311,12 @@ def evaluate(game, league, config):
 
     # Both sides can be on the watchlist -- a game between the division leader
     # and the wild card holder is doubly interesting, and says so.
+    notable = []
     watch_notes, watch_context = [], []
     for entry in watchlist_for(config, league["key"]):
-        if any(_matches(t, entry.get("team")) for t in sides):
+        hits = [t for t in sides if _matches(t, entry.get("team"))]
+        notable.extend(t for t in hits if t not in notable)
+        if hits:
             note = entry.get("note") or "watchlist"
             if note not in watch_notes:
                 watch_notes.append(note)
@@ -258,6 +325,9 @@ def evaluate(game, league, config):
     # Rule-driven Key opponents, alongside the sheet's manual watchlist.
     for rule in rules.get("tier3_rules") or []:
         if rule_matches(game, rule):
+            for name in rule.get("teams") or []:
+                notable.extend(t for t in sides
+                               if _matches(t, name) and t not in notable)
             note = rule.get("note") or "watchlist"
             if note not in watch_notes:
                 watch_notes.append(note)
@@ -334,6 +404,8 @@ def evaluate(game, league, config):
     if config.get("exclude_exhibitions", True) and is_exhibition(game):
         keep = False
 
+    stamp_details(game, league)
+    game["tint"] = _tint(game, sides, pinned, notable)
     game["tier"] = tier
     game["is_favorite"] = fav_hit
     game["watch_note"] = watch_note

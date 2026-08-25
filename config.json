@@ -27,7 +27,8 @@
       "race_until_month": 2,
       "race_min_odds": 20,
       "sort_rank": 6,
-      "national_only_display": true
+      "national_only_display": true,
+      "team_detail": "record"
     },
     {
       "key": "nba",
@@ -48,7 +49,8 @@
       "race_from_month": 3,
       "race_until_season_end": true,
       "sort_rank": 8,
-      "national_only_display": true
+      "national_only_display": true,
+      "team_detail": "division_place"
     },
     {
       "key": "mlb",
@@ -67,7 +69,8 @@
       "race_until_month": 10,
       "race_min_odds": 20,
       "sort_rank": 7,
-      "national_only_display": true
+      "national_only_display": true,
+      "team_detail": "division_place"
     },
     {
       "key": "nhl",
@@ -86,7 +89,8 @@
       "race_until_settled": true,
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 9
+      "sort_rank": 9,
+      "team_detail": "division_place"
     },
     {
       "key": "college-football",
@@ -150,7 +154,8 @@
         "power_conferences_both": true
       },
       "sort_rank": 1,
-      "split_ranked": true
+      "split_ranked": true,
+      "team_detail": "record"
     },
     {
       "key": "mens-college-basketball",
@@ -223,7 +228,8 @@
         ]
       },
       "sort_rank": 2,
-      "split_ranked": true
+      "split_ranked": true,
+      "team_detail": "record"
     },
     {
       "key": "mens-college-hockey",
@@ -246,7 +252,8 @@
           "championship"
         ]
       },
-      "sort_rank": 3
+      "sort_rank": 3,
+      "team_detail": "record"
     },
     {
       "key": "mls",
@@ -267,7 +274,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "table_place"
     },
     {
       "key": "usopen",
@@ -280,7 +288,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "leaguescup",
@@ -305,7 +314,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "ccc",
@@ -318,7 +328,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "epl",
@@ -381,7 +392,8 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 4,
+      "team_detail": "table_place"
     },
     {
       "key": "facup",
@@ -410,7 +422,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "eflcup",
@@ -439,7 +452,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "ucl",
@@ -480,7 +494,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "uel",
@@ -515,7 +530,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "uecl",
@@ -550,7 +566,8 @@
           }
         ]
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "wcq",
@@ -563,7 +580,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "worldcup",
@@ -576,7 +594,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "goldcup",
@@ -589,7 +608,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     },
     {
       "key": "nations",
@@ -602,7 +622,8 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5
+      "sort_rank": 5,
+      "team_detail": "none"
     }
   ],
   "national_networks": [
