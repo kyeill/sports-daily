@@ -1,5 +1,7 @@
-# Generated output: the app is rebuilt in CI, history stays local in Drive
-output/
+# Generated output is rebuilt every run -- except the history, which is the
+# one thing that cannot be regenerated after the fact.
+output/*
+!output/history/
 cache/
 run.log
 __pycache__/

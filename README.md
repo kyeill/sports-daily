@@ -40,10 +40,12 @@ Verified from a bare clone: the build needs nothing but Python and `requests`.
 Verified live: the service worker registers and caches the page and the ESPN
 logos, so a loaded day survives going offline.
 
-The local scheduled task still writes the single-day `output/today.html`, and
-`output/history/` stays local — both are gitignored. **That means games-back
-history only accrues on days this machine runs the task**; the cloud build does
-not write it back to the repo.
+**Nothing depends on a machine at home.** The cloud build also records the
+games-back history and commits it back to the repo, so it accrues every day
+whether or not anything local ever runs.
+
+`sports_daily.py` still works locally for a single day or an arbitrary date --
+useful for checking a rule change before pushing -- but it is optional.
 
 ## Editing your teams
 
@@ -478,13 +480,15 @@ comes back — add a league entry with a `path` and those rules work again.
 
 ## Automation
 
-`register-task.ps1`, run once from an elevated PowerShell, registers **"sports
-daily"**: 07:15 daily plus logon+5min, because the machine is not reliably on
-in the morning. It runs `run-daily.cmd`, which appends to `run.log` — read it
-with `Get-Content run.log -Encoding UTF8`.
+GitHub Actions runs `site.py` at **11:15 and 22:15 UTC**, publishes the app to
+GitHub Pages, and commits any new `output/history/` row back to the repo. Two
+schedules because GitHub cron has no timezone, so the morning build drifts an
+hour with daylight saving.
 
-Because `output/today.html` sits in Drive, it syncs to the phone; opening it
-there is the whole delivery mechanism. Nothing to host, nothing to log into.
+The history commit carries **`[skip ci]`**: without it, the push retriggers the
+workflow, which commits again, forever.
+
+Trigger a build by hand from the Actions tab, or by pushing anything.
 
 ## Environment
 

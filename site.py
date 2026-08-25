@@ -140,6 +140,10 @@ def build(config, days=8, out=SITE):
     os.makedirs(out, exist_ok=True)
 
     race.merge_into(config, today=today)
+    # The cloud build owns the games-back history now; nothing depends on a
+    # machine at home being switched on.
+    for line in sports_daily.record_history(config, today, tz):
+        print("  history: %s" % line)
     info = [line for line in (race.status(lg) for lg in config.get("leagues", []))
             if line]
 
