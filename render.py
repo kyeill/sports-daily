@@ -197,6 +197,33 @@ def _section(title, games, show_league, config):
     return '<h2>%s</h2><div class="card">%s</div>' % (_esc(title), rows)
 
 
+def sections_for(games, config):
+    """[(heading, games)] for everything outside the pinned blocks.
+
+    Shared by the page and the console output so the two cannot drift -- they
+    already had, with the console missing the ranked split entirely.
+    """
+    rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
+    split = {lg["label"] for lg in config.get("leagues", []) if lg.get("split_ranked")}
+    by_league = {}
+    for game in games:
+        label = game["league_label"]
+        if label in split:
+            # A top-25 game is a different proposition from the rest of a
+            # college slate, so it gets its own heading.
+            ranked = any(t.get("rank") for t in (game["home"], game["away"]))
+            label = ("Ranked %s" % label) if ranked else label
+            # Ranked leads when both start at the same minute.
+            rank[label] = rank.get(game["league_label"], 99) + (0 if ranked else 0.5)
+        by_league.setdefault(label, []).append(game)
+    # Sports come in the order their first game starts; the configured rank
+    # only breaks ties between sports starting at the same minute.
+    order = sorted(by_league,
+                   key=lambda label: (min(g["start_local"] for g in by_league[label]),
+                                      rank.get(label, 99), label))
+    return [(label, by_league[label]) for label in order]
+
+
 def day_body(day, games, config, notes=None, info=None):
     """The sections for one day, without the page chrome.
 
@@ -223,8 +250,8 @@ def _body(games, config, notes=None, info=None):
     pinned = [g for g in games if g.get("tier") == "favorite"]
     # Rivals get their own block under My Teams -- but a rival playing one of
     # your teams is already up there, so it is not repeated.
-    rivals = [g for g in games if g.get("tier") != "favorite" and g.get("rival")]
-    rest = [g for g in games if g.get("tier") != "favorite" and not g.get("rival")]
+    rivals = [g for g in games if g.get("tier") != "favorite" and g.get("highlight")]
+    rest = [g for g in games if g.get("tier") != "favorite" and not g.get("highlight")]
 
     parts = []
     for note in notes or []:
@@ -233,34 +260,16 @@ def _body(games, config, notes=None, info=None):
         parts.append('<div class="info">%s</div>' % _esc(line))
     if pinned:
         parts.append('<div class="pinned">%s</div>' %
-                     _section("My Teams", pinned, True, config))
+                     _section("Main Slate", pinned, True, config))
     if rivals:
         parts.append('<div class="watching">%s</div>' %
-                     _section("Rivals", rivals, True, config))
+                     _section("Highlights", rivals, True, config))
 
     # Everything else sits in its own sport, highlights included -- the tag on
     # the row already says why it is there, so a separate section was just an
     # extra heading to scroll past.
-    rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
-    split = {lg["label"] for lg in config.get("leagues", []) if lg.get("split_ranked")}
-    by_league = {}
-    for game in rest:
-        label = game["league_label"]
-        if label in split:
-            # Ranked games are a different proposition from the rest of a
-            # college slate, so they get their own heading.
-            ranked = any(t.get("rank") for t in (game["home"], game["away"]))
-            label = "%s %s %s" % (label, "–", "Ranked" if ranked else "Other")
-            # Ranked leads on a tie, so nudge it ahead of Other in the rank.
-            rank[label] = rank.get(game["league_label"], 99) + (0 if ranked else 0.5)
-        by_league.setdefault(label, []).append(game)
-    # Sports come in the order their first game starts; the configured rank
-    # only breaks ties between sports starting at the same minute.
-    order = sorted(by_league,
-                   key=lambda label: (min(g["start_local"] for g in by_league[label]),
-                                      rank.get(label, 99), label))
-    for label in order:
-        parts.append(_section(label, by_league[label], False, config))
+    for label, block in sections_for(rest, config):
+        parts.append(_section(label, block, False, config))
 
     if not games:
         parts.append('<div class="card"><div class="empty">'

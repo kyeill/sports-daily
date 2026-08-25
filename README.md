@@ -405,18 +405,27 @@ Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
 football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
 NHL, college hockey.
 
-**Rivals** sit in their own block directly under My Teams: Ohio State,
-Michigan State, Notre Dame, Arsenal and Chelsea. A rival playing one of your
-teams is already in My Teams and is not repeated.
+**Main Slate** is the top block; **Highlights** sits directly under it and
+holds three things:
 
-In **My Teams** the league is not named, since the team implies it -- except in
+* the rivals -- Ohio State, Michigan State, Notre Dame, Arsenal, Chelsea
+* your own teams whose games are not, in themselves, an event: the Tigers,
+  Pistons, Cavaliers, Red Wings, Atlanta United and Cornell (`highlight_teams`)
+* every European club fixture -- the Premier League, both domestic cups and all
+  three European competitions (`highlight_all`)
+
+**Postseason promotes them back to Main Slate.** A Tigers game in June is a
+highlight; a Tigers playoff game is the main slate. Which leaves Main Slate as
+the Lions, Michigan, the USMNT, and anything that has become an event.
+
+In **Main Slate** the league is not named, since the team implies it -- except in
 soccer, where Tottenham and Atlanta United appear across half a dozen
 competitions and the badge is the only way to tell the Carabao Cup from the
 league.
 
-College football and basketball each split into **Ranked** and **Other**
-(`split_ranked`), since a top-25 game is a different proposition from the rest
-of the slate.
+College football and basketball each split in two (`split_ranked`): **Ranked
+College Football** for anything with a top-25 team, then **College Football**
+for the rest. Same for basketball.
 
 Highlighted teams sit in their own sport rather than a separate block — the tag
 on the row already says why the game is there.

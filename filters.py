@@ -467,9 +467,22 @@ def evaluate(game, league, config):
         if headline and any(p in headline for p in patterns):
             reasons.append("tournament")
 
-    if fav_hit:
+    # Some of your own teams belong in Highlights rather than the main slate
+    # unless the game actually matters: a Tigers game in June, every European
+    # club fixture. Postseason promotes them back.
+    demoted = False
+    if fav_hit and not game.get("postseason"):
+        if league.get("highlight_all"):
+            demoted = True
+        else:
+            for name in league.get("highlight_teams") or []:
+                if any(_matches(t, name) for t in sides):
+                    demoted = True
+                    break
+
+    if fav_hit and not demoted:
         tier = "favorite"
-    elif watch_note:
+    elif fav_hit or watch_note:
         tier = "watch"
     else:
         tier = "interest"
@@ -494,7 +507,8 @@ def evaluate(game, league, config):
     game["my_side"] = mine_side
     stamp_details(game, league, config)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
-    game["rival"] = bool(rivals)
+    # Both a rival and a demoted favourite live in the Highlights block.
+    game["highlight"] = bool(rivals) or demoted
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
@@ -632,7 +646,10 @@ def detail_of(game, config=None, league=None):
     lead = round_label(game, config, league)
     if " - Game " in headline:
         lead = ("%s Gm %s" % (lead, headline.split(" - Game ", 1)[1].strip())).strip()
-    series = _series_short(game.get("series"))
+    # ESPN also files a regular-season head-to-head under `series`, which read
+    # as "(CLE 4-3)" on an ordinary November game -- indistinguishable from a
+    # playoff series.
+    series = _series_short(game.get("series")) if game.get("postseason") else ""
     if series:
         lead = ("%s (%s)" % (lead, series)).strip()
 

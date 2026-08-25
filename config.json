@@ -50,7 +50,11 @@
       "race_until_season_end": true,
       "sort_rank": 8,
       "national_only_display": true,
-      "team_detail": "division_place"
+      "team_detail": "division_place",
+      "highlight_teams": [
+        "Detroit Pistons",
+        "Cleveland Cavaliers"
+      ]
     },
     {
       "key": "mlb",
@@ -70,7 +74,10 @@
       "race_min_odds": 20,
       "sort_rank": 7,
       "national_only_display": true,
-      "team_detail": "division_place"
+      "team_detail": "division_place",
+      "highlight_teams": [
+        "Detroit Tigers"
+      ]
     },
     {
       "key": "nhl",
@@ -90,7 +97,10 @@
       "race_from_month": 3,
       "race_until_season_end": true,
       "sort_rank": 9,
-      "team_detail": "division_place"
+      "team_detail": "division_place",
+      "highlight_teams": [
+        "Detroit Red Wings"
+      ]
     },
     {
       "key": "college-football",
@@ -155,7 +165,10 @@
       },
       "sort_rank": 1,
       "split_ranked": true,
-      "team_detail": "record"
+      "team_detail": "record",
+      "highlight_teams": [
+        "Cornell Big Red"
+      ]
     },
     {
       "key": "mens-college-basketball",
@@ -229,7 +242,10 @@
       },
       "sort_rank": 2,
       "split_ranked": true,
-      "team_detail": "record"
+      "team_detail": "record",
+      "highlight_teams": [
+        "Cornell Big Red"
+      ]
     },
     {
       "key": "mens-college-hockey",
@@ -253,7 +269,10 @@
         ]
       },
       "sort_rank": 3,
-      "team_detail": "record"
+      "team_detail": "record",
+      "highlight_teams": [
+        "Cornell Big Red"
+      ]
     },
     {
       "key": "mls",
@@ -279,7 +298,10 @@
       "round_overrides": {
         "*conference-playoffs*": "MLS Playoffs {round}",
         "mls-cup": "MLS Cup Final"
-      }
+      },
+      "highlight_teams": [
+        "Atlanta United"
+      ]
     },
     {
       "key": "usopen",
@@ -398,7 +420,8 @@
         ]
       },
       "sort_rank": 4,
-      "team_detail": "table_place"
+      "team_detail": "table_place",
+      "highlight_all": true
     },
     {
       "key": "facup",
@@ -429,7 +452,8 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_all": true
     },
     {
       "key": "eflcup",
@@ -460,7 +484,8 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_all": true
     },
     {
       "key": "ucl",
@@ -503,7 +528,8 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_all": true
     },
     {
       "key": "uel",
@@ -540,7 +566,8 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_all": true
     },
     {
       "key": "uecl",
@@ -577,7 +604,8 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_all": true
     },
     {
       "key": "wcq",
