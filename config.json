@@ -168,6 +168,40 @@
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
+      ],
+      "max_spread": 30,
+      "spread_exempt_teams": [
+        "Syracuse Orange"
+      ],
+      "spread_exempt_windows": [
+        {
+          "days": [
+            "Sat"
+          ],
+          "time": "12:00",
+          "network": "FOX"
+        },
+        {
+          "days": [
+            "Sat"
+          ],
+          "time": "15:30",
+          "network": "CBS"
+        },
+        {
+          "days": [
+            "Sat"
+          ],
+          "time": "19:30",
+          "network": "NBC"
+        },
+        {
+          "days": [
+            "Sat"
+          ],
+          "time": "19:30",
+          "network": "ABC"
+        }
       ]
     },
     {

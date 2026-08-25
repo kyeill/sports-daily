@@ -376,6 +376,38 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     return _colour(_tint_fallback(game, sides, league, config), config)
 
 
+def _spread_points(game):
+    """The number of points in 'IU -40.5', or None."""
+    match = re.search(r"-\s*(\d+(?:\.\d+)?)", game.get("spread") or "")
+    return float(match.group(1)) if match else None
+
+
+def is_blowout(game, league):
+    """A game nobody expects to be competitive, and no reason to keep it.
+
+    Only ever applied to the ordinary sections: your own teams and the
+    highlights are never dropped for being lopsided.
+    """
+    limit = league.get("max_spread")
+    if not limit:
+        return False
+    points = _spread_points(game)
+    if points is None or points <= limit:
+        return False
+
+    sides = (game["home"], game["away"])
+    for name in league.get("spread_exempt_teams") or []:
+        if any(_matches(t, name) for t in sides):
+            return False
+    # The marquee windows are worth having on whatever the line says.
+    for slot in league.get("spread_exempt_windows") or []:
+        if (_on_day(game, slot.get("days"))
+                and game["start_local"].strftime("%H:%M") == slot.get("time")
+                and on_networks(game, [slot.get("network")])):
+            return False
+    return True
+
+
 def evaluate(game, league, config):
     """Returns (keep, tier, reasons). Also stamps the game dict."""
     rules = league.get("include") or {}
@@ -505,6 +537,9 @@ def evaluate(game, league, config):
         keep = False
 
     if config.get("exclude_exhibitions", True) and is_exhibition(game):
+        keep = False
+
+    if tier == "interest" and is_blowout(game, league):
         keep = False
 
     # Only a true favourite gets its regional feed; a "follow" team is pinned

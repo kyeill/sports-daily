@@ -436,6 +436,13 @@ soccer, where Tottenham and Atlanta United appear across half a dozen
 competitions and the badge is the only way to tell the Carabao Cup from the
 league.
 
+**Lopsided college football games are dropped** (`max_spread: 30`): a line over
+30 points means nobody expects a contest. Three things survive it -- Syracuse
+always (`spread_exempt_teams`), the four Saturday marquee windows, FOX at noon,
+CBS at 3:30, NBC and ABC at 7:30 (`spread_exempt_windows`), and anything in
+Main Slate or Highlights, which the rule never touches. On the 2026 opening
+Saturday that took college football from 26 games to 14.
+
 College football and basketball each split in two (`split_ranked`): **Ranked
 College Football** for anything with a top-25 team, then **College Football**
 for the rest. Same for basketball.
