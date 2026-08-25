@@ -138,7 +138,10 @@ def _game_html(game, show_league, config):
     # Which competition, for a club that plays in several -- on the detail line
     # rather than as a right-hand badge: "Carabao Cup Second Round".
     if show_league and (game.get("sport") or "") == "Soccer":
-        detail = ("%s %s" % (game["league_label"], detail)).strip()
+        label = game["league_label"]
+        # "MLS MLS Cup" reads badly; the round already names it.
+        if not detail.startswith(label):
+            detail = ("%s %s" % (label, detail)).strip()
     note = ('<div class="note">%s</div>' % _esc(detail)) if detail else ""
 
     # Your team's colour when you are involved, otherwise whichever team makes

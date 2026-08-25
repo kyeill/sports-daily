@@ -229,7 +229,10 @@ def as_text(day, games, config, notes=None):
         detail = filters.detail_of(game)
         # Which competition, for a club that plays in several.
         if with_league and (game.get("sport") or "") == "Soccer":
-            detail = ("%s %s" % (game["league_label"], detail)).strip()
+            label = game["league_label"]
+            # "MLS MLS Cup" reads badly; the round already names it.
+            if not detail.startswith(label):
+                detail = ("%s %s" % (label, detail)).strip()
         if detail:
             suffix = "%s  (%s)" % (suffix, detail)
         return "  %-9s %s %s %s%s" % (when, side(first), joiner, side(second), suffix)

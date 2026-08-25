@@ -313,10 +313,18 @@ with everything else about the state of the tie:
 ```
 World Series Gm 3 (LAD 2-1)
 Stanley Cup Final Gm 4 (Tied 2-2)
-Round of 16 2nd Leg · Arsenal advance 3-1 on aggregate
-Second Round
-Sweet 16 · SAP Center at San Jose
+Carabao Cup Second Round
+Champions League R16 - 2nd Leg (3-1 ARS)
+Pop-Tarts Bowl
 ```
+
+For a club that plays across several competitions the competition leads the
+line, unless the round already names it -- "MLS Cup", not "MLS MLS Cup".
+European rounds abbreviate to R16 and R32, and the aggregate comes from ESPN's
+own `series.competitors` figures rather than the prose headline.
+
+A named round suppresses the venue: a bowl game does not also need its stadium.
+Neutral-site games with no round still show where they are played.
 
 ESPN writes the series as "LAD lead series 2-1" or "Series tied 1-1"; both are
 shortened to fit alongside the round.
@@ -384,8 +392,9 @@ dropped when the game is also on real television, and kept when it is not. So
 a Premier League match on USA and Peacock shows USA; an MLS game on Apple TV
 shows Apple TV.
 
-MLB.TV is flagged *national* despite being a streaming service, so
-`hide_networks` still does real work, as does hiding `Universo`.
+Only **one** network is listed -- the March Madness TBS/truTV simulcast does
+not need both. MLB.TV is flagged *national* despite being a streaming service,
+so `hide_networks` still does real work, as does hiding `Universo` and `TUDN`.
 
 ## Section order
 
