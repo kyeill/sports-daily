@@ -36,16 +36,7 @@
       "include": {
         "favorites": true,
         "all": false,
-        "rules": [
-          {
-            "headline": [
-              "East Finals",
-              "West Finals",
-              "NBA Finals"
-            ],
-            "note": "Playoffs"
-          }
-        ]
+        "include_postseason": true
       },
       "playoff_spots": 10,
       "playoff_race": true,
@@ -64,16 +55,7 @@
       "include": {
         "favorites": true,
         "all": false,
-        "rules": [
-          {
-            "headline": [
-              "ALCS",
-              "NLCS",
-              "World Series"
-            ],
-            "note": "Playoffs"
-          }
-        ]
+        "include_postseason": true
       },
       "playoff_spots": 6,
       "playoff_race": true,
@@ -90,16 +72,7 @@
       "include": {
         "favorites": true,
         "all": false,
-        "rules": [
-          {
-            "headline": [
-              "East Final",
-              "West Final",
-              "Stanley Cup Final"
-            ],
-            "note": "Playoffs"
-          }
-        ]
+        "include_postseason": true
       },
       "playoff_spots": 8,
       "playoff_race": true,

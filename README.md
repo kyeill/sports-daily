@@ -190,11 +190,10 @@ never drive the race). No tier 2. Race runs **March 1 to the end of the regular
 season**, shows only the team holding the last playoff spot (seed 10, the last
 play-in place), and stops the moment the Pistons clinch or are eliminated.
 
-**Postseason** — MLB, NBA and NHL show the **marquee rounds only**: the LCS and
-World Series, the conference finals and the Finals, the conference finals and
-the Stanley Cup Final. Early rounds stay out, which would otherwise be two
-months of nightly games. Rounds are matched on the note headline ("World Series
-- Game 1"), because the season slug for all of them is just `post-season`.
+**Postseason** — every playoff game in all four American leagues, from the
+wild card round to the final. All-star games are *not* postseason in ESPN's
+data (they are season type 2 with teams like "AL VS NL"), so they stay out
+without needing a rule.
 
 **NHL** — Red Wings pinned, same race rules. No tier 2, no odds gate (no source
 exists for hockey), so `race_until_settled` and the short window do the work
