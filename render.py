@@ -108,9 +108,14 @@ def _when(game):
 
 def _game_html(game, show_league, config):
     show_records = config.get("show_records", True)
-    matchup = "%s <span class=\"at\">at</span> %s" % (
-        _team_html(game["away"], show_records, config),
-        _team_html(game["home"], show_records, config))
+    # Soccer is written home side first; every other sport is away at home.
+    if (game.get("sport") or "") == "Soccer":
+        first, second, joiner = game["home"], game["away"], "vs"
+    else:
+        first, second, joiner = game["away"], game["home"], "at"
+    matchup = "%s <span class=\"at\">%s</span> %s" % (
+        _team_html(first, show_records, config), joiner,
+        _team_html(second, show_records, config))
     if game.get("neutral") and game.get("venue"):
         matchup += ' <span class="rec">&middot; %s</span>' % _esc(game["venue"])
 
@@ -121,11 +126,8 @@ def _game_html(game, show_league, config):
         meta.append('<span class="chip why">%s</span>' % _esc(tag))
     for name in filters.display_networks(game, config):
         meta.append('<span class="chip tv">%s</span>' % _esc(name))
-    if config.get("show_odds", True):
-        if game.get("spread"):
-            meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
-        if game.get("over_under"):
-            meta.append('<span class="chip">%s</span>' % _esc(game["over_under"]))
+    if config.get("show_odds", True) and game.get("spread"):
+        meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
 
     # Why an extra team is here: "Lions 2 GB", "Red Wings 4 pts back".
     context = game.get("watch_context") or ""

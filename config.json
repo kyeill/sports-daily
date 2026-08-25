@@ -26,7 +26,7 @@
       "race_from_month": 11,
       "race_until_month": 2,
       "race_min_odds": 20,
-      "sort_rank": 5
+      "sort_rank": 6
     },
     {
       "key": "nba",
@@ -46,7 +46,7 @@
       "race_spot_label": "Playoff Spot Chase",
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 7
+      "sort_rank": 8
     },
     {
       "key": "mlb",
@@ -64,7 +64,7 @@
       "race_from_month": 7,
       "race_until_month": 10,
       "race_min_odds": 20,
-      "sort_rank": 6
+      "sort_rank": 7
     },
     {
       "key": "nhl",
@@ -83,7 +83,7 @@
       "race_until_settled": true,
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 8
+      "sort_rank": 9
     },
     {
       "key": "college-football",
@@ -240,7 +240,7 @@
           "championship"
         ]
       },
-      "sort_rank": 9
+      "sort_rank": 3
     },
     {
       "key": "mls",
@@ -261,7 +261,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "usopen",
@@ -274,7 +274,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "leaguescup",
@@ -299,7 +299,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "ccc",
@@ -312,7 +312,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "epl",
@@ -375,7 +375,7 @@
           }
         ]
       },
-      "sort_rank": 3
+      "sort_rank": 4
     },
     {
       "key": "facup",
@@ -404,7 +404,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "eflcup",
@@ -433,7 +433,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "ucl",
@@ -474,7 +474,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "uel",
@@ -509,7 +509,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "uecl",
@@ -544,7 +544,7 @@
           }
         ]
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "wcq",
@@ -557,7 +557,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "worldcup",
@@ -570,7 +570,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "goldcup",
@@ -583,7 +583,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     },
     {
       "key": "nations",
@@ -596,7 +596,7 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 4
+      "sort_rank": 5
     }
   ],
   "national_networks": [

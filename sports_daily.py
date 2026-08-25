@@ -224,7 +224,11 @@ def as_text(day, games, config, notes=None):
         if config.get("show_odds", True) and game["spread"]:
             tail.append(game["spread"])
         suffix = "  [%s]" % ", ".join(tail) if tail else ""
-        return "  %-9s %s at %s%s" % (when, side(game["away"]), side(game["home"]), suffix)
+        if (game.get("sport") or "") == "Soccer":
+            first, second, joiner = game["home"], game["away"], "vs"
+        else:
+            first, second, joiner = game["away"], game["home"], "at"
+        return "  %-9s %s %s %s%s" % (when, side(first), joiner, side(second), suffix)
 
     by_time = sorted(games, key=lambda g: g["start_local"])
     pinned = [g for g in by_time if g.get("tier") == "favorite"]

@@ -137,7 +137,7 @@ standings, not typed in.
 | `race_only_last_spot` | just the last-spot holder, skipping the division leader |
 | `race_until_settled` | stop once your team clinches or is eliminated |
 | `hide_finished` | drop games already over |
-| `show_odds` | spread and over/under |
+| `show_odds` | the spread |
 | `show_records` | W-L beside team names |
 | `timezone` | IANA name, `All` scope only |
 
@@ -491,6 +491,8 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   Wolverines`), which means short entries over-match. `--check` is the guard.
 - **Config is read `utf-8-sig`** — Notepad and PowerShell write a BOM that
   plain `json.loads` rejects. (Same as dynasty.)
+- **Soccer is written home side first** ("Fulham vs Chelsea"); every other
+  sport is away at home. ESPN's `homeAway` field is the source either way.
 - **`%-I` is not portable on Windows**; times strip the leading zero by hand.
 
 Two more leagues' worth of plumbing is still in the code (`ranked_within`,
