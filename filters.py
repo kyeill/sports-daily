@@ -268,22 +268,38 @@ def _division_places(league):
     return _place_cache[key]
 
 
-def _conference_places(league):
-    """{team name: rank within its conference or league}.
+def _win_pct(row):
+    wins = row.get("wins") or 0
+    losses = row.get("losses") or 0
+    ties = row.get("ties") or 0
+    played = wins + losses + ties
+    return (wins + 0.5 * ties) / played if played else 0.0
 
-    The same number ESPN calls a playoff seed, which is why the postseason can
-    print it as a seed instead of a standings place.
+
+def _conference_places(league):
+    """{team name: (place, seed)} within its conference or league.
+
+    Place is by RECORD; seed is ESPN's playoff seed, and the two genuinely
+    differ -- the NFL seeds division winners 1-4 regardless of record, so in
+    2025 Pittsburgh held the 4 seed at 10-7 while Houston sat behind them at
+    12-5. Hockey orders by points rather than win percentage.
     """
     key = ("conference", league["key"])
     if key not in _place_cache:
+        by_points = (league.get("sport") or "").lower() == "hockey"
         groups = {}
         for row in espn.standings(league):
-            if row.get("seed"):
-                groups.setdefault(row["conference"], []).append(row)
+            groups.setdefault(row["conference"], []).append(row)
         places = {}
         for rows in groups.values():
-            for spot, row in enumerate(sorted(rows, key=lambda r: r["seed"]), 1):
-                places[row["team"].lower()] = spot
+            # Record first; equal records fall back to ESPN's own seed, which
+            # already encodes the league's tiebreakers.
+            ordered = sorted(
+                rows,
+                key=lambda r: (-((r.get("points") or 0) if by_points else _win_pct(r)),
+                               r.get("seed") or 99))
+            for spot, row in enumerate(ordered, 1):
+                places[row["team"].lower()] = (spot, row.get("seed"))
         _place_cache[key] = places
     return _place_cache[key]
 
@@ -317,14 +333,13 @@ def stamp_details(game, league, config):
     for side in (game["home"], game["away"]):
         side["label"] = _label(side, config)
         if mode == "conference_place":
-            spot = _conference_places(league).get((side.get("name") or "").lower())
-            if not spot:
-                side["detail"] = ""
-            elif game.get("postseason"):
+            found = _conference_places(league).get((side.get("name") or "").lower())
+            place, seed = found if found else (None, None)
+            if game.get("postseason"):
                 # A regular-season place means nothing once the bracket starts.
-                side["detail"] = "%d seed" % spot
+                side["detail"] = "%d seed" % seed if seed else ""
             else:
-                side["detail"] = _ordinal(spot)
+                side["detail"] = _ordinal(place) if place else ""
         elif mode == "division_place":
             side["detail"] = _division_places(league).get((side.get("name") or "").lower(), "")
         elif mode == "table_place":
