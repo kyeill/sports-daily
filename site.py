@@ -17,6 +17,7 @@ import zlib
 from datetime import timedelta
 from zoneinfo import ZoneInfo
 
+import espn
 import race
 import render
 import sheets
@@ -176,7 +177,11 @@ def build(config, days=8, out=SITE):
     for offset in range(days):
         day = today + timedelta(days=offset)
         games, _ = sports_daily.collect(config, day, tz)
-        body = render.day_body(day, games, config, info=info if offset == 0 else None)
+        today_info = list(info) if offset == 0 else None
+        if offset == 0 and espn.FAILURES:
+            today_info.append("Some data could not be loaded today: %s"
+                              % ", ".join(sorted(espn.FAILURES)))
+        body = render.day_body(day, games, config, info=today_info)
         ident = "d%s" % day.isoformat()
         label = "Today" if offset == 0 else day.strftime("%a")
         tabs.append(
@@ -226,6 +231,13 @@ def build(config, days=8, out=SITE):
     for name, data in files.items():
         with open(os.path.join(out, name), "wb") as fh:
             fh.write(data)
+
+    # Committed alongside the history, so the workflow's later slot can tell
+    # whether the earlier one actually ran.
+    stamp_dir = os.path.join(HERE, "output", "history")
+    os.makedirs(stamp_dir, exist_ok=True)
+    with open(os.path.join(stamp_dir, "_last_build.txt"), "w", encoding="utf-8") as fh:
+        fh.write(today.isoformat())
     return out, len(page)
 
 

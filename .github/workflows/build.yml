@@ -26,15 +26,31 @@ jobs:
     outputs:
       run: ${{ steps.check.outputs.run }}
     steps:
+      - uses: actions/checkout@v4
       - id: check
         run: |
           hour=$(TZ=America/New_York date +%H)
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$hour" = "06" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "building (Eastern hour is $hour)"
+          today=$(TZ=America/New_York date +%F)
+          built=$(cat output/history/_last_build.txt 2>/dev/null || echo none)
+
+          # Both UTC slots fire because GitHub cron has no timezone. 06 Eastern
+          # is the intended one; 07 is a catch-up for the days GitHub delays the
+          # earlier run past the hour, and only builds if the day has not
+          # already been built.
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            reason="manual or push"; go=yes
+          elif [ "$hour" = "06" ]; then
+            reason="the 6am slot"; go=yes
+          elif [ "$hour" = "07" ] && [ "$built" != "$today" ]; then
+            reason="catch-up: no build recorded for $today"; go=yes
           else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "skipping: Eastern hour is $hour, not 06"
+            reason="Eastern hour $hour, last build $built"; go=no
+          fi
+
+          if [ "$go" = "yes" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"; echo "building ($reason)"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"; echo "skipping ($reason)"
           fi
 
   build:

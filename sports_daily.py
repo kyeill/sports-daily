@@ -308,6 +308,9 @@ def main(argv=None):
         return 1 if problems else 0
 
     games, stats = collect(config, day, tz, only=only)
+    if espn.FAILURES:
+        info.append("Some data could not be loaded today: %s"
+                    % ", ".join(sorted(espn.FAILURES)))
 
     if args.text:
         print(as_text(day, games, config, notes + info))

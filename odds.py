@@ -104,6 +104,9 @@ def playoff_odds(league):
         return source(league)
     except Exception as exc:  # a third party changing shape must not break the run
         print("  ! playoff odds unavailable for %s (%s)" % (league["label"], exc))
+        note = "%s odds" % league["label"]
+        if note not in espn.FAILURES:
+            espn.FAILURES.append(note)
         return {}
 
 

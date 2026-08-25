@@ -577,6 +577,18 @@ Two more leagues' worth of plumbing is still in the code (`ranked_within`,
 `conferences`) from the college version. Harmless, and there if college ever
 comes back — add a league entry with a `path` and those rules work again.
 
+## Reviewing every competition at once
+
+```
+python showcase.py     -> output/showcase.html
+```
+
+No real date contains an FA Cup final, a World Series game, the Frozen Four and
+a Sweet 16 tie, so `showcase.py` pulls a genuine example of each from its own
+date and lays all 36 onto one page: rounds, series scores, aggregates, tints,
+tags and networks, exactly as they render on the day. It is the fastest way to
+check a display change against every scenario at once.
+
 ## Automation
 
 GitHub Actions runs `site.py` **once a day at 6am Eastern**, publishes the app
@@ -585,6 +597,14 @@ to GitHub Pages, and commits any new `output/history/` row back to the repo.
 GitHub cron is UTC only, so two schedules fire (10:00 and 11:00 UTC) and a gate
 job lets exactly one through by checking the Eastern hour. That keeps it at 6am
 year-round instead of drifting an hour with daylight saving.
+
+Both UTC slots fire, and a gate job lets exactly one through: 6am Eastern
+normally, with the 7am slot acting as a **catch-up** when GitHub delays the
+earlier run past the hour. It knows whether the day already built from
+`output/history/_last_build.txt`, which the build itself commits.
+
+If a league or the odds feed cannot be reached, the page says so in a quiet
+line at the top of today rather than looking like a quiet day.
 
 The history commit carries **`[skip ci]`**: without it, the push retriggers the
 workflow, which commits again, forever.

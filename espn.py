@@ -23,6 +23,10 @@ UA = {"Accept": "application/json"}
 
 UNRANKED = 99  # ESPN uses curatedRank.current == 99 for "not ranked"
 
+# Fetches that failed this run, so the page can say so rather than looking
+# like a quiet day.
+FAILURES = []
+
 
 def _cache_path(name):
     safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in name)
@@ -51,6 +55,9 @@ def _get(url, params=None, cache_key=None, max_age_min=30):
             print("    using stale cache")
             with open(path, encoding="utf-8") as fh:
                 return json.load(fh)
+        label = (cache_key or url).split("-")[0]
+        if label not in FAILURES:
+            FAILURES.append(label)
         return None
     if path:
         with open(path, "w", encoding="utf-8") as fh:
