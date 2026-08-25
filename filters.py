@@ -78,6 +78,12 @@ def display_networks(game, config, limit=2):
     # you nothing useful unless it happens to be the one you get.
     pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
     names = [n for n in (pool or []) if _flat(n) not in hidden]
+    # If a game is on NBC there is no point also saying Peacock; it only earns
+    # a mention when it is the only way to watch.
+    for main, redundant in (config.get("network_supersedes") or {}).items():
+        if any(_flat(n) == _flat(main) for n in names):
+            names = [n for n in names
+                     if not any(_flat(n) == _flat(r) for r in redundant)]
     names.sort(key=lambda n: 0 if _flat(n) in wanted else 1)
     return names[:limit]
 
@@ -284,20 +290,43 @@ def stamp_details(game, league):
             side["detail"] = side.get("record") or ""
 
 
-def _tint(game, sides, pinned, notable):
-    """The colour stripe: your team if involved, else the notable one.
+RIVAL_NOTE = "rival"
 
-    Both notable (Ohio State vs Michigan State, Arsenal vs Chelsea) has no
-    honest answer, so it goes black.
+
+def _colour(team, config):
+    """A team's stripe colour, honouring any override in config.
+
+    ESPN's primary colour is not always the one people picture: Syracuse comes
+    back navy, not orange.
+    """
+    overrides = config.get("team_colors") or {}
+    name = (team.get("name") or "").lower()
+    for label, value in overrides.items():
+        if label.lower() in name:
+            return value.lstrip("#")
+    return team.get("color") or ""
+
+
+def _tint(game, sides, pinned, notable, rivals, config):
+    """The colour stripe.
+
+    Your team wins outright. Against a rival the stripe takes the OTHER team's
+    colour -- you are watching for the rival to lose. Any other team of
+    interest (Syracuse, Arsenal, the last-spot holder) colours itself. Two
+    rivals in one game has no honest answer, so it goes black.
     """
     mine = [t for t in sides if any(_matches(t, f) for f in pinned)]
     if mine:
-        return mine[0].get("color") or ""
-    if len(notable) > 1:
+        return _colour(mine[0], config)
+    if len(rivals) > 1:
         return "000000"
+    if rivals:
+        other = [t for t in sides if t is not rivals[0]]
+        if other:
+            return _colour(other[0], config)
     if notable:
-        return notable[0].get("color") or ""
-    return game["home"].get("color") or ""
+        return _colour(notable[0], config)
+    return _colour(game["home"], config)
 
 
 def evaluate(game, league, config):
@@ -311,11 +340,13 @@ def evaluate(game, league, config):
 
     # Both sides can be on the watchlist -- a game between the division leader
     # and the wild card holder is doubly interesting, and says so.
-    notable = []
+    notable, rivals = [], []
     watch_notes, watch_context = [], []
     for entry in watchlist_for(config, league["key"]):
         hits = [t for t in sides if _matches(t, entry.get("team"))]
         notable.extend(t for t in hits if t not in notable)
+        if (entry.get("note") or "").strip().lower() == RIVAL_NOTE:
+            rivals.extend(t for t in hits if t not in rivals)
         if hits:
             note = entry.get("note") or "watchlist"
             if note not in watch_notes:
@@ -405,7 +436,7 @@ def evaluate(game, league, config):
         keep = False
 
     stamp_details(game, league)
-    game["tint"] = _tint(game, sides, pinned, notable)
+    game["tint"] = _tint(game, sides, pinned, notable, rivals, config)
     game["tier"] = tier
     game["is_favorite"] = fav_hit
     game["watch_note"] = watch_note

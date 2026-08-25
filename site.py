@@ -184,10 +184,8 @@ def build(config, days=8, out=SITE):
             '<small>%s</small></button>'
             % (ident, label, day.strftime("%b %d").replace(" 0", " ")))
         panels.append(
-            '<section class="day" id="%s"><h1>%s</h1>'
-            '<div class="sub">%s &middot; times %s</div>%s</section>'
-            % (ident, day.strftime("%A, %B %d").replace(" 0", " "),
-               render.summary(games), config.get("timezone", "local"), body))
+            '<section class="day" id="%s"><h1>%s</h1>%s</section>'
+            % (ident, day.strftime("%A, %B %d").replace(" 0", " "), body))
         print("  %s  %d games" % (day.isoformat(), len(games)))
 
     page = (

@@ -337,11 +337,17 @@ relegated has no place at all when you browse an old date.
 
 ## The colour stripe
 
-The stripe down the left of each row is **your team's colour when you are
-involved**, otherwise the colour of whichever team makes the game interesting
--- a rival, Arsenal or Chelsea, the team holding the last playoff spot. When
-both sides qualify (Ohio State vs Michigan State) it goes black, and when
-neither does it falls back to the home team.
+The stripe down the left of each row is:
+
+1. **your team's colour** when you are involved
+2. against a **rival** (a watchlist entry noted `Rival`), the **opponent's**
+   colour -- you are watching for the rival to lose
+3. otherwise the colour of whichever team makes the game interesting
+   (Syracuse, Arsenal, the last-spot holder)
+4. **black** when both sides are rivals, and the home team when none apply
+
+`team_colors` in `config.json` overrides ESPN where its idea of a team's colour
+is not the one people picture -- Syracuse comes back navy, not orange.
 
 ## Networks
 
@@ -351,7 +357,9 @@ carried solely on regional networks shows no network at all, which is the
 honest answer — the regional feed is only useful if you happen to get it.
 
 MLB.TV is flagged *national* despite being a streaming service, so the
-`hide_networks` list still does real work.
+`hide_networks` list still does real work -- as do `Universo` and the
+`network_supersedes` map, which drops Peacock when a game is already on NBC or
+USA but keeps it when it is the only way to watch.
 
 ## Section order
 
@@ -530,6 +538,10 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   Wolverines`), which means short entries over-match. `--check` is the guard.
 - **Config is read `utf-8-sig`** — Notepad and PowerShell write a BOM that
   plain `json.loads` rejects. (Same as dynasty.)
+- **"at" / "vs" sit inside an `<a>`**, so they are inline-level boxes that
+  align on their baselines. An inline-flex side holding a 20px logo has a very
+  different baseline from 12px text, which dropped the word below the names;
+  `vertical-align: middle` aligns them on their centres instead.
 - **Neutral-site games read "vs", never "at"** — `neutralSite` in the payload.
 - **Soccer is written home side first** ("Fulham vs Chelsea"); every other
   sport is away at home. ESPN's `homeAway` field is the source either way.

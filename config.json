@@ -663,7 +663,9 @@
     "MLB.TV",
     "NBA League Pass",
     "NHL Power Play",
-    "ESPN Deportes"
+    "ESPN Deportes",
+    "Universo",
+    "Telemundo Deportes"
   ],
   "cache_minutes": 30,
   "exclude_exhibitions": true,
@@ -754,5 +756,19 @@
     ]
   },
   "show_logos": true,
-  "show_colors": true
+  "show_colors": true,
+  "network_supersedes": {
+    "NBC": [
+      "Peacock"
+    ],
+    "USA Network": [
+      "Peacock"
+    ],
+    "USA Net": [
+      "Peacock"
+    ]
+  },
+  "team_colors": {
+    "Syracuse": "f76900"
+  }
 }

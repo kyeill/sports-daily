@@ -48,9 +48,15 @@ h2 {
 }
 .match { flex: 1 1 300px; min-width: 0; display: flex; align-items: center;
   gap: 6px; flex-wrap: wrap; }
-.side { display: inline-flex; align-items: center; gap: 5px; }
+/* These sit inside an <a>, so they are inline-level boxes and align on their
+   BASELINES by default -- and an inline-flex box holding a 20px logo has a
+   very different baseline from 12px text, which dropped "at" below the names.
+   vertical-align: middle aligns them on their centres instead. */
+.side { display: inline-flex; align-items: center; gap: 5px; min-height: 20px;
+  vertical-align: middle; }
 .side img { width: 20px; height: 20px; object-fit: contain; flex: 0 0 20px; }
-.at { color: var(--muted); font-size: 12px; }
+.at { display: inline-block; vertical-align: middle;
+  color: var(--muted); font-size: 12px; }
 .game { border-left: 3px solid transparent; }
 .game.tinted { border-left-color: var(--tint); }
 .match a { color: inherit; text-decoration: none; }
@@ -206,7 +212,8 @@ def _body(games, config, notes=None, info=None):
             # college slate, so they get their own heading.
             ranked = any(t.get("rank") for t in (game["home"], game["away"]))
             label = "%s %s %s" % (label, "–", "Ranked" if ranked else "Other")
-            rank.setdefault(label, rank.get(game["league_label"], 99))
+            # Ranked leads on a tie, so nudge it ahead of Other in the rank.
+            rank[label] = rank.get(game["league_label"], 99) + (0 if ranked else 0.5)
         by_league.setdefault(label, []).append(game)
     # Sports come in the order their first game starts; the configured rank
     # only breaks ties between sports starting at the same minute.
@@ -234,15 +241,12 @@ def render(day, games, config, generated=None, notes=None, info=None):
 
     return (
         '<title>Games &middot; %s</title>\n<style>%s</style>\n'
-        '<div class="wrap"><h1>%s</h1>'
-        '<div class="sub">%s &middot; times %s</div>%s'
+        '<div class="wrap"><h1>%s</h1>%s'
         '<footer>Generated %s from ESPN. Times shown in %s.</footer></div>'
     ) % (
         _esc(day.strftime("%b %d").replace(" 0", " ")),
         CSS,
         _esc(day.strftime("%A, %B %d").replace(" 0", " ")),
-        counts,
-        _esc(config.get("timezone", "local")),
         body,
         _esc(generated.strftime("%b %d, %I:%M %p").replace(" 0", " ")),
         _esc(config.get("timezone", "local")),
