@@ -301,6 +301,10 @@
       },
       "highlight_teams": [
         "Atlanta United"
+      ],
+      "promote_rounds": [
+        "*playoffs*",
+        "mls-cup"
       ]
     },
     {
@@ -315,7 +319,10 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "highlight_teams": [
+        "Atlanta United"
+      ]
     },
     {
       "key": "leaguescup",
@@ -341,7 +348,16 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "promote_rounds": [
+        "quarterfinals",
+        "semifinals",
+        "final",
+        "3rd-place-match"
+      ],
+      "highlight_teams": [
+        "Atlanta United"
+      ]
     },
     {
       "key": "ccc",
@@ -355,7 +371,17 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "promote_rounds": [
+        "round-one",
+        "round-of-16",
+        "quarterfinals",
+        "semifinals",
+        "final"
+      ],
+      "highlight_teams": [
+        "Atlanta United"
+      ]
     },
     {
       "key": "epl",

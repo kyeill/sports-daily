@@ -470,8 +470,16 @@ def evaluate(game, league, config):
     # Some of your own teams sit in Highlights rather than the main slate
     # unless the game actually matters -- a Tigers game in June. Postseason
     # promotes them back.
+    # Soccer has no postseason flag, so a competition can nominate the rounds
+    # that count as one: the Leagues Cup knockouts, every Concacaf round.
+    promoted = bool(game.get("postseason"))
+    if not promoted and league.get("promote_rounds"):
+        current = (game.get("round") or "").lower()
+        promoted = bool(current) and any(
+            fnmatch.fnmatch(current, r.lower()) for r in league["promote_rounds"])
+
     demoted = False
-    if fav_hit and not game.get("postseason"):
+    if fav_hit and not promoted:
         for name in league.get("highlight_teams") or []:
             if any(_matches(t, name) for t in sides):
                 demoted = True

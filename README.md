@@ -426,6 +426,11 @@ European football that sits in Highlights.
 | Lions, Michigan, Tottenham, USMNT | Main Slate, always |
 | Tigers, Pistons, Cavaliers, Red Wings, Atlanta United, Cornell | Highlights, Main Slate in the postseason |
 
+Soccer has no postseason flag, so a competition names the rounds that count
+(`promote_rounds`): the MLS bracket and MLS Cup, the Leagues Cup knockouts, and
+every Concacaf Champions Cup round, since that is a straight knockout. The U.S.
+Open Cup stays in Highlights throughout, deliberately.
+
 In **Main Slate** the league is not named, since the team implies it -- except in
 soccer, where Tottenham and Atlanta United appear across half a dozen
 competitions and the badge is the only way to tell the Carabao Cup from the
