@@ -10,6 +10,7 @@ bucket.
 """
 
 import fnmatch
+import re
 
 import espn
 
@@ -582,18 +583,40 @@ def leg_of(game):
     return ""
 
 
+def _series_short(summary):
+    """'LAD lead series 2-1' -> 'LAD 2-1'; 'Series tied 1-1' -> 'Tied 1-1'."""
+    if not summary:
+        return ""
+    score = re.search(r"(\d+)-(\d+)", summary)
+    if not score:
+        return ""
+    if "tied" in summary.lower():
+        return "Tied %s" % score.group(0)
+    who = re.match(r"^([A-Z][A-Za-z]{1,4})\b", summary.strip())
+    return "%s %s" % (who.group(1), score.group(0)) if who else score.group(0)
+
+
 def detail_of(game):
-    """The line under a matchup: series state, aggregate, game number."""
-    parts = []
-    if game.get("watch_context"):
-        parts.append(game["watch_context"])
+    """The single line under a matchup.
+
+    Everything about the state of a tie belongs together rather than split
+    across two lines: "World Series Gm 3 (LAD 2-1)".
+    """
     headline = game.get("note") or ""
+    lead = round_label(game)
     if " - Game " in headline:
-        parts.append("Game " + headline.split(" - Game ", 1)[1].strip())
-    if game.get("series"):
-        parts.append(game["series"])
+        lead = ("%s Gm %s" % (lead, headline.split(" - Game ", 1)[1].strip())).strip()
+    series = _series_short(game.get("series"))
+    if series:
+        lead = ("%s (%s)" % (lead, series)).strip()
+
+    parts = [lead]
     # "2nd Leg - Arsenal advance 3-1 on aggregate" -> the aggregate half
     if leg_of(game) and " - " in headline:
         parts.append(headline.split(" - ", 1)[1].strip())
+    if game.get("watch_context"):
+        parts.append(game["watch_context"])
+    if game.get("neutral") and game.get("venue"):
+        parts.append(game["venue"])
     return " · ".join(p for p in parts if p)
 

@@ -307,10 +307,19 @@ something the row does not:
 
 * **`Division Chase`, `Wild Card Chase`, `Playoff Spot Chase`** — the
   standings-derived teams, alongside the gap ("2 GB", "6 pts back")
-The **round** is not a tag: it reads as part of the matchup, beside the teams
-on a wide screen and on its own line under them on a phone -- `Second Round`,
-`World Series`, `Sweet 16`, `Round of 16 2nd Leg`. So does a neutral-site
-venue.
+The **round** is not a tag. It goes on a single line under the matchup, along
+with everything else about the state of the tie:
+
+```
+World Series Gm 3 (LAD 2-1)
+Stanley Cup Final Gm 4 (Tied 2-2)
+Round of 16 2nd Leg · Arsenal advance 3-1 on aggregate
+Second Round
+Sweet 16 · SAP Center at San Jose
+```
+
+ESPN writes the series as "LAD lead series 2-1" or "Series tied 1-1"; both are
+shortened to fit alongside the round.
 
 Underneath the matchup, a detail line carries the state of a tie: the game
 number and series score for American playoffs ("Game 3 · LAD lead series 2-1"),

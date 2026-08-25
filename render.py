@@ -57,16 +57,6 @@ h2 {
 .side img { width: 20px; height: 20px; object-fit: contain; flex: 0 0 20px; }
 .at { display: inline-block; vertical-align: middle;
   color: var(--muted); font-size: 12px; }
-.venue { color: var(--muted); font-size: 12px; vertical-align: middle; }
-/* The separator belongs to the inline layout only: on its own line a leading
-   middot reads as a stray bullet. Written as literal characters, since a CSS
-   escape like \\00b7 inside this Python string is an octal escape. */
-.venue::before { content: "· "; }
-@media (max-width: 640px) {
-  /* On a phone the venue belongs under the matchup, not squeezed beside it. */
-  .venue { display: block; margin-left: 0; }
-  .venue::before { content: ""; }
-}
 .game { border-left: 3px solid transparent; }
 .game.tinted { border-left-color: var(--tint); }
 .match a { color: inherit; text-decoration: none; }
@@ -135,13 +125,6 @@ def _game_html(game, show_league, config):
     matchup = "%s <span class=\"at\">%s</span> %s" % (
         _team_html(first, show_records, config), joiner,
         _team_html(second, show_records, config))
-    # The round and a neutral-site venue read as part of the matchup, not as
-    # right-hand metadata: beside the teams on a wide screen, under them on a
-    # phone.
-    for extra in (filters.round_label(game),
-                  game["venue"] if (game.get("neutral") and game.get("venue")) else ""):
-        if extra:
-            matchup += ' <span class="venue">%s</span>' % _esc(extra)
 
     meta = []
     # In My Teams the sport is obvious from the team -- except in soccer, where
