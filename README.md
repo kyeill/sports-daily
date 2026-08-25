@@ -307,8 +307,10 @@ something the row does not:
 
 * **`Division Chase`, `Wild Card Chase`, `Playoff Spot Chase`** — the
   standings-derived teams, alongside the gap ("2 GB", "6 pts back")
-* **the round** — `World Series`, `East Finals`, `Sweet 16`, `Final`,
-  `Semifinals`, `Round of 16 2nd Leg`, `MLS Cup`
+The **round** is not a tag: it reads as part of the matchup, beside the teams
+on a wide screen and on its own line under them on a phone -- `Second Round`,
+`World Series`, `Sweet 16`, `Round of 16 2nd Leg`. So does a neutral-site
+venue.
 
 Underneath the matchup, a detail line carries the state of a tie: the game
 number and series score for American playoffs ("Game 3 · LAD lead series 2-1"),
@@ -363,11 +365,6 @@ ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,
 NBA and MLB show the national feed only (`national_only_display`). A game
 carried solely on regional networks shows no network at all, which is the
 honest answer — the regional feed is only useful if you happen to get it.
-
-A **favourite's** own regional feed is always named -- Tigers.TV, FanDuel SN
-Detroit -- even where the national-only rule hides every other regional
-network. The opponent's feed stays hidden, and a `follow` team (the Cavaliers)
-stays national-only while still appearing in My Teams.
 
 **Streaming is listed only when it is the only way to watch.** Anything in
 `streaming_networks` -- Peacock, Paramount+, ESPN+, Apple TV and the rest -- is

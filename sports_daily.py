@@ -220,6 +220,9 @@ def as_text(day, games, config, notes=None):
         if with_league and (game.get("sport") or "") == "Soccer":
             tail.append(game["league_label"])
         tail += game.get("tags") or []
+        rnd = filters.round_label(game)
+        if rnd:
+            tail.insert(0, rnd)
         tail += filters.display_networks(game, config)
         if config.get("show_odds", True) and game["spread"]:
             tail.append(game["spread"])

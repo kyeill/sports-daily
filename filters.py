@@ -77,14 +77,7 @@ def display_networks(game, config, limit=2):
     # Some leagues only want the national feed: a regional sports network tells
     # you nothing useful unless it happens to be the one you get.
     pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
-    pool = list(pool or [])
-    # Your own team's regional feed is worth naming even when the national
-    # rule would hide every regional network.
-    if game.get("national_only") and game.get("my_side"):
-        for name in game.get("tv_%s" % game["my_side"]) or []:
-            if name not in pool:
-                pool.append(name)
-    names = [n for n in pool if _flat(n) not in hidden]
+    names = [n for n in (pool or []) if _flat(n) not in hidden]
     # Streaming only earns a mention when it is the only way to watch: if a
     # game is on NBC there is no point also saying Peacock.
     streaming = {_flat(n) for n in (config.get("streaming_networks") or [])}
@@ -537,6 +530,22 @@ def _round_tag(game):
     return pretty
 
 
+def round_label(game):
+    """The round, shown beside the matchup: 'Second Round', 'World Series'."""
+    reasons = game.get("reasons") or []
+    explicit = [r.split(":", 1)[1] for r in reasons if r.startswith("round:")]
+    if explicit:
+        label = explicit[0]
+    elif "postseason" in reasons:
+        label = _postseason_tag(game)
+    else:
+        label = _round_tag(game)
+    leg = leg_of(game)
+    if label and leg:
+        return "%s %s" % (label, leg)
+    return label or leg
+
+
 def tags_for(game):
     """The short label on a row: why you care, or which round it is.
 
@@ -544,24 +553,8 @@ def tags_for(game):
     Ten, National Game, Standalone -- were noise on every row, so the only
     survivors are the standings-derived chases and the round name.
     """
+    # Only the standings-derived chases; the round sits beside the matchup.
     tags = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
-
-    reasons = game.get("reasons") or []
-    # Explicit round labels set by postseason_rules (March Madness, the NIT).
-    tags += [r.split(":", 1)[1] for r in reasons if r.startswith("round:")]
-
-    if "postseason" in reasons:
-        label = _postseason_tag(game)
-    else:
-        label = _round_tag(game)
-    leg = leg_of(game)
-    if label and leg:
-        label = "%s %s" % (label, leg)
-    elif not label and leg:
-        label = leg
-    if label and label not in tags:
-        tags.append(label)
-
     return tags[:MAX_TAGS]
 
 
