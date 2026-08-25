@@ -6,18 +6,14 @@ from datetime import datetime
 import filters
 
 CSS = """
+/* Dark only, deliberately: the page is read at a glance and should look the
+   same on every device, rather than following each one's system setting. */
 :root {
-  --bg: #f7f7f5; --card: #ffffff; --ink: #1a1a18; --muted: #6b6b66;
-  --line: #e3e3de; --accent: #b8552b; --pin: #fdf4ec; --pin-line: #eccfb6;
-  --watch: #f3f6fb; --watch-line: #cfd9e8; --watch-ink: #3d5a80; --chip: #eeeeea;
+  --bg: #16161a; --card: #1e1e23; --ink: #ececea; --muted: #9a9a95;
+  --line: #2e2e35; --accent: #e0834f; --pin: #26201c; --pin-line: #4a3628;
+  --watch: #1b2029; --watch-line: #33445c; --watch-ink: #8fb0d8; --chip: #2a2a31;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16161a; --card: #1e1e23; --ink: #ececea; --muted: #9a9a95;
-    --line: #2e2e35; --accent: #e0834f; --pin: #26201c; --pin-line: #4a3628;
-    --watch: #1b2029; --watch-line: #33445c; --watch-ink: #8fb0d8; --chip: #2a2a31;
-  }
-}
+html { color-scheme: dark; }
 * { box-sizing: border-box; }
 body {
   margin: 0; padding: 24px 16px 64px; background: var(--bg); color: var(--ink);

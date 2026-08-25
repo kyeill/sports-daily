@@ -26,10 +26,13 @@ Python is not on PATH. Use the full interpreter path:
 **Live at https://kyeill.github.io/sports-daily/** — open it on a phone and
 Share -> Add to Home Screen for an icon and a full-screen launch.
 
-`site.py` builds an installable web app into `output/site/`: eight days in one
-page with a sticky day picker, plus a manifest, icons and a service worker.
+`site.py` builds an installable web app into `output/site/`: fifteen days in
+one page with a sticky day picker, plus a manifest, icons and a service worker.
 Every day is inlined, so switching days is instant and works offline — no fetch,
-no JSON round trip, ~24KB for the lot.
+no JSON round trip, ~62KB for the lot. A cold build takes about two minutes.
+
+The page is **dark only**, deliberately: it is read at a glance and should look
+the same on every device rather than following each one's system setting.
 
 GitHub Actions rebuilds and publishes it to GitHub Pages twice a day
 (`.github/workflows/build.yml`), which is what makes it work when this machine
@@ -186,6 +189,12 @@ night that is one or two games, not fifteen.
 never drive the race). No tier 2. Race runs **March 1 to the end of the regular
 season**, shows only the team holding the last playoff spot (seed 10, the last
 play-in place), and stops the moment the Pistons clinch or are eliminated.
+
+**Postseason** — MLB, NBA and NHL show the **marquee rounds only**: the LCS and
+World Series, the conference finals and the Finals, the conference finals and
+the Stanley Cup Final. Early rounds stay out, which would otherwise be two
+months of nightly games. Rounds are matched on the note headline ("World Series
+- Game 1"), because the season slug for all of them is just `post-season`.
 
 **NHL** — Red Wings pinned, same race rules. No tier 2, no odds gate (no source
 exists for hockey), so `race_until_settled` and the short window do the work

@@ -208,6 +208,14 @@ def rule_matches(game, rule):
         if not any(r and r <= limit for r in ranks):
             return False
 
+    headline = rule.get("headline")
+    if headline:
+        # Rounds live in the note for the US leagues: "World Series - Game 1",
+        # "Stanley Cup Final - Game 4". The season slug is only "post-season".
+        current = (game.get("note") or "").lower()
+        if not current or not any(h.lower() in current for h in headline):
+            return False
+
     if rule.get("networks") and not on_networks(game, rule["networks"]):
         return False
 

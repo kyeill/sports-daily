@@ -208,7 +208,7 @@ def build(config, days=8, out=SITE):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Build the Sports Daily web app")
-    ap.add_argument("--days", type=int, default=8)
+    ap.add_argument("--days", type=int, default=15)
     ap.add_argument("--out", default=SITE)
     args = ap.parse_args(argv)
 

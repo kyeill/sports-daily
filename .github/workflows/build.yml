@@ -30,7 +30,7 @@ jobs:
       - run: pip install requests
 
       - name: Build the eight-day app
-        run: python site.py --days 8
+        run: python site.py --days 15
 
       - name: Commit the games-back history
         run: |
