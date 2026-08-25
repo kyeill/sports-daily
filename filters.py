@@ -78,12 +78,12 @@ def display_networks(game, config, limit=2):
     # you nothing useful unless it happens to be the one you get.
     pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
     names = [n for n in (pool or []) if _flat(n) not in hidden]
-    # If a game is on NBC there is no point also saying Peacock; it only earns
-    # a mention when it is the only way to watch.
-    for main, redundant in (config.get("network_supersedes") or {}).items():
-        if any(_flat(n) == _flat(main) for n in names):
-            names = [n for n in names
-                     if not any(_flat(n) == _flat(r) for r in redundant)]
+    # Streaming only earns a mention when it is the only way to watch: if a
+    # game is on NBC there is no point also saying Peacock.
+    streaming = {_flat(n) for n in (config.get("streaming_networks") or [])}
+    on_tv = [n for n in names if _flat(n) not in streaming]
+    if on_tv:
+        names = on_tv
     names.sort(key=lambda n: 0 if _flat(n) in wanted else 1)
     return names[:limit]
 
@@ -307,7 +307,39 @@ def _colour(team, config):
     return team.get("color") or ""
 
 
-def _tint(game, sides, pinned, notable, rivals, config):
+def _conference_of(league, team):
+    return espn.conference_names(league["path"]).get(team.get("conference_id"), "")
+
+
+def _tint_fallback(game, sides, league, config):
+    """Which side to colour when nobody involved is yours or notable.
+
+    Two rooting rules, in this order: back the unranked side in a
+    ranked-vs-unranked game, then back the conference side. They can disagree
+    -- a ranked Big Ten team against an unranked outsider -- and ranked wins,
+    because an upset is the more interesting outcome.
+    """
+    rules = config.get("tint_rules") or {}
+
+    if rules.get("prefer_unranked"):
+        ranked = [bool(t.get("rank")) for t in sides]
+        if ranked[0] != ranked[1]:
+            return sides[0] if not ranked[0] else sides[1]
+
+    wanted = [c.lower() for c in (rules.get("prefer_conference") or [])]
+    if wanted:
+        excluded = [e.lower() for e in (rules.get("conference_exclude") or [])]
+        in_conf = [any(w in _conference_of(league, t).lower() for w in wanted)
+                   for t in sides]
+        if in_conf[0] != in_conf[1]:
+            pick = sides[0] if in_conf[0] else sides[1]
+            if not any(e in (pick.get("name") or "").lower() for e in excluded):
+                return pick
+
+    return game["home"]
+
+
+def _tint(game, sides, pinned, notable, rivals, config, league):
     """The colour stripe.
 
     Your team wins outright. Against a rival the stripe takes the OTHER team's
@@ -326,7 +358,7 @@ def _tint(game, sides, pinned, notable, rivals, config):
             return _colour(other[0], config)
     if notable:
         return _colour(notable[0], config)
-    return _colour(game["home"], config)
+    return _colour(_tint_fallback(game, sides, league, config), config)
 
 
 def evaluate(game, league, config):
@@ -436,7 +468,7 @@ def evaluate(game, league, config):
         keep = False
 
     stamp_details(game, league)
-    game["tint"] = _tint(game, sides, pinned, notable, rivals, config)
+    game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
     game["tier"] = tier
     game["is_favorite"] = fav_hit
     game["watch_note"] = watch_note

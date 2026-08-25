@@ -344,10 +344,18 @@ The stripe down the left of each row is:
    colour -- you are watching for the rival to lose
 3. otherwise the colour of whichever team makes the game interesting
    (Syracuse, Arsenal, the last-spot holder)
-4. **black** when both sides are rivals, and the home team when none apply
+4. **black** when both sides are rivals
+
+When none of that applies, two rooting rules decide (`tint_rules`): back the
+**unranked** side in a ranked-vs-unranked game, then back the **Big Ten** side
+against an outsider -- never Ohio State or Michigan State. Those two can
+disagree, a ranked Big Ten team against an unranked outsider, and **ranked
+wins**, on the grounds that the upset is the more interesting outcome. Failing
+all of it, the home team.
 
 `team_colors` in `config.json` overrides ESPN where its idea of a team's colour
-is not the one people picture -- Syracuse comes back navy, not orange.
+is not the one people picture -- Syracuse comes back navy rather than orange,
+and Michigan blue rather than maize.
 
 ## Networks
 
@@ -356,10 +364,14 @@ NBA and MLB show the national feed only (`national_only_display`). A game
 carried solely on regional networks shows no network at all, which is the
 honest answer — the regional feed is only useful if you happen to get it.
 
-MLB.TV is flagged *national* despite being a streaming service, so the
-`hide_networks` list still does real work -- as do `Universo` and the
-`network_supersedes` map, which drops Peacock when a game is already on NBC or
-USA but keeps it when it is the only way to watch.
+**Streaming is listed only when it is the only way to watch.** Anything in
+`streaming_networks` -- Peacock, Paramount+, ESPN+, Apple TV and the rest -- is
+dropped when the game is also on real television, and kept when it is not. So
+a Premier League match on USA and Peacock shows USA; an MLS game on Apple TV
+shows Apple TV.
+
+MLB.TV is flagged *national* despite being a streaming service, so
+`hide_networks` still does real work, as does hiding `Universo`.
 
 ## Section order
 

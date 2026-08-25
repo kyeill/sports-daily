@@ -757,18 +757,37 @@
   },
   "show_logos": true,
   "show_colors": true,
-  "network_supersedes": {
-    "NBC": [
-      "Peacock"
-    ],
-    "USA Network": [
-      "Peacock"
-    ],
-    "USA Net": [
-      "Peacock"
-    ]
-  },
   "team_colors": {
-    "Syracuse": "f76900"
+    "Syracuse": "f76900",
+    "Michigan Wolverines": "ffcb05"
+  },
+  "streaming_networks": [
+    "Peacock",
+    "Paramount+",
+    "ESPN+",
+    "Prime Video",
+    "Apple TV",
+    "Apple TV+",
+    "Netflix",
+    "Max",
+    "HBO Max",
+    "Fubo",
+    "SECN+",
+    "ACCNX",
+    "ESPN3",
+    "B1G+",
+    "FloHockey",
+    "Victory+",
+    "NBA League Pass"
+  ],
+  "tint_rules": {
+    "prefer_unranked": true,
+    "prefer_conference": [
+      "Big Ten"
+    ],
+    "conference_exclude": [
+      "Ohio State",
+      "Michigan State"
+    ]
   }
 }
