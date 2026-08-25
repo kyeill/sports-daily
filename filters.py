@@ -495,6 +495,7 @@ def evaluate(game, league, config):
     stamp_details(game, league, config)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
     game["rival"] = bool(rivals)
+    game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
     game["watch_note"] = watch_note
@@ -550,7 +551,19 @@ def _round_tag(game):
     return pretty
 
 
-def round_label(game):
+def _spell_out(label, config):
+    """Numerals and league shorthand written the way people say them."""
+    for short, full in (config.get("round_spellings") or {}).items():
+        if label == short:
+            return full
+        if label.endswith(" " + short):          # "East 1st Round"
+            return label[: -len(short)] + full
+        if label.startswith(short + " "):
+            return full + label[len(short):]
+    return label
+
+
+def round_label(game, config=None, league=None):
     """The round, shown beside the matchup: 'Second Round', 'World Series'."""
     reasons = game.get("reasons") or []
     explicit = [r.split(":", 1)[1] for r in reasons if r.startswith("round:")]
@@ -560,6 +573,15 @@ def round_label(game):
         label = _postseason_tag(game)
     else:
         label = _round_tag(game)
+    # Per-league wording: MLS calls its bracket "Playoffs Round One", and its
+    # showpiece "MLS Cup Final" rather than plain "MLS Cup".
+    for pattern, wording in ((league or {}).get("round_overrides") or {}).items():
+        if fnmatch.fnmatch((game.get("round") or "").lower(), pattern.lower()):
+            label = wording.replace("{round}", label)
+            break
+    if config:
+        label = _spell_out(label, config)
+
     leg = leg_of(game)
     if label and leg:
         return "%s - %s" % (label, leg)
@@ -600,14 +622,14 @@ def _series_short(summary):
     return "%s %s" % (who.group(1), score.group(0)) if who else score.group(0)
 
 
-def detail_of(game):
+def detail_of(game, config=None, league=None):
     """The single line under a matchup.
 
     Everything about the state of a tie belongs together rather than split
     across two lines: "World Series Gm 3 (LAD 2-1)".
     """
     headline = game.get("note") or ""
-    lead = round_label(game)
+    lead = round_label(game, config, league)
     if " - Game " in headline:
         lead = ("%s Gm %s" % (lead, headline.split(" - Game ", 1)[1].strip())).strip()
     series = _series_short(game.get("series"))

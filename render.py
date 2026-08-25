@@ -134,7 +134,7 @@ def _game_html(game, show_league, config):
     if config.get("show_odds", True) and game.get("spread"):
         meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
 
-    detail = filters.detail_of(game)
+    detail = filters.detail_of(game, config, game.get("_league"))
     # Which competition, for a club that plays in several -- on the detail line
     # rather than as a right-hand badge: "Carabao Cup Second Round".
     if show_league and (game.get("sport") or "") == "Soccer":

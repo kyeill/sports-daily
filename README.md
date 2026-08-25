@@ -320,7 +320,8 @@ Pop-Tarts Bowl
 
 For a club that plays across several competitions the competition leads the
 line, unless the round already names it -- "MLS Cup", not "MLS MLS Cup".
-European rounds abbreviate to R16 and R32, and the aggregate comes from ESPN's
+Playoff rounds are spelled out -- First Round, Sweet Sixteen, AL Championship
+Series -- through `round_spellings`. European rounds abbreviate to R16 and R32, and the aggregate comes from ESPN's
 own `series.competitors` figures rather than the prose headline.
 
 A named round suppresses the venue: a bowl game does not also need its stadium.
@@ -594,6 +595,20 @@ today's standings, so a backdated run shows a race that reflects now, not then.
 Two more leagues' worth of plumbing is still in the code (`ranked_within`,
 `conferences`) from the college version. Harmless, and there if college ever
 comes back — add a league entry with a `path` and those rules work again.
+
+A league can reword its own rounds with `round_overrides`: MLS turns
+`eastern-conference-playoffs---round-one` into "MLS Playoffs Round One" and
+`mls-cup` into "MLS Cup Final".
+
+## Choosing a colour or a font
+
+```
+python styles.py     -> output/style-options.html
+```
+
+The same real rows rendered once per detail-line colour and once per font, so
+the choice is made by looking. Every font is locally installed, so nothing is
+fetched.
 
 ## Reviewing every competition at once
 

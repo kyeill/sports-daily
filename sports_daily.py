@@ -226,7 +226,7 @@ def as_text(day, games, config, notes=None):
             first, second, joiner = game["away"], game["home"], "at"
         if game.get("neutral"):
             joiner = "vs"          # nobody is "at" a neutral site
-        detail = filters.detail_of(game)
+        detail = filters.detail_of(game, config, game.get("_league"))
         # Which competition, for a club that plays in several.
         if with_league and (game.get("sport") or "") == "Soccer":
             label = game["league_label"]

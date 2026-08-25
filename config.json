@@ -275,7 +275,11 @@
         ]
       },
       "sort_rank": 5,
-      "team_detail": "table_place"
+      "team_detail": "table_place",
+      "round_overrides": {
+        "*conference-playoffs*": "MLS Playoffs {round}",
+        "mls-cup": "MLS Cup Final"
+      }
     },
     {
       "key": "usopen",
@@ -804,5 +808,20 @@
   },
   "team_names": {
     "Tottenham Hotspur": "Tottenham"
+  },
+  "round_spellings": {
+    "1st Round": "First Round",
+    "2nd Round": "Second Round",
+    "3rd Round": "Third Round",
+    "4th Round": "Fourth Round",
+    "Sweet 16": "Sweet Sixteen",
+    "Elite 8": "Elite Eight",
+    "Final 4": "Final Four",
+    "ALWC": "AL Wild Card",
+    "NLWC": "NL Wild Card",
+    "ALDS": "AL Division Series",
+    "NLDS": "NL Division Series",
+    "ALCS": "AL Championship Series",
+    "NLCS": "NL Championship Series"
   }
 }
