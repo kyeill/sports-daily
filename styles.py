@@ -38,6 +38,19 @@ COLOURS = [
     ("Cool blue-grey", "#8fb0d8"),
 ]
 
+# Web fonts worth considering for a dense, data-heavy page. Each is a variable
+# font with real numeral support; Inter and IBM Plex offer tabular figures,
+# which keeps kickoff times from shifting column to column.
+GOOGLE_FONTS = [
+    ("Inter - the modern UI default", "Inter", "'Inter', sans-serif"),
+    ("Source Sans 3 - warmer, narrower", "Source+Sans+3", "'Source Sans 3', sans-serif"),
+    ("IBM Plex Sans - engineered, tabular", "IBM+Plex+Sans", "'IBM Plex Sans', sans-serif"),
+    ("Public Sans - plain, very legible", "Public+Sans", "'Public Sans', sans-serif"),
+    ("Manrope - rounder, friendlier", "Manrope", "'Manrope', sans-serif"),
+    ("Figtree - geometric", "Figtree", "'Figtree', sans-serif"),
+    ("Barlow - slightly condensed, fits more", "Barlow", "'Barlow', sans-serif"),
+]
+
 FONTS = [
     ("Current - system UI",
      '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'),
@@ -60,6 +73,28 @@ def rows(config, tz):
             out.append(render._game_html(game, True, config))
             break
     return "".join(out)
+
+
+def google_page(body):
+    families = "&".join("family=%s:wght@400;600" % g[1] for g in GOOGLE_FONTS)
+    link = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
+            '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+            '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?%s'
+            '&display=swap">' % families)
+    blocks = ["<h1>Google Fonts</h1>",
+              '<div class="info">These are fetched over the network on first '
+              'load, then cached by the service worker. Everything else on the '
+              'page works offline either way.</div>']
+    for label, _, stack in GOOGLE_FONTS:
+        blocks.append('<h2>%s</h2><div class="card" style="font-family:%s">%s</div>'
+                      % (label, stack, body))
+    return (
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        '<title>Google Fonts</title>%s<style>%s'
+        ' h1 { font-size: 20px; margin: 32px 0 6px; }'
+        '</style></head><body><div class="wrap">%s</div></body></html>'
+    ) % (link, render.CSS, "".join(blocks))
 
 
 def main():
@@ -96,6 +131,11 @@ def main():
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(page)
     print("wrote %s" % OUT)
+
+    google = os.path.join(os.path.dirname(OUT), "font-options.html")
+    with open(google, "w", encoding="utf-8") as fh:
+        fh.write(google_page(body))
+    print("wrote %s" % google)
 
 
 if __name__ == "__main__":

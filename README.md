@@ -607,8 +607,12 @@ python styles.py     -> output/style-options.html
 ```
 
 The same real rows rendered once per detail-line colour and once per font, so
-the choice is made by looking. Every font is locally installed, so nothing is
-fetched.
+the choice is made by looking. It also writes `output/font-options.html` with
+seven Google Fonts, which are fetched over the network on first load and then
+cached by the service worker.
+
+The detail line uses the same muted grey as the kickoff times, so the matchup
+leads and the context recedes.
 
 ## Reviewing every competition at once
 

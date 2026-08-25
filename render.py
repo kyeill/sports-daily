@@ -75,7 +75,7 @@ h2 {
 .chip.why { background: transparent; border: 1px solid var(--watch-line);
   color: var(--watch-ink); }
 .lg { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
-.note { color: var(--accent); font-size: 12px; margin-top: 3px; width: 100%; }
+.note { color: var(--muted); font-size: 12px; margin-top: 3px; width: 100%; }
 .empty { color: var(--muted); padding: 14px; }
 footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
 """
