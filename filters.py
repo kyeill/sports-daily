@@ -398,6 +398,25 @@ def _tint_fallback(game, sides, league, config):
     return game["home"]
 
 
+def _preferred_sides(game, sides, league):
+    """Sides whose own colour should win, if exactly one of them qualifies.
+
+    Named clubs in the league (Liverpool, the Manchester pair) and, in the
+    European competitions, any English club. Two of them in one game has no
+    answer, so it falls through to the home side -- which is also why the
+    domestic cups name nobody: both sides are English by definition.
+    """
+    found = []
+    for name in league.get("tint_prefer_teams") or []:
+        found.extend(t for t in sides if _matches(t, name) and t not in found)
+    pool_path = league.get("tint_prefer_clubs_from")
+    if pool_path:
+        pool = espn.clubs_in(pool_path)
+        found.extend(t for t in sides
+                     if _club_names(t) & pool and t not in found)
+    return found
+
+
 def _tint(game, sides, pinned, notable, rivals, config, league):
     """The colour stripe.
 
@@ -415,8 +434,16 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
         other = [t for t in sides if t is not rivals[0]]
         if other:
             return _colour(other[0], config)
-    if notable:
+    preferred = _preferred_sides(game, sides, league)
+    if len(preferred) == 1:
+        return _colour(preferred[0], config)
+    if preferred:
+        return _colour(game["home"], config)     # two of them: no honest pick
+
+    if len(notable) == 1:
         return _colour(notable[0], config)
+    if notable:
+        return _colour(game["home"], config)
     return _colour(_tint_fallback(game, sides, league, config), config)
 
 

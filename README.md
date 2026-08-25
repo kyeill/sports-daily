@@ -372,9 +372,15 @@ The stripe down the left of each row is:
 1. **your team's colour** when you are involved
 2. against a **rival** (a watchlist entry noted `Rival`), the **opponent's**
    colour -- you are watching for the rival to lose
-3. otherwise the colour of whichever team makes the game interesting
-   (Syracuse, Arsenal, the last-spot holder)
-4. **black** when both sides are rivals
+3. in English football, the colour of the club you are watching for --
+   Liverpool and the two Manchester clubs at home and abroad
+   (`tint_prefer_teams`), and any English club in Europe
+   (`tint_prefer_clubs_from`). Two of them in one game has no answer, so it
+   falls to the home side; the domestic cups name nobody, since both clubs are
+   English by definition
+4. otherwise the colour of whichever team makes the game interesting
+   (Syracuse, the last-spot holder), or the home side when two qualify
+5. **black** when both sides are rivals
 
 When none of that applies, two rooting rules decide (`tint_rules`), conference
 first: back the **Big Ten** side against an outsider -- never Ohio State or

@@ -487,7 +487,12 @@
       },
       "sort_rank": 4,
       "team_detail": "table_place",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_prefer_teams": [
+        "Liverpool",
+        "Manchester City",
+        "Manchester United"
+      ]
     },
     {
       "key": "facup",
@@ -595,7 +600,8 @@
       },
       "sort_rank": 5,
       "team_detail": "none",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_prefer_clubs_from": "soccer/eng.1"
     },
     {
       "key": "uel",
@@ -633,7 +639,8 @@
       },
       "sort_rank": 5,
       "team_detail": "none",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_prefer_clubs_from": "soccer/eng.1"
     },
     {
       "key": "uecl",
@@ -671,7 +678,8 @@
       },
       "sort_rank": 5,
       "team_detail": "none",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_prefer_clubs_from": "soccer/eng.1"
     },
     {
       "key": "wcq",
