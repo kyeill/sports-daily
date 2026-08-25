@@ -102,9 +102,10 @@ def main():
     for title, key, day, want in SCENARIOS:
         game, note = pick(config, tz, key, day, want)
         stamp = "%s-%s-%s" % (day[:4], day[4:6], day[6:])
-        heading = "%s &nbsp;<span style='font-weight:400;text-transform:none;" \
-                  "letter-spacing:0'>%s%s</span>" % (
-                      title, stamp, (" &middot; " + note) if note else "")
+        # Plain text only: _section escapes its title, as it should, so any
+        # markup passed in here renders as literal tags.
+        heading = "%s · %s%s" % (title, stamp,
+                                      (" · " + note) if note else "")
         if not game:
             parts.append('<h2>%s</h2><div class="card"><div class="empty">'
                          'nothing to show</div></div>' % heading)
