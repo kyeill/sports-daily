@@ -587,6 +587,11 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   align on their baselines. An inline-flex side holding a 20px logo has a very
   different baseline from 12px text, which dropped the word below the names;
   `vertical-align: middle` aligns them on their centres instead.
+- **Team crests need the dark variant.** ESPN's default logo is drawn for a
+  light background: measured on canvas, the Tottenham badge averages luminance
+  35 and Ohio State's 52, both invisible on a #16161a page. Swapping `/500/`
+  for `/500-dark/` gives 255 and 165. Every league tested returns 200 for the
+  variant, and an `onerror` swap covers any team that does not.
 - **Neutral-site games read "vs", never "at"** — `neutralSite` in the payload.
 - **Soccer is written home side first** ("Fulham vs Chelsea"); every other
   sport is away at home. ESPN's `homeAway` field is the source either way.

@@ -42,8 +42,18 @@ COLOURS = [
 # font with real numeral support; Inter and IBM Plex offer tabular figures,
 # which keeps kickoff times from shifting column to column.
 GOOGLE_FONTS = [
-    ("Inter - the modern UI default", "Inter", "'Inter', sans-serif"),
     ("Source Sans 3 - warmer, narrower", "Source+Sans+3", "'Source Sans 3', sans-serif"),
+    # --- the same humanist family as Source Sans -------------------------
+    ("Open Sans - the closest cousin", "Open+Sans", "'Open Sans', sans-serif"),
+    ("Lato - slightly warmer still", "Lato", "'Lato', sans-serif"),
+    ("Fira Sans - a touch more character", "Fira+Sans", "'Fira Sans', sans-serif"),
+    ("Noto Sans - neutral, huge coverage", "Noto+Sans", "'Noto Sans', sans-serif"),
+    ("PT Sans - compact humanist", "PT+Sans", "'PT Sans', sans-serif"),
+    ("Work Sans - a little more geometric", "Work+Sans", "'Work Sans', sans-serif"),
+    ("Nunito Sans - softer terminals", "Nunito+Sans", "'Nunito Sans', sans-serif"),
+    ("Mulish - clean and quiet", "Mulish", "'Mulish', sans-serif"),
+    # --- the rest of the earlier shortlist -------------------------------
+    ("Inter - the modern UI default", "Inter", "'Inter', sans-serif"),
     ("IBM Plex Sans - engineered, tabular", "IBM+Plex+Sans", "'IBM Plex Sans', sans-serif"),
     ("Public Sans - plain, very legible", "Public+Sans", "'Public Sans', sans-serif"),
     ("Manrope - rounder, friendlier", "Manrope", "'Manrope', sans-serif"),

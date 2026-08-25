@@ -86,10 +86,18 @@ def _esc(text):
 
 
 def _logo(team, config):
-    """ESPN's CDN logo. Hot-linked, so it needs a connection to display."""
+    """ESPN's CDN crest, in its dark-background variant.
+
+    Hot-linked, so it needs a connection. If a team happens to have no dark
+    variant the onerror swap falls back to the default rather than showing a
+    broken image.
+    """
     if not config.get("show_logos", True) or not team.get("logo"):
         return ""
-    return '<img src="%s" alt="" loading="lazy">' % _esc(team["logo"])
+    dark = team.get("logo_dark") or team["logo"]
+    swap = "this.onerror=null;this.src=&quot;%s&quot;" % _esc(team["logo"])
+    return ('<img src="%s" alt="" loading="lazy" onerror="%s">'
+            % (_esc(dark), swap))
 
 
 def _team_html(team, show_records, config):

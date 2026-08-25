@@ -282,6 +282,10 @@ def _team(competitor):
         "name": team.get("displayName") or team.get("name") or "",
         "short": team.get("shortDisplayName") or team.get("displayName") or "",
         "logo": team.get("logo") or "",
+        # ESPN publishes a light version of every crest for dark backgrounds.
+        # Verified: the default Tottenham badge averages luminance 35, the
+        # dark-mode one 255 -- the first is invisible on our background.
+        "logo_dark": (team.get("logo") or "").replace("/500/", "/500-dark/"),
         "color": team.get("color") or "",
         "conference_id": str(team.get("conferenceId") or ""),
         "rank": rank if rank and rank != UNRANKED else None,
