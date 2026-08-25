@@ -175,7 +175,7 @@ def summary(games):
     watching = [g for g in games if g.get("tier") == "watch"]
     counts = "%d game%s" % (len(games), "" if len(games) == 1 else "s")
     if pinned:
-        counts += " &middot; %d for your teams" % len(pinned)
+        counts += " &middot; %d for my teams" % len(pinned)
     if watching:
         counts += " &middot; %d highlighted" % len(watching)
     return counts
@@ -193,7 +193,7 @@ def _body(games, config, notes=None, info=None):
         parts.append('<div class="info">%s</div>' % _esc(line))
     if pinned:
         parts.append('<div class="pinned">%s</div>' %
-                     _section("Your teams", pinned, True, config))
+                     _section("My Teams", pinned, True, config))
 
     # Everything else sits in its own sport, highlights included -- the tag on
     # the row already says why it is there, so a separate section was just an

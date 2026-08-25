@@ -233,7 +233,7 @@ def as_text(day, games, config, notes=None):
     by_time = sorted(games, key=lambda g: g["start_local"])
     pinned = [g for g in by_time if g.get("tier") == "favorite"]
     if pinned:
-        lines.append("YOUR TEAMS")
+        lines.append("MY TEAMS")
         lines += [line(g) for g in pinned]
         lines.append("")
 

@@ -1,7 +1,7 @@
 # Sports Daily — the day's games, filtered
 
 Builds a single self-contained HTML page listing the day's games across NFL,
-NBA, MLB, NHL and the Premier League, with **your teams** pinned at the top and everything
+NBA, MLB, NHL and the Premier League, with **my teams** pinned at the top and everything
 else grouped by sport. Data comes from ESPN's
 public scoreboard API — no key, no account, no scraping.
 
@@ -241,7 +241,7 @@ a row reads "#9 Iowa at #8 Clemson" rather than showing AP ranks.
 
 **College football tier 2:** any **Big Ten** game; any game with an **AP top-25**
 team (ESPN's curated rank switches to the CFP rankings once they exist, which is
-what you want); any **Power Four** game **midweek only**; any **FOX/CBS/NBC/ABC**
+what you want); any **Power Four vs Power Four** game **midweek only**; any **FOX/CBS/NBC/ABC**
 game **on Saturdays involving an FBS team**; and every bowl and CFP game.
 
 The FBS requirement is why the two college-football feeds are labelled: FBS is
@@ -302,21 +302,23 @@ UCL league phase Jan 28 6 of 18; UCL knockouts Mar 10 4 of 4; MLS playoffs Nov 1
 
 ## Tags
 
-Every game outside your favorites carries short tags saying why it is there:
-`Standalone`, `National Game`, the playoff round (`NFC Wild Card`), and for
-watchlist teams whatever the sheet's Note says — the race logic writes
-`Division Chase` and `Wild Card Chase` itself.
+Deliberately narrow. A row carries at most two, and only when they say
+something the row does not:
 
-Two rules keep them honest. A game kept only because its whole league is shown
-gets **no** tag, since tagging every row the same word is noise. And
-`Standalone` is dropped from playoff games, which are all standalone by
-definition. Tags are ordered why-you-care, then round, then broadcast, and
-capped at two, so the cap always keeps the informative one.
+* **`Division Chase`, `Wild Card Chase`, `Playoff Spot Chase`** — the
+  standings-derived teams, alongside the gap ("2 GB", "6 pts back")
+* **the round** — `World Series`, `East Finals`, `Sweet 16`, `Final`,
+  `Semifinals`, `Round of 16`, `MLS Cup`
 
-Watchlist tags come straight from the Note column, so the vocabulary is yours
-to set — whatever you type is what appears on the page. In practice the Teams
-tab holds favorites and little else: Key opponents fills itself from the
-standings, and manual rows are for things the standings cannot know.
+Everything else was removed: `Ranked`, `Big Ten`, `Power Four`, `National
+Game`, `Standalone`, `Midweek`, `Knockout`, `Rival` and the rest merely
+restated the section they were sitting in.
+
+Round names come from two different places. The American leagues put them in
+the note headline (`World Series - Game 1`, trimmed to `World Series`); soccer
+puts them in `season.slug`. The slug check is a **whitelist** of knockout words,
+because league slugs are unpredictable — the Premier League calls its regular
+season `2025-26-english-premier-league`, which a blacklist turned into a tag.
 
 ## Section order
 

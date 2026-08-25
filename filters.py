@@ -18,13 +18,8 @@ TIERS = ("favorite", "watch", "interest")
 # Internal reason -> the label shown on the page. "slate" has no entry on
 # purpose: a game kept only because its whole league is shown would tag every
 # row with the same word, which is noise, not information.
-TAG_LABELS = {
-    "standalone": "Standalone",
-    "national tv": "National Game",
-    "ranked": "Ranked",
-    "power": "Power Four",
-    "tournament": "Tournament",
-}
+# The only notes that still earn a tag: they say something the row does not.
+CHASE_NOTES = ("Division Chase", "Wild Card Chase", "Playoff Spot Chase")
 MAX_TAGS = 2
 
 
@@ -292,8 +287,20 @@ def evaluate(game, league, config):
 
     # Power conferences, but only on the days you asked for -- college
     # football's midweek games are a different proposition from Saturday's.
-    if not tournament and _on_day(game, rules.get("power_conference_days"))             and matching_conference(game, rules.get("power_conferences")):
-        reasons.append("power")
+    if not tournament and rules.get("power_conferences")             and _on_day(game, rules.get("power_conference_days")):
+        wanted = rules["power_conferences"]
+        if rules.get("power_conferences_both"):
+            # Both sides must be Power Four, so resolve each team's own
+            # conference -- game["conference"] is the two joined together and
+            # cannot tell "SEC vs Sun Belt" from "SEC vs ACC".
+            names = espn.conference_names(league["path"])
+            sides_conf = [names.get(t.get("conference_id"), "") for t in sides]
+            hit = all(any(w.lower() in (c or "").lower() for w in wanted)
+                      for c in sides_conf)
+        else:
+            hit = bool(matching_conference(game, wanted))
+        if hit:
+            reasons.append("power")
 
     # The big broadcast networks, likewise day-limited.
     if not tournament and rules.get("major_networks") and _on_day(game, rules.get("major_network_days"))             and on_networks(game, rules["major_networks"]):
@@ -335,38 +342,66 @@ def evaluate(game, league, config):
 
 
 def _postseason_tag(game):
-    """'NFC Wild Card Playoffs' -> 'NFC Wild Card'; falls back to 'Playoff'."""
+    """'World Series - Game 1' -> 'World Series'; 'NFC Wild Card Playoffs' -> 'NFC Wild Card'."""
     headline = (game.get("note") or "").strip()
     if not headline:
         return "Playoff"
+    headline = headline.split(" - Game ")[0].strip()
     for suffix in (" Playoffs", " Playoff"):
         if headline.endswith(suffix):
-            return headline[: -len(suffix)]
+            headline = headline[: -len(suffix)]
     return headline
 
 
-def tags_for(game):
-    """Short labels saying why this game is on the page.
+# Whitelisted, not blacklisted: league slugs are unpredictable -- the Premier
+# League calls its regular season "2025-26-english-premier-league", which a
+# blacklist happily turned into a tag.
+KNOCKOUT_WORDS = ("final", "semifinal", "quarterfinal", "round-of", "playoff",
+                  "cup", "knockout", "3rd-place", "round-one", "round-two")
 
-    Ordered most-specific first rather than by the order rules happened to
-    fire, so the cap keeps the informative tag: why you personally care beats
-    the playoff round, which beats how it is being broadcast.
+
+def _round_tag(game):
+    """A readable round name from soccer's season slug, or ''.
+
+    Soccer keeps the round in `season.slug` rather than the note, so a cup
+    semi-final has nothing to label itself with unless we build it here.
     """
+    slug = (game.get("round") or "").lower()
+    if not slug or not any(w in slug for w in KNOCKOUT_WORDS):
+        return ""
+    # MLS uses "eastern-conference-playoffs---round-one"; the tail is the part
+    # worth showing.
+    slug = slug.split("---")[-1]
+    words = [w for w in slug.replace("-", " ").split() if w]
+    small = ("of", "the", "and")
+    pretty = " ".join(
+        w.upper() if w in ("mls", "nit")
+        else w if (w in small and i) else w.capitalize()
+        for i, w in enumerate(words))
+    return pretty
+
+
+def tags_for(game):
+    """The short label on a row: why you care, or which round it is.
+
+    Deliberately narrow. Tags that merely restate the section -- Ranked, Big
+    Ten, National Game, Standalone -- were noise on every row, so the only
+    survivors are the standings-derived chases and the round name.
+    """
+    tags = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
+
     reasons = game.get("reasons") or []
-    tags = list(game.get("watch_notes") or [])
+    # Explicit round labels set by postseason_rules (March Madness, the NIT).
+    tags += [r.split(":", 1)[1] for r in reasons if r.startswith("round:")]
+
     if "postseason" in reasons:
-        tags.append(_postseason_tag(game))
-    ordered = [r for r in reasons if r.startswith("round:")]
-    ordered += [r for r in reasons if r.startswith("note:")]
-    ordered += ["tournament", "standalone", "national tv", "ranked", "power"]
-    ordered += [r for r in reasons if r.startswith("conf:")]
-    for reason in ordered:
-        # Every playoff game is in its own window, so "Standalone" next to
-        # "NFC Wild Card" says nothing.
-        if reason == "standalone" and "postseason" in reasons:
-            continue
-        if reason in reasons:
-            label = reason.split(":", 1)[1] if reason.startswith(("conf:", "round:", "note:"))                 else TAG_LABELS.get(reason)
-            if label and label not in tags:
-                tags.append(label)
+        label = _postseason_tag(game)
+        if label and label not in tags:
+            tags.append(label)
+    else:
+        label = _round_tag(game)
+        if label and label not in tags:
+            tags.append(label)
+
     return tags[:MAX_TAGS]
+
