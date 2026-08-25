@@ -67,7 +67,7 @@ def watchlist_for(config, league_key):
     return (config.get("watchlist") or {}).get(league_key, [])
 
 
-def display_networks(game, config, limit=2):
+def display_networks(game, config, limit=1):
     """Networks worth printing: national ones first, junk dropped.
 
     Baseball lists MLB.TV plus both teams' regional feeds on every game, which
@@ -538,6 +538,10 @@ def _round_tag(game):
     slug = slug.split("---")[-1]
     words = [w for w in slug.replace("-", " ").split() if w]
     words = [w for w in words if w != "proper"]      # "Third Round Proper"
+    # Europe's rounds are long; the short forms are what people say.
+    joined = " ".join(words)
+    if joined in ("round of 16", "round of 32"):
+        return "R%s" % joined.rsplit(" ", 1)[1]
     small = ("of", "the", "and")
     pretty = " ".join(
         w.upper() if w in ("mls", "nit")
@@ -558,7 +562,7 @@ def round_label(game):
         label = _round_tag(game)
     leg = leg_of(game)
     if label and leg:
-        return "%s %s" % (label, leg)
+        return "%s - %s" % (label, leg)
     return label or leg
 
 
@@ -610,13 +614,15 @@ def detail_of(game):
     if series:
         lead = ("%s (%s)" % (lead, series)).strip()
 
+    if game.get("aggregate"):
+        lead = ("%s (%s)" % (lead, game["aggregate"])).strip()
+
     parts = [lead]
-    # "2nd Leg - Arsenal advance 3-1 on aggregate" -> the aggregate half
-    if leg_of(game) and " - " in headline:
-        parts.append(headline.split(" - ", 1)[1].strip())
     if game.get("watch_context"):
         parts.append(game["watch_context"])
-    if game.get("neutral") and game.get("venue"):
+    # A named round already says where you are; a bowl game does not also need
+    # the stadium, nor a regional final its arena.
+    if game.get("neutral") and game.get("venue") and not lead:
         parts.append(game["venue"])
     return " · ".join(p for p in parts if p)
 

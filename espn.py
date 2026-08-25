@@ -277,6 +277,7 @@ def _team(competitor):
         recs = competitor.get("records") or []
         record = (recs[0].get("summary") or "") if recs else ""
     return {
+        "id": str(team.get("id") or ""),
         "abbr": team.get("abbreviation") or team.get("shortDisplayName") or "",
         "name": team.get("displayName") or team.get("name") or "",
         "short": team.get("shortDisplayName") or team.get("displayName") or "",
@@ -331,6 +332,27 @@ def _odds(comp):
     details = first.get("details") or ""
     over_under = first.get("overUnder")
     return details, ("O/U %s" % over_under if over_under is not None else "")
+
+
+def _aggregate(comp, home, away):
+    """Two-legged aggregate as '3-1 ARS', or '1-1 agg' when level.
+
+    Built from series.competitors rather than the prose headline, so the
+    figures are ESPN's own and the leader is identified by team id.
+    """
+    series = comp.get("series") or {}
+    entries = [c for c in series.get("competitors") or []
+               if isinstance(c.get("aggregateScore"), (int, float))]
+    if len(entries) != 2:
+        return ""
+    entries.sort(key=lambda c: c["aggregateScore"], reverse=True)
+    top, bottom = entries
+    scores = "%g-%g" % (top["aggregateScore"], bottom["aggregateScore"])
+    if top["aggregateScore"] == bottom["aggregateScore"]:
+        return "%s agg" % scores
+    by_id = {t["id"]: t for t in (home, away) if t.get("id")}
+    leader = by_id.get(str(top.get("id") or ""))
+    return "%s %s" % (scores, leader["abbr"]) if leader else "%s agg" % scores
 
 
 def _parse_start(raw):
@@ -430,6 +452,7 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "national": national,
             # Series state for a playoff tie: "LAD lead series 2-1".
             "series": ((comp.get("series") or {}).get("summary") or ""),
+            "aggregate": _aggregate(comp, home, away),
             "national_only": bool(league.get("national_only_display")),
             "spread": spread,
             "over_under": over_under,

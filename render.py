@@ -75,7 +75,7 @@ h2 {
 .chip.why { background: transparent; border: 1px solid var(--watch-line);
   color: var(--watch-ink); }
 .lg { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
-.note { color: var(--accent); font-size: 12px; }
+.note { color: var(--accent); font-size: 12px; margin-top: 3px; width: 100%; }
 .empty { color: var(--muted); padding: 14px; }
 footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
 """
@@ -127,10 +127,6 @@ def _game_html(game, show_league, config):
         _team_html(second, show_records, config))
 
     meta = []
-    # In My Teams the sport is obvious from the team -- except in soccer, where
-    # Tottenham and Atlanta United turn up in half a dozen competitions.
-    if show_league and (game.get("sport") or "") == "Soccer":
-        meta.append('<span class="chip lg">%s</span>' % _esc(game["league_label"]))
     for tag in game.get("tags") or []:
         meta.append('<span class="chip why">%s</span>' % _esc(tag))
     for name in filters.display_networks(game, config):
@@ -138,8 +134,11 @@ def _game_html(game, show_league, config):
     if config.get("show_odds", True) and game.get("spread"):
         meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
 
-    # "2 GB", "Game 3", "LAD lead series 2-1", "advance 3-1 on aggregate"
     detail = filters.detail_of(game)
+    # Which competition, for a club that plays in several -- on the detail line
+    # rather than as a right-hand badge: "Carabao Cup Second Round".
+    if show_league and (game.get("sport") or "") == "Soccer":
+        detail = ("%s %s" % (game["league_label"], detail)).strip()
     note = ('<div class="note">%s</div>' % _esc(detail)) if detail else ""
 
     # Your team's colour when you are involved, otherwise whichever team makes

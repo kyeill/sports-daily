@@ -215,10 +215,6 @@ def as_text(day, games, config, notes=None):
             return "%s%s%s" % (rank, team.get("label") or team["short"] or team["name"], rec)
 
         tail = []
-        # The sport is obvious from the team except in soccer, where the same
-        # club turns up across half a dozen competitions.
-        if with_league and (game.get("sport") or "") == "Soccer":
-            tail.append(game["league_label"])
         tail += game.get("tags") or []
         tail += filters.display_networks(game, config)
         if config.get("show_odds", True) and game["spread"]:
@@ -231,6 +227,9 @@ def as_text(day, games, config, notes=None):
         if game.get("neutral"):
             joiner = "vs"          # nobody is "at" a neutral site
         detail = filters.detail_of(game)
+        # Which competition, for a club that plays in several.
+        if with_league and (game.get("sport") or "") == "Soccer":
+            detail = ("%s %s" % (game["league_label"], detail)).strip()
         if detail:
             suffix = "%s  (%s)" % (suffix, detail)
         return "  %-9s %s %s %s%s" % (when, side(first), joiner, side(second), suffix)

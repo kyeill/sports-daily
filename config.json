@@ -787,7 +787,10 @@
     "B1G+",
     "FloHockey",
     "Victory+",
-    "NBA League Pass"
+    "NBA League Pass",
+    "ESPN Unlimited",
+    "ESPN Select",
+    "MLS Season Pass"
   ],
   "tint_rules": {
     "prefer_unranked": true,
