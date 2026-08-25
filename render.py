@@ -21,6 +21,9 @@ CSS = """
   --bg: #16161a; --card: #1e1e23; --ink: #ececea; --muted: #9a9a95;
   --line: #2e2e35; --accent: #e0834f; --pin: #26201c; --pin-line: #4a3628;
   --watch: #1b2029; --watch-line: #33445c; --watch-ink: #8fb0d8; --chip: #2a2a31;
+  /* Ranks read better in light blue: a dark navy would vanish against the
+     background the same way the black stripe does. */
+  --rank: #8fb0d8;
 }
 html { color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -71,7 +74,7 @@ h2 {
 .game.tinted { border-left-color: var(--tint); }
 .match a { color: inherit; text-decoration: none; }
 .match a:hover { text-decoration: underline; }
-.rank { color: var(--accent); font-weight: 600; font-size: 12px; }
+.rank { color: var(--rank); font-weight: 600; font-size: 12px; }
 .rec { color: var(--muted); font-size: 12px; }
 .meta {
   flex: 1 1 220px; display: flex; gap: 6px; flex-wrap: wrap;
@@ -87,6 +90,16 @@ h2 {
 .lg { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
 .note { color: var(--muted); font-size: 12px; margin-top: 3px; width: 100%; }
 .empty { color: var(--muted); padding: 14px; }
+@media (max-width: 640px) {
+  /* Each row wraps to matchup / detail / networks, and a 12px gap between all
+     three made a row with a detail line 28px taller than one without. The
+     column gap stays wide; only the rows close up. */
+  .game { row-gap: 1px; padding: 9px 12px; }
+  /* The detail line lives inside .match, so that container's own 6px gap was
+     costing as much as the text itself. */
+  .match { row-gap: 0; }
+  .note { margin-top: 0; line-height: 1.35; }
+}
 footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
 """
 
