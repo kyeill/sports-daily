@@ -23,6 +23,9 @@ Python is not on PATH. Use the full interpreter path:
 
 ## The app
 
+**Live at https://kyeill.github.io/sports-daily/** — open it on a phone and
+Share -> Add to Home Screen for an icon and a full-screen launch.
+
 `site.py` builds an installable web app into `output/site/`: eight days in one
 page with a sticky day picker, plus a manifest, icons and a service worker.
 Every day is inlined, so switching days is instant and works offline — no fetch,
@@ -34,9 +37,13 @@ is off. On a phone, open the Pages URL and **Add to Home Screen** for an icon
 and a full-screen launch.
 
 Verified from a bare clone: the build needs nothing but Python and `requests`.
+Verified live: the service worker registers and caches the page and the ESPN
+logos, so a loaded day survives going offline.
 
 The local scheduled task still writes the single-day `output/today.html`, and
-`output/history/` stays local — both are gitignored.
+`output/history/` stays local — both are gitignored. **That means games-back
+history only accrues on days this machine runs the task**; the cloud build does
+not write it back to the repo.
 
 ## Editing your teams
 
