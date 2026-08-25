@@ -308,7 +308,12 @@ something the row does not:
 * **`Division Chase`, `Wild Card Chase`, `Playoff Spot Chase`** — the
   standings-derived teams, alongside the gap ("2 GB", "6 pts back")
 * **the round** — `World Series`, `East Finals`, `Sweet 16`, `Final`,
-  `Semifinals`, `Round of 16`, `MLS Cup`
+  `Semifinals`, `Round of 16 2nd Leg`, `MLS Cup`
+
+Underneath the matchup, a detail line carries the state of a tie: the game
+number and series score for American playoffs ("Game 3 · LAD lead series 2-1"),
+the aggregate for two-legged European ties ("Arsenal advance 3-1 on aggregate"),
+and the gap for a standings-derived team ("2 GB").
 
 Everything else was removed: `Ranked`, `Big Ten`, `Power Four`, `National
 Game`, `Standalone`, `Midweek`, `Knockout`, `Rival` and the rest merely
@@ -320,6 +325,16 @@ puts them in `season.slug`. The slug check is a **whitelist** of knockout words,
 because league slugs are unpredictable — the Premier League calls its regular
 season `2025-26-english-premier-league`, which a blacklist turned into a tag.
 
+## Networks
+
+ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,
+NBA and MLB show the national feed only (`national_only_display`). A game
+carried solely on regional networks shows no network at all, which is the
+honest answer — the regional feed is only useful if you happen to get it.
+
+MLB.TV is flagged *national* despite being a streaming service, so the
+`hide_networks` list still does real work.
+
 ## Section order
 
 Your teams first, then one section per sport **ordered by when that sport's
@@ -327,6 +342,10 @@ first game starts**, so a 7:30am Premier League match leads and a 10pm West
 Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
 football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
 NHL, college hockey.
+
+College football and basketball each split into **Ranked** and **Other**
+(`split_ranked`), since a top-25 game is a different proposition from the rest
+of the slate.
 
 Highlighted teams sit in their own sport rather than a separate block — the tag
 on the row already says why the game is there.
@@ -493,6 +512,7 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   Wolverines`), which means short entries over-match. `--check` is the guard.
 - **Config is read `utf-8-sig`** — Notepad and PowerShell write a BOM that
   plain `json.loads` rejects. (Same as dynasty.)
+- **Neutral-site games read "vs", never "at"** — `neutralSite` in the payload.
 - **Soccer is written home side first** ("Fulham vs Chelsea"); every other
   sport is away at home. ESPN's `homeAway` field is the source either way.
 - **`%-I` is not portable on Windows**; times strip the leading zero by hand.

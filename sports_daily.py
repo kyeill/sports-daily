@@ -228,6 +228,11 @@ def as_text(day, games, config, notes=None):
             first, second, joiner = game["home"], game["away"], "vs"
         else:
             first, second, joiner = game["away"], game["home"], "at"
+        if game.get("neutral"):
+            joiner = "vs"          # nobody is "at" a neutral site
+        detail = filters.detail_of(game)
+        if detail:
+            suffix = "%s  (%s)" % (suffix, detail)
         return "  %-9s %s %s %s%s" % (when, side(first), joiner, side(second), suffix)
 
     by_time = sorted(games, key=lambda g: g["start_local"])

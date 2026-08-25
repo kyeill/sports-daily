@@ -74,7 +74,10 @@ def display_networks(game, config, limit=2):
     """
     hidden = {_flat(n) for n in (config.get("hide_networks") or [])}
     wanted = {_flat(n) for n in (config.get("national_networks") or [])}
-    names = [n for n in (game.get("tv") or []) if _flat(n) not in hidden]
+    # Some leagues only want the national feed: a regional sports network tells
+    # you nothing useful unless it happens to be the one you get.
+    pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
+    names = [n for n in (pool or []) if _flat(n) not in hidden]
     names.sort(key=lambda n: 0 if _flat(n) in wanted else 1)
     return names[:limit]
 
@@ -396,12 +399,40 @@ def tags_for(game):
 
     if "postseason" in reasons:
         label = _postseason_tag(game)
-        if label and label not in tags:
-            tags.append(label)
     else:
         label = _round_tag(game)
-        if label and label not in tags:
-            tags.append(label)
+    leg = leg_of(game)
+    if label and leg:
+        label = "%s %s" % (label, leg)
+    elif not label and leg:
+        label = leg
+    if label and label not in tags:
+        tags.append(label)
 
     return tags[:MAX_TAGS]
+
+
+def leg_of(game):
+    """'1st Leg' / '2nd Leg' for a two-legged European tie, else ''."""
+    headline = (game.get("note") or "")
+    for leg in ("1st Leg", "2nd Leg"):
+        if headline.startswith(leg):
+            return leg
+    return ""
+
+
+def detail_of(game):
+    """The line under a matchup: series state, aggregate, game number."""
+    parts = []
+    if game.get("watch_context"):
+        parts.append(game["watch_context"])
+    headline = game.get("note") or ""
+    if " - Game " in headline:
+        parts.append("Game " + headline.split(" - Game ", 1)[1].strip())
+    if game.get("series"):
+        parts.append(game["series"])
+    # "2nd Leg - Arsenal advance 3-1 on aggregate" -> the aggregate half
+    if leg_of(game) and " - " in headline:
+        parts.append(headline.split(" - ", 1)[1].strip())
+    return " · ".join(p for p in parts if p)
 

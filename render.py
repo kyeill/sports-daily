@@ -113,6 +113,8 @@ def _game_html(game, show_league, config):
         first, second, joiner = game["home"], game["away"], "vs"
     else:
         first, second, joiner = game["away"], game["home"], "at"
+    if game.get("neutral"):
+        joiner = "vs"          # nobody is "at" a neutral site
     matchup = "%s <span class=\"at\">%s</span> %s" % (
         _team_html(first, show_records, config), joiner,
         _team_html(second, show_records, config))
@@ -129,15 +131,9 @@ def _game_html(game, show_league, config):
     if config.get("show_odds", True) and game.get("spread"):
         meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
 
-    # Why an extra team is here: "Lions 2 GB", "Red Wings 4 pts back".
-    context = game.get("watch_context") or ""
-
-    # The headline is often the playoff round, which is already a tag by then.
-    headline = game.get("note") or ""
-    if any(headline.startswith(tag) for tag in game.get("tags") or []):
-        headline = ""
-    lines = [t for t in (context, headline) if t]
-    note = ('<div class="note">%s</div>' % _esc(" · ".join(lines))) if lines else ""
+    # "2 GB", "Game 3", "LAD lead series 2-1", "advance 3-1 on aggregate"
+    detail = filters.detail_of(game)
+    note = ('<div class="note">%s</div>' % _esc(detail)) if detail else ""
 
     # A thin accent in the home team's colour; muted enough for both themes.
     tint = (game["home"].get("color") or "").strip()
@@ -199,9 +195,17 @@ def _body(games, config, notes=None, info=None):
     # the row already says why it is there, so a separate section was just an
     # extra heading to scroll past.
     rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
+    split = {lg["label"] for lg in config.get("leagues", []) if lg.get("split_ranked")}
     by_league = {}
     for game in rest:
-        by_league.setdefault(game["league_label"], []).append(game)
+        label = game["league_label"]
+        if label in split:
+            # Ranked games are a different proposition from the rest of a
+            # college slate, so they get their own heading.
+            ranked = any(t.get("rank") for t in (game["home"], game["away"]))
+            label = "%s %s %s" % (label, "–", "Ranked" if ranked else "Other")
+            rank.setdefault(label, rank.get(game["league_label"], 99))
+        by_league.setdefault(label, []).append(game)
     # Sports come in the order their first game starts; the configured rank
     # only breaks ties between sports starting at the same minute.
     order = sorted(by_league,

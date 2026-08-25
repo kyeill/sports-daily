@@ -26,7 +26,8 @@
       "race_from_month": 11,
       "race_until_month": 2,
       "race_min_odds": 20,
-      "sort_rank": 6
+      "sort_rank": 6,
+      "national_only_display": true
     },
     {
       "key": "nba",
@@ -46,7 +47,8 @@
       "race_spot_label": "Playoff Spot Chase",
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 8
+      "sort_rank": 8,
+      "national_only_display": true
     },
     {
       "key": "mlb",
@@ -64,7 +66,8 @@
       "race_from_month": 7,
       "race_until_month": 10,
       "race_min_odds": 20,
-      "sort_rank": 7
+      "sort_rank": 7,
+      "national_only_display": true
     },
     {
       "key": "nhl",
@@ -146,7 +149,8 @@
         ],
         "power_conferences_both": true
       },
-      "sort_rank": 1
+      "sort_rank": 1,
+      "split_ranked": true
     },
     {
       "key": "mens-college-basketball",
@@ -218,7 +222,8 @@
           }
         ]
       },
-      "sort_rank": 2
+      "sort_rank": 2,
+      "split_ranked": true
     },
     {
       "key": "mens-college-hockey",

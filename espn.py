@@ -283,13 +283,21 @@ def _team(competitor):
 
 
 def _broadcasts(comp):
-    """Returns (names, is_national)."""
-    names, national = [], False
+    """Returns (names, national_names, is_national).
+
+    ESPN labels each broadcast market as national / home / away, which is what
+    makes "national only" possible. Note MLB.TV is flagged national despite
+    being a streaming service, so the hide list still matters.
+    """
+    names, national_names, national = [], [], False
     for entry in comp.get("broadcasts") or []:
+        is_nat = (entry.get("market") or "").lower() == "national"
         for name in entry.get("names") or []:
             if name not in names:
                 names.append(name)
-        if (entry.get("market") or "").lower() == "national":
+            if is_nat and name not in national_names:
+                national_names.append(name)
+        if is_nat:
             national = True
     if not names:
         for geo in comp.get("geoBroadcasts") or []:
@@ -298,7 +306,9 @@ def _broadcasts(comp):
                 names.append(name)
             if ((geo.get("market") or {}).get("type") or "").lower() == "national":
                 national = True
-    return names, national
+                if name and name not in national_names:
+                    national_names.append(name)
+    return names, national_names, national
 
 
 def _odds(comp):
@@ -377,7 +387,7 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             found = {conf_names.get(t["conference_id"], "") for t in (home, away)}
             conference = " / ".join(sorted(found - {""}))
 
-        tv, national = _broadcasts(comp)
+        tv, tv_national, national = _broadcasts(comp)
         spread, over_under = _odds(comp)
         status = (comp.get("status") or {}).get("type") or {}
         notes = [n.get("headline") for n in comp.get("notes") or [] if n.get("headline")]
@@ -402,7 +412,11 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "home": home,
             "away": away,
             "tv": tv,
+            "tv_national": tv_national,
             "national": national,
+            # Series state for a playoff tie: "LAD lead series 2-1".
+            "series": ((comp.get("series") or {}).get("summary") or ""),
+            "national_only": bool(league.get("national_only_display")),
             "spread": spread,
             "over_under": over_under,
             "conference": conference,
