@@ -467,22 +467,24 @@ def evaluate(game, league, config):
         if headline and any(p in headline for p in patterns):
             reasons.append("tournament")
 
-    # Some of your own teams belong in Highlights rather than the main slate
-    # unless the game actually matters: a Tigers game in June, every European
-    # club fixture. Postseason promotes them back.
+    # Some of your own teams sit in Highlights rather than the main slate
+    # unless the game actually matters -- a Tigers game in June. Postseason
+    # promotes them back.
     demoted = False
     if fav_hit and not game.get("postseason"):
-        if league.get("highlight_all"):
-            demoted = True
-        else:
-            for name in league.get("highlight_teams") or []:
-                if any(_matches(t, name) for t in sides):
-                    demoted = True
-                    break
+        for name in league.get("highlight_teams") or []:
+            if any(_matches(t, name) for t in sides):
+                demoted = True
+                break
+
+    # A whole competition can live in Highlights -- every European club
+    # fixture -- but never at the expense of your own team, who stays on the
+    # main slate wherever they are playing.
+    in_highlight_league = bool(league.get("highlight_all")) and not fav_hit
 
     if fav_hit and not demoted:
         tier = "favorite"
-    elif fav_hit or watch_note:
+    elif fav_hit or watch_note or in_highlight_league:
         tier = "watch"
     else:
         tier = "interest"
@@ -508,7 +510,7 @@ def evaluate(game, league, config):
     stamp_details(game, league, config)
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
     # Both a rival and a demoted favourite live in the Highlights block.
-    game["highlight"] = bool(rivals) or demoted
+    game["highlight"] = bool(rivals) or demoted or in_highlight_league
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit

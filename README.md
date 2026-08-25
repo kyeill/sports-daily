@@ -414,9 +414,17 @@ holds three things:
 * every European club fixture -- the Premier League, both domestic cups and all
   three European competitions (`highlight_all`)
 
-**Postseason promotes them back to Main Slate.** A Tigers game in June is a
-highlight; a Tigers playoff game is the main slate. Which leaves Main Slate as
-the Lions, Michigan, the USMNT, and anything that has become an event.
+**Postseason promotes the demoted teams back to Main Slate.** A Tigers game in
+June is a highlight; a Tigers playoff game is the main slate.
+
+**`highlight_all` never demotes your own team.** Tottenham is on the Main Slate
+wherever they are playing -- league, cup or Europe -- and it is the *rest* of
+European football that sits in Highlights.
+
+| team | where |
+| --- | --- |
+| Lions, Michigan, Tottenham, USMNT | Main Slate, always |
+| Tigers, Pistons, Cavaliers, Red Wings, Atlanta United, Cornell | Highlights, Main Slate in the postseason |
 
 In **Main Slate** the league is not named, since the team implies it -- except in
 soccer, where Tottenham and Atlanta United appear across half a dozen
