@@ -217,10 +217,8 @@ def as_text(day, games, config, notes=None):
         tail = []
         tail += game.get("tags") or []
         tail += filters.display_networks(game, config)
-        if config.get("show_odds", True) and game.get("spread_side"):
-            favourite = game[game["spread_side"]]
-            tail.append("%s %s" % (favourite.get("label") or favourite.get("short"),
-                                   game.get("spread_label") or ""))
+        if config.get("show_odds", True) and game.get("spread_label"):
+            tail.append(game["spread_label"])
         suffix = "  [%s]" % ", ".join(tail) if tail else ""
         if (game.get("sport") or "") == "Soccer":
             first, second, joiner = game["home"], game["away"], "vs"

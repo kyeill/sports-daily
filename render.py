@@ -66,7 +66,8 @@ h2 {
   grid-template-columns: 24px 20px 1fr auto; align-items: center;
   column-gap: 7px; row-gap: 3px;
 }
-.teams a:hover .t { text-decoration: underline; }
+.teams a:hover .t, .teams a:hover .t-short { text-decoration: underline; }
+.t-short { display: none; }
 .s-logo { display: flex; align-items: center; height: 20px; }
 .s-logo img { width: 20px; height: 20px; object-fit: contain; }
 .s-rank { color: var(--rank); font-weight: 600; font-size: 11.5px;
@@ -74,10 +75,13 @@ h2 {
 /* The line rides inside the name cell rather than in a column of its own: a
    column would align it across both rows, stranding it far from a short name.
    The name is what gives way when space runs out, never the line. */
-.s-name { font-size: 14.5px; display: flex; align-items: baseline; gap: 5px;
+.s-name { font-size: 14.5px; display: flex; align-items: baseline;
   min-width: 0; }
 .s-name .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.s-spread { color: var(--muted); font-size: 12px; flex: 0 0 auto; }
+/* margin rather than a flex gap, because the narrow layout makes this cell a
+   block and gaps stop applying there -- which ran the line into the name. */
+.s-spread { color: var(--muted); font-size: 12px; flex: 0 0 auto;
+  margin-left: 5px; }
 .s-rec { color: var(--muted); font-size: 12px; text-align: right;
   white-space: nowrap; }
 /* Third row of the same grid, starting at the name column, so it lines up
@@ -114,9 +118,12 @@ h2 {
      perfectly well, so a quarter of the page turned into three-letter codes.
      Only one team in eighty-two is long enough to need two lines. */
   .s-name { display: block; }
-  .s-name .t { display: inline; white-space: normal; overflow: visible;
-    text-overflow: clip; }
+  .s-name .t, .s-name .t-short { display: inline; white-space: normal;
+    overflow: visible; text-overflow: clip; }
   .s-spread { display: inline; }
+  /* Where a short name was offered, it stands in for the full one here. */
+  .swap .t { display: none; }
+  .swap .t-short { display: inline; }
   .s-rec { font-size: 11.5px; }
   .when, .nets { font-size: 12.5px; }
 }
@@ -146,6 +153,10 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
+# What a phone fits on one line. Only names past this are worth shortening.
+LONG_NAME = 16
+
+
 def _side_html(team, show_records, config, line=""):
     """One team as four grid cells: crest, rank, name, record.
 
@@ -157,12 +168,24 @@ def _side_html(team, show_records, config, line=""):
     detail = team.get("detail") if show_records else ""
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
+
+    # A phone fits about sixteen characters. Past that, ESPN's short name is
+    # offered alongside and the narrow stylesheet picks it: "Manchester
+    # United" becomes "Man United", "Brighton & Hove Albion" becomes
+    # "Brighton". Not the abbreviation, which is unreadable, and not at a
+    # lower threshold, which catches names like "Crystal Palace" that fit
+    # perfectly well and turns them into "C Palace".
+    short = team.get("short") or ""
+    cell, alt = "s-name", ""
+    if len(label) > LONG_NAME and short and len(short) < len(label):
+        alt = '<span class="t-short">%s</span>' % _esc(short)
+        cell = "s-name swap"     # marks the pair, so no :has() is needed
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
-        '<span class="s-name"><span class="t">%s</span>%s</span>'
+        '<span class="%s"><span class="t">%s</span>%s%s</span>'
         '<span class="s-rec">%s</span>'
-    ) % (_logo(team, config), rank, _esc(label), spread, _esc(detail))
+    ) % (_logo(team, config), rank, cell, _esc(label), alt, spread, _esc(detail))
 
 
 def _when(game):
