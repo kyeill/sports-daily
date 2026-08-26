@@ -316,6 +316,20 @@ def _table_places(league):
     return _place_cache[key]
 
 
+def _short_label(team, config):
+    """The name a phone falls back to when the full one will not fit.
+
+    ESPN's short name is usually right, but not always: it renders Nottingham
+    Forest as "Nottm Forest" when "Forest" is what anyone would say.
+    """
+    overrides = config.get("team_short_names") or {}
+    name = (team.get("name") or "").lower()
+    for match, short in overrides.items():
+        if match.lower() in name:
+            return short
+    return team.get("short") or ""
+
+
 def _label(team, config, league=None):
     """The name to print, honouring any override.
 
@@ -350,6 +364,8 @@ def stamp_details(game, league, config):
     mode = league.get("team_detail", "record")
     for side in (game["home"], game["away"]):
         side["label"] = _label(side, config, league)
+        # After the label, since the label falls back to this for pro teams.
+        side["short"] = _short_label(side, config)
         if mode == "conference_place":
             found = _conference_places(league).get((side.get("name") or "").lower())
             place, seed = found if found else (None, None)

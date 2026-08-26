@@ -910,7 +910,8 @@
     ]
   },
   "team_names": {
-    "Tottenham Hotspur": "Tottenham"
+    "Tottenham Hotspur": "Tottenham",
+    "Ajax": "Ajax"
   },
   "round_spellings": {
     "1st Round": "First Round",
@@ -1011,5 +1012,8 @@
     "SEC Network": "SECN",
     "CBS Sports Network": "CBSSN",
     "ACC Network Extra": "ACCNX"
+  },
+  "team_short_names": {
+    "Nottingham Forest": "Forest"
   }
 }
