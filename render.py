@@ -138,7 +138,12 @@ h2 {
 @media (max-width: 640px) {
   /* A phone has about 200px for the teams once the right-hand column is paid
      for, so everything gives up a little: the columns, the gaps, the type. */
-  .row { grid-template-columns: 1fr 108px; gap: 9px; padding: 9px 11px; }
+  /* Measured in the page at mobile sizes: the widest network actually shown
+     is "ACC Network" at 68px, and a season one like "SEC Network+" reaches
+     74px, against a 49px time. 80px of content plus the padding and rule is
+     90px -- the 108px it used to be was 18px of nothing, and those 18px are
+     worth more to the names. */
+  .row { grid-template-columns: 1fr 90px; gap: 9px; padding: 9px 11px; }
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
   .s-name { font-size: 14px; }
@@ -183,8 +188,15 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-# What a phone fits on one line. Only names past this are worth shortening.
-LONG_NAME = 16
+# What a phone fits on one line, in characters. Measured: the teams column is
+# about 137px once the crest, rank and record are paid for, and a name runs
+# roughly 6.5px a character -- so about twenty. A betting line beside the name
+# costs another 50px, which is worth some seven characters, so a team carrying
+# one has far less room. Two thresholds rather than one, because a single
+# figure either shortens names that would have fitted or overflows the ones
+# that do not.
+LONG_NAME = 20
+LONG_NAME_WITH_LINE = 13
 
 
 def _side_html(team, show_records, config, line=""):
@@ -199,15 +211,15 @@ def _side_html(team, show_records, config, line=""):
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
 
-    # A phone fits about sixteen characters. Past that, ESPN's short name is
-    # offered alongside and the narrow stylesheet picks it: "Manchester
-    # United" becomes "Man United", "Brighton & Hove Albion" becomes
-    # "Brighton". Not the abbreviation, which is unreadable, and not at a
-    # lower threshold, which catches names like "Crystal Palace" that fit
-    # perfectly well and turns them into "C Palace".
+    # Past what a phone fits, ESPN's short name is offered alongside and the
+    # narrow stylesheet picks it: "Manchester United" becomes "Man United",
+    # "Brighton & Hove Albion" becomes "Brighton". Not the abbreviation, which
+    # is unreadable, and not at a threshold low enough to catch names like
+    # "Crystal Palace" that fit perfectly well.
     short = team.get("short") or ""
     cell, alt = "s-name", ""
-    if len(label) > LONG_NAME and short and len(short) < len(label):
+    limit = LONG_NAME_WITH_LINE if line else LONG_NAME
+    if len(label) > limit and short and len(short) < len(label):
         alt = '<span class="t-short">%s</span>' % _esc(short)
         cell = "s-name swap"     # marks the pair, so no :has() is needed
     return (
