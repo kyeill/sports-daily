@@ -50,36 +50,49 @@ h2 {
 }
 .pinned .card { background: var(--pin); border-color: var(--pin-line); }
 .watching .card { background: var(--watch); border-color: var(--watch-line); }
-.game {
-  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
-  padding: 11px 14px; border-bottom: 1px solid var(--line);
+/* One game is two stacked team lines sharing a four-column grid -- crest,
+   rank, name, record -- so every field lines up down the page regardless of
+   how long the names are. The time and networks sit in a column of their own
+   behind a rule. */
+.row {
+  display: grid; grid-template-columns: 1fr 168px; gap: 14px;
+  align-items: center; padding: 10px 14px;
+  border-bottom: 1px solid var(--line); border-left: 3px solid transparent;
 }
-.game:last-child { border-bottom: none; }
-.time {
-  flex: 0 0 78px; font-variant-numeric: tabular-nums; color: var(--muted);
-  font-size: 13px;
+.row:last-child { border-bottom: none; }
+.row.tinted { border-left-color: var(--tint); }
+.teams a {
+  color: inherit; text-decoration: none; display: grid;
+  grid-template-columns: 24px 20px 1fr auto; align-items: center;
+  column-gap: 7px; row-gap: 3px;
 }
-.match { flex: 1 1 300px; min-width: 0; display: flex; align-items: center;
-  gap: 6px; flex-wrap: wrap; }
-/* These sit inside an <a>, so they are inline-level boxes and align on their
-   BASELINES by default -- and an inline-flex box holding a 20px logo has a
-   very different baseline from 12px text, which dropped "at" below the names.
-   vertical-align: middle aligns them on their centres instead. */
-.side { display: inline-flex; align-items: center; gap: 5px; min-height: 20px;
-  vertical-align: middle; }
-.side img { width: 20px; height: 20px; object-fit: contain; flex: 0 0 20px; }
-.at { display: inline-block; vertical-align: middle;
-  color: var(--muted); font-size: 12px; }
-.game { border-left: 3px solid transparent; }
-.game.tinted { border-left-color: var(--tint); }
-.match a { color: inherit; text-decoration: none; }
-.match a:hover { text-decoration: underline; }
-.rank { color: var(--rank); font-weight: 600; font-size: 12px; }
-.rec { color: var(--muted); font-size: 12px; }
-.meta {
-  flex: 1 1 220px; display: flex; gap: 6px; flex-wrap: wrap;
-  justify-content: flex-end; font-size: 12px; color: var(--muted);
+.teams a:hover .t { text-decoration: underline; }
+.s-logo { display: flex; align-items: center; height: 20px; }
+.s-logo img { width: 20px; height: 20px; object-fit: contain; }
+.s-rank { color: var(--rank); font-weight: 600; font-size: 11.5px;
+  text-align: right; }
+/* The line rides inside the name cell rather than in a column of its own: a
+   column would align it across both rows, stranding it far from a short name.
+   The name is what gives way when space runs out, never the line. */
+.s-name { font-size: 14.5px; display: flex; align-items: baseline; gap: 5px;
+  min-width: 0; }
+.s-name .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s-spread { color: var(--muted); font-size: 12px; flex: 0 0 auto; }
+.s-rec { color: var(--muted); font-size: 12px; text-align: right;
+  white-space: nowrap; }
+/* Third row of the same grid, starting at the name column, so it lines up
+   with the names above however the columns are sized. */
+.s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
+  margin-top: 1px; }
+.right {
+  border-left: 1px solid var(--line); padding-left: 12px; min-height: 44px;
+  display: flex; flex-direction: column; justify-content: center; gap: 3px;
 }
+.when { font-size: 13px; font-variant-numeric: tabular-nums; }
+/* Same size and face as the time, differing only in colour, so the two read
+   as one block rather than as a label and a badge. */
+.nets { font-size: 13px; color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .chip {
   background: var(--chip); border-radius: 999px; padding: 1px 8px;
   white-space: nowrap;
@@ -87,21 +100,16 @@ h2 {
 .chip.tv { color: var(--ink); }
 .chip.why { background: transparent; border: 1px solid var(--watch-line);
   color: var(--watch-ink); }
-.lg { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
-.note { color: var(--muted); font-size: 12px; margin-top: 3px; width: 100%; }
 .empty { color: var(--muted); padding: 14px; }
 @media (max-width: 640px) {
-  /* Each row wraps to matchup / detail / networks, and a 12px gap between all
-     three made a row with a detail line 28px taller than one without. The
-     column gap stays wide; only the rows close up. */
-  .game { row-gap: 1px; padding: 9px 12px; }
-  /* The detail line lives inside .match, so that container's own 6px gap was
-     costing as much as the text itself. */
-  .match { row-gap: 0; }
-  /* A game with no network and no line would otherwise sit shorter than its
-     neighbours; the empty row still holds its place. */
-  .meta { min-height: 20px; }
-  .note { margin-top: 0; line-height: 1.35; }
+  /* A phone has about 200px for the teams once the right-hand column is paid
+     for, so everything gives up a little: the columns, the gaps, the type. */
+  .row { grid-template-columns: 1fr 108px; gap: 9px; padding: 9px 11px; }
+  .right { padding-left: 9px; }
+  .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
+  .s-name { font-size: 14px; }
+  .s-rec { font-size: 11.5px; }
+  .when, .nets { font-size: 12.5px; }
 }
 footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
 """
@@ -129,15 +137,24 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-def _team_html(team, show_records, config):
-    bits = [_logo(team, config)]
-    if team.get("rank"):
-        bits.append('<span class="rank">#%d</span>' % team["rank"])
-    bits.append(_esc(team.get("label") or team.get("short") or team.get("name")))
+def _side_html(team, show_records, config, line=""):
+    """One team as four grid cells: crest, rank, name, record.
+
+    Four cells rather than one run of text, because both teams share the grid:
+    that is what makes the names start at the same place whether or not a team
+    is ranked, and the records finish at the same place whatever the names do.
+    """
+    rank = ('%d' % team["rank"]) if team.get("rank") else ""
     detail = team.get("detail") if show_records else ""
-    if detail:
-        bits.append('<span class="rec">(%s)</span>' % _esc(detail))
-    return '<span class="side">%s</span>' % " ".join(b for b in bits if b)
+    spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
+    return (
+        '<span class="s-logo">%s</span>'
+        '<span class="s-rank">%s</span>'
+        '<span class="s-name"><span class="t">%s</span>%s</span>'
+        '<span class="s-rec">%s</span>'
+    ) % (_logo(team, config), rank,
+         _esc(team.get("label") or team.get("short") or team.get("name")),
+         spread, _esc(detail))
 
 
 def _when(game):
@@ -153,23 +170,18 @@ def _when(game):
 def _game_html(game, show_league, config):
     show_records = config.get("show_records", True)
     # Soccer is written home side first; every other sport is away at home.
+    # With the teams stacked, that order is what says which is which -- there
+    # is no "at" between them any more.
     if (game.get("sport") or "") == "Soccer":
-        first, second, joiner = game["home"], game["away"], "vs"
+        first, second, order = game["home"], game["away"], ("home", "away")
     else:
-        first, second, joiner = game["away"], game["home"], "at"
-    if game.get("neutral"):
-        joiner = "vs"          # nobody is "at" a neutral site
-    matchup = "%s <span class=\"at\">%s</span> %s" % (
-        _team_html(first, show_records, config), joiner,
-        _team_html(second, show_records, config))
+        first, second, order = game["away"], game["home"], ("away", "home")
 
-    meta = []
-    for tag in game.get("tags") or []:
-        meta.append('<span class="chip why">%s</span>' % _esc(tag))
-    for name in filters.display_networks(game, config):
-        meta.append('<span class="chip tv">%s</span>' % _esc(name))
-    if config.get("show_odds", True) and game.get("spread"):
-        meta.append('<span class="chip">%s</span>' % _esc(game["spread"]))
+    # The line belongs against the team it is about: a point spread where the
+    # sport has one, otherwise the moneyline, which espn.py labels ML.
+    lines = {"home": "", "away": ""}
+    if config.get("show_odds", True) and game.get("spread_side"):
+        lines[game["spread_side"]] = game.get("spread_label") or ""
 
     detail = filters.detail_of(game, config, game.get("_league"))
     # Which competition, for a club that plays in several -- on the detail line
@@ -179,21 +191,33 @@ def _game_html(game, show_league, config):
         # "MLS MLS Cup" reads badly; the round already names it.
         if not detail.startswith(label):
             detail = ("%s %s" % (label, detail)).strip()
-    note = ('<div class="note">%s</div>' % _esc(detail)) if detail else ""
+    # Stacking drops the "at"/"vs", and with it the only sign of a neutral
+    # site. Bowls and tournament rounds already say so by name, so this only
+    # speaks up when nothing else would.
+    if game.get("neutral") and not detail:
+        detail = "Neutral site"
+    note = ('<span class="s-note">%s</span>' % _esc(detail)) if detail else ""
+
+    networks = "/".join(filters.display_networks(game, config))
+    tags = "".join('<span class="chip why">%s</span>' % _esc(t)
+                   for t in game.get("tags") or [])
+    tags = ('<div class="tags">%s</div>' % tags) if tags else ""
 
     # Your team's colour when you are involved, otherwise whichever team makes
     # the game interesting; black when both sides do.
     tint = (game.get("tint") or "").strip()
-    attrs = (' class="game tinted" style="--tint:#%s"' % _esc(tint)) \
-        if tint and config.get("show_colors", True) else ' class="game"'
+    attrs = (' class="row tinted" style="--tint:#%s"' % _esc(tint))         if tint and config.get("show_colors", True) else ' class="row"'
 
     return (
         '<div%s>'
-        '<div class="time">%s</div>'
-        '<div class="match"><a href="%s">%s</a>%s</div>'
-        '<div class="meta">%s</div>'
+        '<div class="teams"><a href="%s">%s%s%s</a></div>'
+        '<div class="right"><div class="when">%s</div>'
+        '<div class="nets">%s</div>%s</div>'
         '</div>'
-    ) % (attrs, _esc(_when(game)), _esc(game["link"]), matchup, note, "".join(meta))
+    ) % (attrs, _esc(game["link"]),
+         _side_html(first, show_records, config, lines[order[0]]),
+         _side_html(second, show_records, config, lines[order[1]]),
+         note, _esc(_when(game)), _esc(networks), tags)
 
 
 def _section(title, games, show_league, config):

@@ -8,6 +8,7 @@ Verified payload shapes on 2026-08-24 -- see README for the trap list.
 
 import json
 import os
+import re
 import time
 from datetime import datetime, timezone
 
@@ -328,14 +329,107 @@ def _broadcasts(comp):
 
 
 def _odds(comp):
+    """-> (details, over_under, favourite_side, label).
+
+    `details` is the provider's own wording ("IU -40.5") and stays the source
+    for the blowout rule. The other two say which team the line belongs to and
+    how to write it, which differs by sport:
+
+    * Point-spread sports flag the favourite per side, and `spread` is signed
+      from the home team, so the favourite always reads as minus its
+      magnitude -- no abbreviation matching needed.
+    * Soccer has neither field. Only `details` carries anything, holding
+      either a three-way moneyline ("LIV -205") or an Asian handicap
+      ("TOT -0.5"), and the team is named by abbreviation. That abbreviation
+      is ESPN's own, so it matches the competitors exactly -- verified across
+      33 priced fixtures, all 33 matched. Only the moneylines are kept, and
+      they are labelled ML so they cannot be read as points; a moneyline is
+      100 or more in magnitude, a handicap always less.
+    """
     # The odds list itself can contain nulls (seen on college football).
     odds = [o for o in (comp.get("odds") or []) if isinstance(o, dict)]
     if not odds:
-        return "", ""
+        return "", "", "", ""
     first = odds[0]
-    details = first.get("details") or ""
+    details = (first.get("details") or "").strip()
     over_under = first.get("overUnder")
-    return details, ("O/U %s" % over_under if over_under is not None else "")
+    over_under = "O/U %s" % over_under if over_under is not None else ""
+
+    for name in ("home", "away"):
+        if (first.get("%sTeamOdds" % name) or {}).get("favorite"):
+            points = first.get("spread")
+            if isinstance(points, (int, float)):
+                return details, over_under, name, "-%g" % abs(points)
+            break
+
+    match = re.match(r"^(.+?)\s+([+-]\d+(?:\.\d+)?)$", details)
+    if match:
+        token, value = match.group(1).strip(), float(match.group(2))
+        # Only moneylines, which are 100 or more in magnitude. The rest are
+        # Asian handicaps -- half-goal lines in a sport that scores in ones,
+        # which read as nonsense next to a point spread.
+        if abs(value) >= 100:
+            for competitor in comp.get("competitors") or []:
+                if ((competitor.get("team") or {}).get("abbreviation") or "") == token:
+                    return (details, over_under, competitor.get("homeAway") or "",
+                            "%+g ML" % value)
+
+    return details, over_under, "", ""
+
+
+def _american(decimal_price):
+    """Decimal odds as an American moneyline: 2.15 -> +115, 1.5 -> -200."""
+    if decimal_price >= 2:
+        return "+%d" % round((decimal_price - 1) * 100)
+    return "-%d" % round(100 / (decimal_price - 1))
+
+
+def _decimal_price(entry):
+    """Decimal odds from either shape ESPN uses, or None.
+
+    DraftKings publishes an American `moneyLine`; Bet 365 publishes fractional
+    odds already reduced to a decimal `value`. Both are normalised to decimal
+    so prices can be compared across providers.
+    """
+    money = entry.get("moneyLine")
+    if isinstance(money, (int, float)) and money:
+        return 1 + (money / 100.0 if money > 0 else 100.0 / -money)
+    value = ((entry.get("odds") or {}).get("value"))
+    if isinstance(value, (int, float)) and value > 1:
+        return float(value)
+    return None
+
+
+def event_moneyline(league, event_id, competition_id):
+    """-> (side, label) for a fixture the scoreboard priced only as a handicap.
+
+    The scoreboard carries one provider and sometimes only its handicap, which
+    is no use here. The core API returns every provider and the full three-way
+    market, so a moneyline can usually still be found. Only asked for when the
+    scoreboard gave nothing -- twice in a fifteen-day window -- so the extra
+    request is rare enough not to matter.
+
+    A provider is only trusted when it prices BOTH sides: given one price
+    alone there is no way to tell a favourite from an underdog.
+    """
+    path = league.get("path") or ""
+    if "/" not in path:
+        return "", ""
+    sport, code = path.split("/", 1)
+    data = _get("%s/%s/leagues/%s/events/%s/competitions/%s/odds"
+                % (CORE, sport, code, event_id, competition_id),
+                {"limit": 20}, cache_key="odds-%s-%s" % (code, event_id),
+                max_age_min=180)
+    for item in (data or {}).get("items") or []:
+        prices = {}
+        for side in ("home", "away"):
+            price = _decimal_price(item.get("%sTeamOdds" % side) or {})
+            if price:
+                prices[side] = price
+        if len(prices) == 2:
+            side = min(prices, key=prices.get)
+            return side, "%s ML" % _american(prices[side])
+    return "", ""
 
 
 def _aggregate(comp, home, away):
@@ -425,8 +519,14 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             conference = " / ".join(sorted(found - {""}))
 
         tv, tv_national, national, tv_market = _broadcasts(comp)
-        spread, over_under = _odds(comp)
+        spread, over_under, spread_side, spread_label = _odds(comp)
         status = (comp.get("status") or {}).get("type") or {}
+        # Soccer fixtures are sometimes priced only as a handicap here, which
+        # says nothing a reader wants. The full market is one request away.
+        if (not spread_label and spread and (league.get("sport") or "") == "Soccer"
+                and (status.get("state") or "pre") == "pre"):
+            spread_side, spread_label = event_moneyline(
+                league, event.get("id") or "", comp.get("id") or "")
         notes = [n.get("headline") for n in comp.get("notes") or [] if n.get("headline")]
 
         out.append({
@@ -459,6 +559,8 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "aggregate": _aggregate(comp, home, away),
             "national_only": bool(league.get("national_only_display")),
             "spread": spread,
+            "spread_side": spread_side,
+            "spread_label": spread_label,
             "over_under": over_under,
             "conference": conference,
             "neutral": bool(comp.get("neutralSite")),
