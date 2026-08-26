@@ -313,7 +313,7 @@ def _table_places(league):
     return _place_cache[key]
 
 
-def _label(team, config):
+def _label(team, config, league=None):
     """The name to print, honouring any override.
 
     ESPN's short name is not always what people say: Tottenham comes back as
@@ -324,6 +324,21 @@ def _label(team, config):
     for match, label in overrides.items():
         if match.lower() in name:
             return label
+    # College and soccer teams are known by school or club, and ESPN's short
+    # name abbreviates exactly that part -- "Boise St", "W Michigan", "Nottm
+    # Forest". Its `location` is the same name written out. Pro teams are the
+    # other way round: short is the nickname ("Tigers"), location the city.
+    if league and (("college" in (league.get("key") or ""))
+                   or (league.get("sport") or "") == "Soccer"):
+        if team.get("location"):
+            name = team["location"]
+            # "Atlanta United FC", "Inter Miami CF" -- the suffix says nothing
+            # on a page where every club is a football club, and it costs
+            # width where there is least of it. A leading "FC Dallas" stays.
+            parts = name.split()
+            if len(parts) > 1 and parts[-1] in ("FC", "CF", "SC"):
+                name = " ".join(parts[:-1])
+            return name
     return team.get("short") or team.get("name") or ""
 
 
@@ -331,7 +346,7 @@ def stamp_details(game, league, config):
     """What shows next to each team name: record, place, or nothing."""
     mode = league.get("team_detail", "record")
     for side in (game["home"], game["away"]):
-        side["label"] = _label(side, config)
+        side["label"] = _label(side, config, league)
         if mode == "conference_place":
             found = _conference_places(league).get((side.get("name") or "").lower())
             place, seed = found if found else (None, None)

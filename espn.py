@@ -282,6 +282,8 @@ def _team(competitor):
         "abbr": team.get("abbreviation") or team.get("shortDisplayName") or "",
         "name": team.get("displayName") or team.get("name") or "",
         "short": team.get("shortDisplayName") or team.get("displayName") or "",
+        # "Boise State", where shortDisplayName mangles it to "Boise St".
+        "location": team.get("location") or "",
         "logo": team.get("logo") or "",
         # ESPN publishes a light version of every crest for dark backgrounds.
         # Verified: the default Tottenham badge averages luminance 35, the
