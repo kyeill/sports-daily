@@ -24,6 +24,10 @@ CSS = """
   /* Ranks read better in light blue: a dark navy would vanish against the
      background the same way the black stripe does. */
   --rank: #8fb0d8;
+  /* One team line: tall enough for the 20px crest and the name above it.
+     The right-hand column uses the same figure, which is the only reason the
+     time and the network stay level with the teams they belong to. */
+  --line-h: 22px; --line-gap: 3px;
 }
 html { color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -66,7 +70,10 @@ h2 {
 .teams a {
   color: inherit; text-decoration: none; display: grid;
   grid-template-columns: 24px 20px 1fr auto; align-items: center;
-  column-gap: 7px; row-gap: 3px;
+  column-gap: 7px; row-gap: var(--line-gap);
+  /* minmax, not a fixed height: a name that wraps on a phone still needs the
+     room. The competition line below takes its own height. */
+  grid-template-rows: minmax(var(--line-h), auto) minmax(var(--line-h), auto);
 }
 .teams a:hover .t, .teams a:hover .t-short { text-decoration: underline; }
 .t-short { display: none; }
@@ -95,8 +102,16 @@ h2 {
    the teams they belong to. */
 .right {
   border-left: 1px solid var(--line); padding-left: 12px; min-height: 44px;
-  display: flex; flex-direction: column; justify-content: flex-start; gap: 3px;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  gap: var(--line-gap);
 }
+/* A time with nothing under it has no second line to pair with, so it centres
+   against the pair of team lines instead of sitting on the first. Half of one
+   line plus the gap is exactly that offset. */
+.right.solo { padding-top: calc((var(--line-h) + var(--line-gap)) / 2); }
+/* Each of these is a box the height of a team line with its text centred, so
+   line one sits against the first team and line two against the second. */
+.when, .nets { min-height: var(--line-h); display: flex; align-items: center; }
 .when { font-size: 13px; font-variant-numeric: tabular-nums; }
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
@@ -244,16 +259,21 @@ def _game_html(game, show_league, config):
     tint = (game.get("tint") or "").strip()
     attrs = (' class="row tinted" style="--tint:#%s"' % _esc(tint))         if tint and config.get("show_colors", True) else ' class="row"'
 
+    # An empty network line would still occupy a team line's worth of height,
+    # so it is left out entirely -- and when nothing else is there, the time
+    # centres rather than sitting against the first team.
+    nets = ('<div class="nets">%s</div>' % _esc(networks)) if networks else ""
+    solo = " solo" if not networks and not tags else ""
+
     return (
         '<div%s>'
         '<div class="teams"><a href="%s">%s%s%s</a></div>'
-        '<div class="right"><div class="when">%s</div>'
-        '<div class="nets">%s</div>%s</div>'
+        '<div class="right%s"><div class="when">%s</div>%s%s</div>'
         '</div>'
     ) % (attrs, _esc(game["link"]),
          _side_html(first, show_records, config, lines[order[0]]),
          _side_html(second, show_records, config, lines[order[1]]),
-         note, _esc(_when(game)), _esc(networks), tags)
+         note, solo, _esc(_when(game)), nets, tags)
 
 
 def _section(title, games, show_league, config):
