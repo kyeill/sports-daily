@@ -396,6 +396,48 @@ say them -- Tottenham comes back as "Spurs".
 is not the one people picture -- Syracuse comes back navy rather than orange,
 and Michigan blue rather than maize.
 
+## How a row is built
+
+Two team lines stacked, sharing a four-column grid -- crest, rank, name,
+record -- with the time and networks in a column of their own behind a rule.
+Both teams use the same grid, so names start at the same place whether or not
+a team is ranked, and records finish at the same place whatever the names do.
+A competition line ("Carabao Cup Second Round") is a third row of that grid
+rather than an indent, so it stays aligned with the names by construction.
+
+Stacking replaced a single flowing line, where the second team started
+wherever the first one happened to end. It also removes the "at" / "vs", so
+the order carries that meaning: away team first, except in soccer, which is
+written home side first. A neutral site says so on the detail line, but only
+when nothing else would -- bowls and tournament rounds already name themselves.
+
+Both columns take their line height from one custom property, `--line-h`,
+which is the only reason the time stays level with the first team and the
+network with the second. A time with nothing under it centres against the
+pair instead of sitting on the first.
+
+## Names
+
+College and club teams are named by `location` ("Boise State", "Crystal
+Palace"), because ESPN's `shortDisplayName` abbreviates exactly the part that
+identifies them -- "Boise St", "C Palace", "Nottm Forest". Pro teams are the
+other way round: `short` is the nickname ("Tigers") and `location` is the
+city, so the preference only flips for college and soccer. A trailing FC, CF
+or SC is dropped, since every club on the page is a football club.
+
+`team_names` overrides the label outright (Ajax Amsterdam is just Ajax);
+`team_short_names` overrides only the shortened form a phone falls back to
+(Nottingham Forest becomes Forest, not ESPN's "Nottm Forest").
+
+**A phone shortens by measured width, not by name length.** `render.py` carries
+a table of character widths taken from Source Sans 3 at the size and weight the
+narrow stylesheet renders, and a name is shortened only when it will not fit
+the 143px the layout leaves it. Counting characters got this wrong in both
+directions: "Crystal Palace" is fourteen characters and 81px, "Michigan State"
+is fourteen characters and 86px. Abbreviations were tried first and dropped --
+CRY, BHA and NFO are unreadable, and a threshold low enough to catch the real
+offenders turned a quarter of the page into three-letter codes.
+
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,
@@ -410,7 +452,9 @@ a Premier League match on USA and Peacock shows USA; an MLS game on Apple TV
 shows Apple TV.
 
 Only **one** network is listed -- the March Madness TBS/truTV simulcast does
-not need both. MLB.TV is flagged *national* despite being a streaming service,
+not need both. `network_names` settles the spellings ESPN alternates between:
+it returns "SECN+" on some games and "SEC Network+" on others, and the short
+forms are what fit the phone's 84px column. MLB.TV is flagged *national* despite being a streaming service,
 so `hide_networks` still does real work, as does hiding `Universo` and `TUDN`.
 
 ## Section order
@@ -638,10 +682,21 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   Wolverines`), which means short entries over-match. `--check` is the guard.
 - **Config is read `utf-8-sig`** — Notepad and PowerShell write a BOM that
   plain `json.loads` rejects. (Same as dynasty.)
-- **"at" / "vs" sit inside an `<a>`**, so they are inline-level boxes that
-  align on their baselines. An inline-flex side holding a 20px logo has a very
-  different baseline from 12px text, which dropped the word below the names;
-  `vertical-align: middle` aligns them on their centres instead.
+- **Equal boxes do not mean aligned text.** The time and the network sat high
+  against the teams even with both columns on the same line height, because
+  text centred in a box baselines by its own size -- 13px type rides higher
+  than 14.5px type in the same box. A 1px `top` corrects it.
+- **Measure glyphs only after `document.fonts.ready`.** A reading taken before
+  Source Sans 3 arrived described the fallback font and was out by 1.4px, which
+  shipped as an over-correction that pushed the time visibly low.
+- **A flex `gap` disappears when the container stops being flex.** The narrow
+  stylesheet makes the name cell a block, so the gap between a name and its
+  betting line vanished on phones while looking right on desktop. It is a
+  margin now, which works in both.
+- **A nested "phone" panel cannot honour a viewport media query.** A 375px box
+  inside a desktop page still gets the desktop rules, so a mock built that way
+  shows truncation that a real phone would not. Duplicate the rules scoped to
+  the panel, or open the page at a real width.
 - **Team crests need the dark variant.** ESPN's default logo is drawn for a
   light background: measured on canvas, the Tottenham badge averages luminance
   35 and Ohio State's 52, both invisible on a #16161a page. Swapping `/500/`

@@ -1,6 +1,6 @@
 # Sports Daily — to-do
 
-Last refreshed 2026-08-25. The design itself lives in `README.md`; this file is
+Last refreshed 2026-08-26. The design itself lives in `README.md`; this file is
 only what is *not done*. If something here is unclear, the "Traps" section of
 the README explains why most of it is the way it is.
 
@@ -48,6 +48,23 @@ A game with no spread is always kept, so the failure mode is "rule silently
 does nothing", not "games disappear".
 
 ## Recently closed — do not reopen
+
+Settled on 2026-08-26.
+
+* **Crests** — `logos.py` measures both 500px variants and writes 77
+  `logo_overrides` into `config.json`. Where neither variant reads, the mean
+  colour of the default one decides: navy (r < g < b) and near-neutral crests
+  keep the white silhouette, anything else takes the coloured variant. 22
+  teams are left unreadable on purpose. **A backing disc was built and
+  rejected** — only ~3% of teams would carry one, so it reads as a mistake,
+  and a uniform version is impossible: ESPN's pre-composited files are 4096px
+  and 150-270KB, and compositing the dark variant onto the team colour puts
+  the Red Wings' red wheel on a red disc. Do not propose it again.
+* **Row layout** — two stacked team lines on a shared four-column grid. See
+  "How a row is built" in the README.
+* **Shortening names on phones** — by measured width, not character count, and
+  using ESPN's short name rather than its abbreviation. Both alternatives were
+  tried and are recorded in the README; neither is worth revisiting.
 
 These sat in this file as open questions and were all settled on 2026-08-24.
 
