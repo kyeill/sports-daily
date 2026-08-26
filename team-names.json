@@ -176,7 +176,6 @@
   "mens-college-basketball": {
     "BYU Cougars": "Brigham Young",
     "LSU Tigers": "Louisiana State",
-    "NJIT Highlanders": "New Jersey Tech",
     "SMU Mustangs": "Southern Methodist",
     "TCU Horned Frogs": "Texas Christian",
     "UCF Knights": "Central Florida",
@@ -186,9 +185,7 @@
     "VCU Rams": "Virginia Commonwealth",
     "VMI Keydets": "Virginia Military"
   },
-  "mens-college-hockey": {
-    "RIT Tigers": "Rochester Tech"
-  },
+  "mens-college-hockey": {},
   "epl": {
     "AFC Bournemouth": "Bournemouth"
   }
