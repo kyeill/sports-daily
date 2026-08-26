@@ -241,7 +241,7 @@ a row reads "#9 Iowa at #8 Clemson" rather than showing AP ranks.
 
 **College football tier 2:** any **Big Ten** game; any game with an **AP top-25**
 team (ESPN's curated rank switches to the CFP rankings once they exist, which is
-what you want); any **Power Four vs Power Four** game **midweek only**; any **FOX/CBS/NBC/ABC**
+what you want); any **Power Four vs Power Four** game **midweek only** -- plus **week 0**, the last Saturday of August (`power_conference_extra_dates`, 08-23..08-29), where there is so little on that an unranked Power Four pairing is worth having; any **FOX/CBS/NBC/ABC**
 game **on Saturdays involving an FBS team**; and every bowl and CFP game.
 
 The FBS requirement is why the two college-football feeds are labelled: FBS is
