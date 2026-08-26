@@ -109,19 +109,21 @@ h2 {
    against the pair of team lines instead of sitting on the first. Half of one
    line plus the gap is exactly that offset. */
 .right.solo { padding-top: calc((var(--line-h) + var(--line-gap)) / 2); }
-/* Each of these is a box the height of a team line with its text centred, so
-   line one sits against the first team and line two against the second.
+/* Both lines are laid out identically -- a block whose line box is exactly a
+   team line tall -- so the time lands against the first team and the network
+   against the second, and neither drifts relative to the other. Getting this
+   wrong is subtle: while the time was flex-centred and the network was a
+   block, the two sat on different baselines, one 2.4px above its record and
+   the other 1.3px below. Measured with the webfont loaded, this leaves both
+   0.3px from the record beside them, which is why there is no nudge here any
+   more -- the 1px that used to be was covering for that mismatch.
 
-   Equal boxes are not quite enough: what the eye lines up is the baseline,
-   and text centred in a box baselines by its own size, so the 13px time sits
-   a shade higher than the 14.5px name beside it. Measured with the webfont
-   loaded, that residual is about half a pixel -- an earlier reading of 1.9px
-   was taken before the font arrived and over-corrected until the time sat
-   visibly low. 1px covers the residual plus a little for the smaller, muted
-   type, which reads high at matched geometry. Turn this knob if it is still
-   not sitting right; it disturbs nothing else. */
-.when, .nets { min-height: var(--line-h); display: flex; align-items: center;
-  position: relative; top: 1px; }
+   Clipping lives here rather than in the narrow rules so both columns keep
+   the same mechanism at every width. */
+.when, .nets {
+  display: block; min-height: var(--line-h); line-height: var(--line-h);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .when { font-size: 13px; font-variant-numeric: tabular-nums; }
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
@@ -144,10 +146,6 @@ h2 {
      plus the padding and rule is 84px; every pixel saved here goes to the
      names, which is where it is worth something. */
   .row { grid-template-columns: 1fr 84px; gap: 9px; padding: 9px 11px; }
-  /* If a network ever comes back longer than the column, clip it rather than
-     letting it push the layout around. */
-  .nets { overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    display: block; line-height: var(--line-h); }
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
   .s-name { font-size: 14px; }

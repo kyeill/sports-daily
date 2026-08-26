@@ -411,10 +411,11 @@ the order carries that meaning: away team first, except in soccer, which is
 written home side first. A neutral site says so on the detail line, but only
 when nothing else would -- bowls and tournament rounds already name themselves.
 
-Both columns take their line height from one custom property, `--line-h`,
-which is the only reason the time stays level with the first team and the
-network with the second. A time with nothing under it centres against the
-pair instead of sitting on the first.
+Both columns take their line height from one custom property, `--line-h`, and
+the time and network are laid out identically -- blocks whose line box is one
+team line tall. That is what keeps them level with the records beside them:
+measured, 0.3px out on a phone and exact at desktop width. A time with nothing
+under it centres against the pair instead of sitting on the first.
 
 ## Names
 
@@ -682,13 +683,24 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   Wolverines`), which means short entries over-match. `--check` is the guard.
 - **Config is read `utf-8-sig`** — Notepad and PowerShell write a BOM that
   plain `json.loads` rejects. (Same as dynasty.)
-- **Equal boxes do not mean aligned text.** The time and the network sat high
-  against the teams even with both columns on the same line height, because
-  text centred in a box baselines by its own size -- 13px type rides higher
-  than 14.5px type in the same box. A 1px `top` corrects it.
+- **Two things that must line up need the same layout mechanism.** The time
+  was a flex box with its text centred; the network, after a clip guard was
+  added, was a block with a line height. They therefore sat on different
+  baselines -- one 2.4px above the record beside it, the other 1.3px below --
+  and no single nudge could fix both. Laying both out identically (a block
+  whose line box is one team line tall) puts them within 0.3px of the record
+  on a phone and exactly on it at desktop width, with no nudge at all. A `top`
+  offset that "fixes" an alignment is usually covering for something like this.
+- **Compare against the neighbour, not the thing you happened to pick.** The
+  time sits beside the *record*, not the team name, and those are different
+  sizes on different baselines. Aligning to the name left it visibly off
+  against the record, which is what a reader actually sees.
 - **Measure glyphs only after `document.fonts.ready`.** A reading taken before
   Source Sans 3 arrived described the fallback font and was out by 1.4px, which
-  shipped as an over-correction that pushed the time visibly low.
+  shipped as a correction that pushed the time visibly low.
+- **Measure baselines, not box centres.** Centres matched exactly while the
+  text still read as misaligned; a zero-size inline-block appended to an
+  element sits on its baseline and gives the number that matters.
 - **A flex `gap` disappears when the container stops being flex.** The narrow
   stylesheet makes the name cell a block, so the gap between a name and its
   betting line vanished on phones while looking right on desktop. It is a
