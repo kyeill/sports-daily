@@ -647,6 +647,43 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   35 and Ohio State's 52, both invisible on a #16161a page. Swapping `/500/`
   for `/500-dark/` gives 255 and 165. Every league tested returns 200 for the
   variant, and an `onerror` swap covers any team that does not.
+- **...but the dark variant is not always right either.** For some clubs it is
+  a flat white silhouette -- Liverpool and Tottenham both measure saturation 0,
+  luminance 255, so at 20px they are the same shape twice. `python logos.py`
+  decodes both 500px variants in pure Python and writes `logo_overrides` into
+  `config.json`: 77 teams whose default variant reads better (the Dodgers,
+  Tigers, Phillies, Raptors, Steelers, plus Liverpool, Alabama and Michigan
+  State via the hue rule below). Measurements are cached in
+  `output/logo-measurements.json`, so a re-run after adding a league is quick.
+- **Brightness alone is the wrong test; hue decides.** A crimson A or a purple
+  note reads perfectly on #16161a, while a navy crest of the same luminance
+  vanishes. So when neither variant clears the brightness bar, the mean colour
+  of the default one decides: near-neutral (black or grey) and navy keep the
+  white silhouette, anything else takes the coloured variant. Navy runs
+  r < g < b (0c2340, 132448) and purple runs g < r < b, so the two are told
+  apart by that ordering rather than by hue angle.
+- **Only FBS, FCS and Division I are measured.** ESPN returns 759 college
+  football teams, mostly Division II and III schools no rule here could
+  surface. The teams endpoint ignores `?groups=`, so the ids come from the core
+  API instead: `.../seasons/{y}/types/2/groups/{80,81}/teams` for football and
+  group 50 for basketball. That takes 759 down to 277.
+- **A few crests are palette PNGs** (colour type 3) -- Rochdale, Strasbourg --
+  and one is a GIF served with a `.png` name (Newport County). The decoder
+  handles 8-bit palettes by expanding them through PLTE and tRNS; 4-bit ones
+  and the GIF return None and the team keeps its dark variant. Failed
+  measurements must not be cached as a result, or fixing the decoder changes
+  nothing on the next run.
+- **22 teams read badly in both variants, and are left alone deliberately.**
+  A pale disc behind them works, and was built and rejected: only ~3% of teams
+  would carry one, so it reads as a mistake rather than a style, and the row
+  shows one crest on a disc beside one without. Making it uniform is not
+  possible either. ESPN's pre-composited files (`primary_logo_white`,
+  `primary_logo_on_primary_color`) are 4096px and 150-270KB each -- 80 to 160
+  crests a page, so 16-32MB for images drawn at 20px -- and the CDN ignores
+  resize parameters. Compositing the `dark` variant onto the team colour
+  instead fails because that variant already carries colour for 1,594 of the
+  1,752: it puts the Red Wings' red wheel on a red disc. So these 81 stay as
+  they are, which is no worse than before.
 - **Neutral-site games read "vs", never "at"** — `neutralSite` in the payload.
 - **Soccer is written home side first** ("Fulham vs Chelsea"); every other
   sport is away at home. ESPN's `homeAway` field is the source either way.

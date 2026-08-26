@@ -1,39 +1,70 @@
 # Sports Daily — to-do
 
-## ~~Games Back tracking~~ — DONE 2026-08-24
+Last refreshed 2026-08-25. The design itself lives in `README.md`; this file is
+only what is *not done*. If something here is unclear, the "Traps" section of
+the README explains why most of it is the way it is.
 
-Store games back for the four pro teams (Lions, Pistons, Tigers, Red Wings)
-whenever they are **out of a playoff spot or out of the division lead**, so the
-number can be shown on the page and, more usefully, tracked over time.
+## Open
 
-The raw value already arrives and is already parsed — `espn.standings()` returns
-`games_behind` per team, and the division/conference seeding needed to say
-*which* deficit matters is in the same rows. So the display half is small. The
-"store" half is the real feature: a dated CSV per team, appended once a day, the
-way `dynasty/output/history/` works — that history cannot be reconstructed
-later, so the sooner it starts the more it is worth.
+### Playoff odds for three sports have no usable source
 
-Sketch:
+The 20% qualification floor (`race_min_odds`) is real for four sports only:
 
-* `output/history/games_back/<league>.csv` — `date,team,games_back_division,games_back_spot,seed`
-* appended by the daily run, one row per favorite per league
-* skip when the team leads its division and holds a spot (nothing to record)
-* show on the page next to the odds line: "Lions 68% to make the playoffs · 2 GB
-  in the NFC North"
+* **NFL / NBA** — ESPN power index, `probmakeplayoffs`
+* **MLB** — FanGraphs playoff odds
+* **College football** — ESPN FPI, where `probmakeplayoffs` means the CFP
 
-**Built.** `race.snapshot()` produces the daily row, `record_history()` writes
-`output/history/<league>.csv`, and derived Other-highlights rows carry the gap
-as inline context. Hockey reports points rather than games back.
+The gaps, each investigated on 2026-08-24 and each a dead end for now:
 
-## Open questions
+* **NHL** — MoneyPuck serves a "get a license" page and must not be scraped.
+  ESPN's `/futures` carries only Stanley Cup / conference / division *winner*
+  markets — implied championship odds, a different quantity, useless as a
+  qualification floor.
+* **College basketball** — no probability anywhere, only BPI
+  `projectedtournamentseed`.
+* **Soccer** — no playoff concept to have odds about.
 
-* **College tier 2** — he has "a lot of thoughts" and will come back to it. Until
-  then college shows favorites and the rivals watchlist only.
-* **College basketball postseason** — CFP shows all and college hockey shows all,
-  but he was undecided on March Madness; currently `include_postseason` is off
-  for basketball.
-* **Soccer** — deliberately last. Needs a decision on what "the race" even means
-  for a league table (top four, title, relegation) before the tier-3 machinery
-  can apply.
-* **Playoff odds for the gaps** — NHL, college basketball and soccer have no
-  usable source. Options are the standings fallback (current) or a simulator.
+Where no source exists the floor is skipped and the race falls back to
+standings position, which is verified working. Options if this is ever picked
+up: find another feed, or run a simple season simulator off the standings.
+Doing nothing is a legitimate answer — the fallback is not broken.
+
+### Two rules have never run against live data
+
+Both are spread-based, and **ESPN only publishes odds for upcoming games** —
+completed games return an empty `odds` array. So neither can be tested on a
+historical date; readings taken on 2025 dates were meaningless.
+
+* **College football blowout filter** (`max_spread: 30`, Syracuse exempt, four
+  marquee Saturday windows exempt with ±60 min slack). Verified only against
+  fabricated cases. **First real check: Saturday 5 September 2026.** Watch that
+  the exempt windows actually match — the network and local-time matching is
+  the fragile part.
+* **College basketball blowout filter** (`max_spread: 15`, Syracuse exempt, no
+  TV windows). Could not be verified at all: the 2026-27 season had not started
+  and ESPN had no odds three months out. **First real check: November 2026.**
+
+A game with no spread is always kept, so the failure mode is "rule silently
+does nothing", not "games disappear".
+
+## Recently closed — do not reopen
+
+These sat in this file as open questions and were all settled on 2026-08-24.
+
+* **College tier 2** — settled in full. CFB: any Big Ten game, any AP top-25
+  team, Power Four midweek only, FOX/CBS/NBC/ABC Saturdays only (FBS feed
+  only), all bowls and CFP. CBB: Big Ten, ranked, FOX/CBS/NBC/ABC Fri-Sun.
+* **College basketball postseason** — settled via `postseason_rules`, which
+  *replace* the regular rules rather than OR-ing with them (every tournament
+  team is ranked and on a major network, so OR-ing would admit the whole
+  bracket). `include_postseason` stays off for basketball on purpose; it is not
+  an oversight.
+* **Soccer** — all 14 competitions configured. "The race" turned out not to
+  need defining for a league table: tier 3 is rule-driven instead
+  (Arsenal/Chelsea always, the big three Sat-Sun, table top five Sat-Sun
+  Jan-May, FA/Carabao semis and finals).
+* **Games Back tracking** — shipped. `race.snapshot()` builds the daily row,
+  `record_history()` writes `output/history/<league>.csv`, and derived rows
+  carry the gap inline ("Lions 2 GB", "Red Wings 6 pts back" — hockey uses
+  points, chosen from the league's sport, not from whether a `points` field
+  happens to exist). History is written only when the run is for today.

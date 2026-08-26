@@ -112,18 +112,21 @@ def _esc(text):
 
 
 def _logo(team, config):
-    """ESPN's CDN crest, in its dark-background variant.
+    """ESPN's CDN crest, in whichever variant actually reads on a dark page.
 
-    Hot-linked, so it needs a connection. If a team happens to have no dark
-    variant the onerror swap falls back to the default rather than showing a
-    broken image.
+    Normally the `-dark` one, but for some teams that is a flat white
+    silhouette. `logos.py` measures the pixels and records those in
+    `logo_overrides`, where the default variant reads better. Hot-linked, so
+    an onerror swap covers a missing file.
     """
     if not config.get("show_logos", True) or not team.get("logo"):
         return ""
-    dark = team.get("logo_dark") or team["logo"]
+    name = team.get("name") or ""
+    src = ((config.get("logo_overrides") or {}).get(name)
+           or team.get("logo_dark") or team["logo"])
     swap = "this.onerror=null;this.src=&quot;%s&quot;" % _esc(team["logo"])
     return ('<img src="%s" alt="" loading="lazy" onerror="%s">'
-            % (_esc(dark), swap))
+            % (_esc(src), swap))
 
 
 def _team_html(team, show_records, config):
