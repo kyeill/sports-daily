@@ -31,7 +31,7 @@ def load_config(path=None):
     with open(path, encoding="utf-8-sig") as fh:
         text = fh.read()
     try:
-        return json.loads(text)
+        config = json.loads(text)
     except ValueError as exc:
         # Hand-editing JSON goes wrong in exactly two ways: a trailing comma
         # and a missing one. Show the line rather than a bare traceback.
@@ -42,6 +42,18 @@ def load_config(path=None):
             "  line %s: %s\n"
             "  (usually a missing comma between entries, or a stray comma "
             "before a closing } or ])" % (exc, line, context))
+
+    # Display names live in their own file so other tools can read the same
+    # table -- see team-names.json. Missing is fine: every league without an
+    # entry falls back to the rules in filters._label().
+    names_path = os.path.join(os.path.dirname(path) or HERE, "team-names.json")
+    try:
+        with open(names_path, encoding="utf-8-sig") as fh:
+            config["team_labels"] = {
+                k: v for k, v in json.load(fh).items() if not k.startswith("_")}
+    except (OSError, ValueError):
+        config["team_labels"] = {}
+    return config
 
 
 def parse_day(raw, tz):

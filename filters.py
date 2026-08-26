@@ -317,11 +317,17 @@ def _table_places(league):
 
 
 def _label(team, config, league=None):
-    """The name to print, honouring any override.
+    """The name to print: the shared table if it names this team, else a rule.
 
     ESPN's short name is not always what people say: Tottenham comes back as
     "Spurs".
     """
+    # The shared table first: an exact ESPN name on the left, the name to
+    # print on the right, keyed by league so two sports can disagree.
+    exact = (config.get("team_labels") or {}).get(league.get("key") if league else "")
+    if exact and team.get("name") in exact:
+        return exact[team["name"]]
+
     overrides = config.get("team_names") or {}
     name = (team.get("name") or "").lower()
     for match, label in overrides.items():

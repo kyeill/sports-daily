@@ -419,6 +419,21 @@ under it centres against the pair instead of sitting on the first.
 
 ## Names
 
+**`team-names.json` is the source of truth where it names a team.** ESPN's name
+on the left, the name to print on the right, keyed by league so two sports can
+disagree about the same school. It is a separate file rather than a corner of
+`config.json` precisely so other tools can read it -- the standings page uses
+the same table, either from this folder or from the repo's raw URL. It must
+live inside the repo: the daily build runs on GitHub Actions and cannot see
+anything else on the machine.
+
+It currently covers **NFL, MLB, NBA and NHL**, which print the full city and
+nickname ("Detroit Tigers", not "Tigers"), and **MLS**, which prints the full
+club name with FC/SC/CF dropped for the sixteen clubs where it adds nothing --
+including `FC Dallas` and `CF Montréal`, whose suffix leads the name.
+`FC Cincinnati` deliberately keeps its prefix. Anything the table does not
+name falls back to the rules below.
+
 College and club teams are named by `location` ("Boise State", "Crystal
 Palace"), because ESPN's `shortDisplayName` abbreviates exactly the part that
 identifies them -- "Boise St", "C Palace", "Nottm Forest". Pro teams are the
