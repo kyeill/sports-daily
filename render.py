@@ -66,8 +66,7 @@ h2 {
   grid-template-columns: 24px 20px 1fr auto; align-items: center;
   column-gap: 7px; row-gap: 3px;
 }
-.teams a:hover .t, .teams a:hover .t-abbr { text-decoration: underline; }
-.t-abbr { display: none; }
+.teams a:hover .t { text-decoration: underline; }
 .s-logo { display: flex; align-items: center; height: 20px; }
 .s-logo img { width: 20px; height: 20px; object-fit: contain; }
 .s-rank { color: var(--rank); font-weight: 600; font-size: 11.5px;
@@ -109,9 +108,15 @@ h2 {
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
   .s-name { font-size: 14px; }
-  /* Where an abbreviation was offered, it replaces the full name here. */
-  .swap .t { display: none; }
-  .swap .t-abbr { display: inline; }
+  /* A long name wraps onto a second line rather than being cut off or
+     swapped for an abbreviation. Abbreviating by length was tried and looked
+     arbitrary -- it caught "Michigan State" and "Crystal Palace", which read
+     perfectly well, so a quarter of the page turned into three-letter codes.
+     Only one team in eighty-two is long enough to need two lines. */
+  .s-name { display: block; }
+  .s-name .t { display: inline; white-space: normal; overflow: visible;
+    text-overflow: clip; }
+  .s-spread { display: inline; }
   .s-rec { font-size: 11.5px; }
   .when, .nets { font-size: 12.5px; }
 }
@@ -141,11 +146,6 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-# Longer than this and a name is a truncation risk on a phone, so an
-# abbreviation is offered alongside it.
-LONG_NAME = 12
-
-
 def _side_html(team, show_records, config, line=""):
     """One team as four grid cells: crest, rank, name, record.
 
@@ -157,22 +157,12 @@ def _side_html(team, show_records, config, line=""):
     detail = team.get("detail") if show_records else ""
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
-
-    # A phone leaves a name about sixteen characters, fewer when it carries a
-    # line, so the long ones go out as ESPN's abbreviation as well and CSS
-    # picks. Short names are left alone: turning "Tigers" into "DET" would
-    # cost readability and save nothing.
-    short_form, cell = "", "s-name"
-    if len(label) > LONG_NAME and team.get("abbr"):
-        short_form = '<span class="t-abbr">%s</span>' % _esc(team["abbr"])
-        cell = "s-name swap"      # marks the pair, so no :has() is needed
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
-        '<span class="%s"><span class="t">%s</span>%s%s</span>'
+        '<span class="s-name"><span class="t">%s</span>%s</span>'
         '<span class="s-rec">%s</span>'
-    ) % (_logo(team, config), rank, cell, _esc(label), short_form, spread,
-         _esc(detail))
+    ) % (_logo(team, config), rank, _esc(label), spread, _esc(detail))
 
 
 def _when(game):
