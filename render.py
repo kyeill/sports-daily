@@ -56,7 +56,9 @@ h2 {
    behind a rule. */
 .row {
   display: grid; grid-template-columns: 1fr 168px; gap: 14px;
-  align-items: center; padding: 10px 14px;
+  /* stretch, not center: the right-hand cell has to span the row so its rule
+     runs the full height, while the time inside it lines up with the teams. */
+  align-items: stretch; padding: 10px 14px;
   border-bottom: 1px solid var(--line); border-left: 3px solid transparent;
 }
 .row:last-child { border-bottom: none; }
@@ -88,9 +90,12 @@ h2 {
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
   margin-top: 1px; }
+/* Time and networks sit against the two team lines, not centred on the row:
+   a competition line underneath would otherwise push them out of line with
+   the teams they belong to. */
 .right {
   border-left: 1px solid var(--line); padding-left: 12px; min-height: 44px;
-  display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: 3px;
 }
 .when { font-size: 13px; font-variant-numeric: tabular-nums; }
 /* Same size and face as the time, differing only in colour, so the two read
