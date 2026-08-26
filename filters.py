@@ -11,6 +11,7 @@ bucket.
 
 import fnmatch
 import re
+import unicodedata
 
 import espn
 
@@ -316,6 +317,26 @@ def _table_places(league):
     return _place_cache[key]
 
 
+# Letters that carry their sound in the glyph itself rather than in a mark,
+# so NFKD leaves them alone and they need naming.
+_LETTERS = {"ø": "o", "Ø": "O", "æ": "ae", "Æ": "AE",
+            "đ": "d", "Đ": "D", "ł": "l", "Ł": "L",
+            "ß": "ss", "œ": "oe", "Œ": "OE",
+            "þ": "th", "Þ": "Th", "ð": "d", "Ð": "D"}
+
+
+def _plain(text):
+    """Accents stripped: Atletico, Malmo, Bodo/Glimt.
+
+    Decomposing and dropping the combining marks handles most of Europe;
+    the handful above have no mark to drop and are mapped by hand.
+    """
+    for letter, plain in _LETTERS.items():
+        text = text.replace(letter, plain)
+    return "".join(c for c in unicodedata.normalize("NFKD", text)
+                   if not unicodedata.combining(c))
+
+
 def _label(team, config, league=None):
     """The name to print: the shared table if it names this team, else a rule.
 
@@ -326,13 +347,13 @@ def _label(team, config, league=None):
     # print on the right, keyed by league so two sports can disagree.
     exact = (config.get("team_labels") or {}).get(league.get("key") if league else "")
     if exact and team.get("name") in exact:
-        return exact[team["name"]]
+        return _plain(exact[team["name"]])
 
     overrides = config.get("team_names") or {}
     name = (team.get("name") or "").lower()
     for match, label in overrides.items():
         if match.lower() in name:
-            return label
+            return _plain(label)
     # College and soccer teams are known by school or club, and ESPN's short
     # name abbreviates exactly that part -- "Boise St", "W Michigan", "Nottm
     # Forest". Its `location` is the same name written out. Pro teams are the
@@ -347,8 +368,8 @@ def _label(team, config, league=None):
             parts = name.split()
             if len(parts) > 1 and parts[-1] in ("FC", "CF", "SC"):
                 name = " ".join(parts[:-1])
-            return name
-    return team.get("short") or team.get("name") or ""
+            return _plain(name)
+    return _plain(team.get("short") or team.get("name") or "")
 
 
 def stamp_details(game, league, config):

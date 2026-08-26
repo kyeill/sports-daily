@@ -427,12 +427,29 @@ the same table, either from this folder or from the repo's raw URL. It must
 live inside the repo: the daily build runs on GitHub Actions and cannot see
 anything else on the machine.
 
-It currently covers **NFL, MLB, NBA and NHL**, which print the full city and
-nickname ("Detroit Tigers", not "Tigers"), and **MLS**, which prints the full
-club name with FC/SC/CF dropped for the sixteen clubs where it adds nothing --
-including `FC Dallas` and `CF Montréal`, whose suffix leads the name.
-`FC Cincinnati` deliberately keeps its prefix. Anything the table does not
-name falls back to the rules below.
+What it covers:
+
+* **NFL, MLB, NBA, NHL** -- full city and nickname ("Detroit Tigers", not
+  "Tigers"). These are identity mappings; they exist to be edited.
+* **MLS** -- the full club name, with FC/SC/CF dropped only where the club is
+  still two words without it. Austin FC, Charlotte FC, Nashville SC, Toronto
+  FC, FC Dallas and CF Montreal keep theirs because dropping it leaves one
+  word. LAFC is "Los Angeles", Red Bull New York is "New York Red Bulls".
+* **College** -- acronyms spelled out (Louisiana State, Southern Methodist,
+  Southern California) except UCLA, UAB, UNLV, UTEP, UTSA, NJIT and RIT.
+* **EPL and Europe** -- United/City/Town/Albion kept, club-type words dropped
+  (AFC Bournemouth is Bournemouth, VfB Stuttgart is Stuttgart, AS Roma is
+  Roma). `Sporting CP` keeps its, by choice. A few are named outright:
+  Copenhagen, Inter Milan, Athletic Bilbao, Union Saint-Gilloise.
+
+**Accents are always stripped** -- Atletico Madrid, Malmo, Bodo/Glimt, Leon.
+`filters._plain()` decomposes and drops the combining marks, which handles
+most of Europe, and names by hand the letters that carry their sound in the
+glyph rather than in a mark (o-slash, ae, eth, thorn, l-stroke, eszett), since
+those decompose to nothing. It runs on every label, so a club that is not in
+the table is covered too.
+
+Anything the table does not name falls back to the rules below.
 
 College and club teams are named by `location` ("Boise State", "Crystal
 Palace"), because ESPN's `shortDisplayName` abbreviates exactly the part that

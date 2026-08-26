@@ -188,5 +188,30 @@
   "mens-college-hockey": {},
   "epl": {
     "AFC Bournemouth": "Bournemouth"
+  },
+  "ucl": {
+    "AS Monaco": "Monaco",
+    "Athletic Club": "Athletic Bilbao",
+    "F.C. København": "Copenhagen",
+    "FK Qarabag": "Qarabag",
+    "Internazionale": "Inter Milan",
+    "Union St.-Gilloise": "Union Saint-Gilloise"
+  },
+  "uel": {
+    "AS Roma": "Roma",
+    "FC Basel": "Basel",
+    "FC Midtjylland": "Midtjylland",
+    "FC Porto": "Porto",
+    "FC Utrecht": "Utrecht",
+    "Malmö FF": "Malmo",
+    "SC Freiburg": "Freiburg",
+    "SK Brann": "Brann",
+    "SK Sturm Graz": "Sturm Graz",
+    "VfB Stuttgart": "Stuttgart"
+  },
+  "uecl": {
+    "BK Häcken": "Hacken",
+    "FC Noah": "Noah",
+    "NK Celje": "Celje"
   }
 }
