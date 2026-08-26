@@ -188,15 +188,41 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-# What a phone fits on one line, in characters. Measured: the teams column is
-# about 137px once the crest, rank and record are paid for, and a name runs
-# roughly 6.5px a character -- so about twenty. A betting line beside the name
-# costs another 50px, which is worth some seven characters, so a team carrying
-# one has far less room. Two thresholds rather than one, because a single
-# figure either shortens names that would have fitted or overflows the ones
-# that do not.
-LONG_NAME = 20
-LONG_NAME_WITH_LINE = 13
+# Character widths as a fraction of the font size, measured from Source Sans 3
+# at weight 400. Grouped by width to stay readable. Summing these reproduces a
+# string's real width to within about one percent, and errs wide -- which is
+# the safe direction, since the cost of overestimating is a name shortened a
+# shade early rather than one that overflows.
+_WIDTHS = [
+    (0.200, " "), (0.247, "ijíî"), (0.249, "'.:"), (0.255, "l"),
+    (0.263, "IÍÎ"), (0.289, "!"), (0.292, "f"), (0.303, "()"),
+    (0.311, "-"), (0.338, "t"), (0.347, "r"), (0.350, "/"), (0.419, "s"),
+    (0.425, "z"), (0.426, "\""), (0.446, "x"), (0.456, "cç"),
+    (0.467, "vy"), (0.476, "Y"), (0.479, "J"), (0.486, "L"), (0.494, "F"),
+    (0.495, "k"), (0.496, "eéèê"), (0.497, "0123456789+"),
+    (0.504, "agáàâäå"), (0.513, "X"), (0.515, "V"), (0.527, "EÉÈÊ"),
+    (0.534, "S"), (0.536, "T"), (0.539, "Z"), (0.542, "oóôöø"),
+    (0.543, "AÁÀÂÄÅ"), (0.544, "huúü"), (0.547, "nñ"), (0.553, "b"),
+    (0.555, "dpq"), (0.566, "P"), (0.569, "R"), (0.571, "CÇ"),
+    (0.579, "K"), (0.588, "B"), (0.609, "&"), (0.615, "D"), (0.617, "G"),
+    (0.645, "UÚÜ"), (0.647, "NÑ"), (0.652, "H"), (0.664, "OQÓÔÖØ"),
+    (0.719, "w"), (0.727, "M"), (0.786, "W"), (0.829, "m")
+]
+CHAR_W = {ch: w for w, chars in _WIDTHS for ch in chars}
+
+# What a phone leaves for a name, in pixels. At a 375px viewport: 343 after the
+# body padding, 341 after the card border, 338 after the tint stripe, 316 after
+# the row padding; the right-hand column and its gap take 99, leaving 217 for
+# the teams; the crest, rank and their gaps take 58 and the record 22.
+NAME_BUDGET = 137
+LINE_MARGIN = 5      # the gap between a name and its betting line
+NAME_PX = 14         # both as the narrow stylesheet renders them
+LINE_PX = 12
+
+
+def _text_width(text, size):
+    """Roughly what `text` will measure at `size`, in pixels."""
+    return sum(CHAR_W.get(ch, 0.55) for ch in text) * size
 
 
 def _side_html(team, show_records, config, line=""):
@@ -213,13 +239,16 @@ def _side_html(team, show_records, config, line=""):
 
     # Past what a phone fits, ESPN's short name is offered alongside and the
     # narrow stylesheet picks it: "Manchester United" becomes "Man United",
-    # "Brighton & Hove Albion" becomes "Brighton". Not the abbreviation, which
-    # is unreadable, and not at a threshold low enough to catch names like
-    # "Crystal Palace" that fit perfectly well.
+    # "Brighton & Hove Albion" becomes "Brighton". The test is the name's
+    # measured width, not its length -- counting characters shortened
+    # "Crystal Palace", which is narrow enough to fit even beside a moneyline,
+    # while letting wider names of the same length through.
     short = team.get("short") or ""
     cell, alt = "s-name", ""
-    limit = LONG_NAME_WITH_LINE if line else LONG_NAME
-    if len(label) > limit and short and len(short) < len(label):
+    needed = _text_width(label, NAME_PX)
+    if line:
+        needed += LINE_MARGIN + _text_width("(%s)" % line, LINE_PX)
+    if needed > NAME_BUDGET and short and len(short) < len(label):
         alt = '<span class="t-short">%s</span>' % _esc(short)
         cell = "s-name swap"     # marks the pair, so no :has() is needed
     return (
