@@ -993,7 +993,7 @@
     "Spokane Velocity FC": "https://a.espncdn.com/i/teamlogos/soccer/500/22130.png",
     "Union Omaha": "https://a.espncdn.com/i/teamlogos/soccer/500/20684.png",
     "West Chester": "https://a.espncdn.com/i/teamlogos/soccer/500/19999.png",
-    "Quer\u00e9taro": "https://a.espncdn.com/i/teamlogos/soccer/500/222.png",
+    "Querétaro": "https://a.espncdn.com/i/teamlogos/soccer/500/222.png",
     "Liverpool": "https://a.espncdn.com/i/teamlogos/soccer/500/364.png",
     "Nottingham Forest": "https://a.espncdn.com/i/teamlogos/soccer/500/393.png",
     "Boreham Wood": "https://a.espncdn.com/i/teamlogos/soccer/500/2595.png",
@@ -1005,5 +1005,11 @@
     "Sparta Prague": "https://a.espncdn.com/i/teamlogos/soccer/500/433.png",
     "US Virgin Islands": "https://a.espncdn.com/i/teamlogos/countries/500/vir.png",
     "South Korea": "https://a.espncdn.com/i/teamlogos/countries/500/kors.png"
+  },
+  "network_names": {
+    "SEC Network+": "SECN+",
+    "SEC Network": "SECN",
+    "CBS Sports Network": "CBSSN",
+    "ACC Network Extra": "ACCNX"
   }
 }

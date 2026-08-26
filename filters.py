@@ -86,7 +86,10 @@ def display_networks(game, config, limit=1):
     if on_tv:
         names = on_tv
     names.sort(key=lambda n: 0 if _flat(n) in wanted else 1)
-    return names[:limit]
+    # ESPN returns "SECN+" on some games and "SEC Network+" on others. The
+    # short forms are the ones that fit the phone's column.
+    renames = config.get("network_names") or {}
+    return [renames.get(n, n) for n in names[:limit]]
 
 
 def _on_day(game, days):

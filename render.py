@@ -139,11 +139,15 @@ h2 {
   /* A phone has about 200px for the teams once the right-hand column is paid
      for, so everything gives up a little: the columns, the gaps, the type. */
   /* Measured in the page at mobile sizes: the widest network actually shown
-     is "ACC Network" at 68px, and a season one like "SEC Network+" reaches
-     74px, against a 49px time. 80px of content plus the padding and rule is
-     90px -- the 108px it used to be was 18px of nothing, and those 18px are
-     worth more to the names. */
-  .row { grid-template-columns: 1fr 90px; gap: 9px; padding: 9px 11px; }
+     is "ACC Network" at 68px, against a 49px time -- the long-form names that
+     used to be wider are renamed in config (SECN+, CBSSN). 74px of content
+     plus the padding and rule is 84px; every pixel saved here goes to the
+     names, which is where it is worth something. */
+  .row { grid-template-columns: 1fr 84px; gap: 9px; padding: 9px 11px; }
+  /* If a network ever comes back longer than the column, clip it rather than
+     letting it push the layout around. */
+  .nets { overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    display: block; line-height: var(--line-h); }
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
   .s-name { font-size: 14px; }
@@ -212,9 +216,9 @@ CHAR_W = {ch: w for w, chars in _WIDTHS for ch in chars}
 
 # What a phone leaves for a name, in pixels. At a 375px viewport: 343 after the
 # body padding, 341 after the card border, 338 after the tint stripe, 316 after
-# the row padding; the right-hand column and its gap take 99, leaving 217 for
+# the row padding; the right-hand column and its gap take 93, leaving 223 for
 # the teams; the crest, rank and their gaps take 58 and the record 22.
-NAME_BUDGET = 137
+NAME_BUDGET = 143
 LINE_MARGIN = 5      # the gap between a name and its betting line
 NAME_PX = 14         # both as the narrow stylesheet renders them
 LINE_PX = 12
