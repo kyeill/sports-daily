@@ -426,18 +426,20 @@ other way round: `short` is the nickname ("Tigers") and `location` is the
 city, so the preference only flips for college and soccer. A trailing FC, CF
 or SC is dropped, since every club on the page is a football club.
 
-`team_names` overrides the label outright (Ajax Amsterdam is just Ajax);
-`team_short_names` overrides only the shortened form a phone falls back to
-(Nottingham Forest becomes Forest, not ESPN's "Nottm Forest").
+`team_names` overrides the label outright -- Ajax Amsterdam is just Ajax,
+Tottenham Hotspur is Tottenham.
 
-**A phone shortens by measured width, not by name length.** `render.py` carries
-a table of character widths taken from Source Sans 3 at the size and weight the
-narrow stylesheet renders, and a name is shortened only when it will not fit
-the 143px the layout leaves it. Counting characters got this wrong in both
-directions: "Crystal Palace" is fourteen characters and 81px, "Michigan State"
-is fourteen characters and 86px. Abbreviations were tried first and dropped --
-CRY, BHA and NFO are unreadable, and a threshold low enough to catch the real
-offenders turned a quarter of the page into three-letter codes.
+**Names are never shortened.** Two schemes were built and both removed.
+Abbreviations went first: CRY, BHA and NFO are unreadable, and a threshold low
+enough to catch the real offenders turned a quarter of the page into
+three-letter codes. Swapping in ESPN's short name lasted longer, and measured
+widths beat counting characters ("Crystal Palace" is fourteen characters and
+81px, "Michigan State" is fourteen and 86px) -- but the whole approach was
+wrong in principle, because the decision happens at build time and cannot know
+the reader's screen. The budget was worked out for a 375px phone, so on any
+wider one it condensed names that had room to spare. A name that genuinely
+does not fit now **wraps**, which costs a line only where it is really needed
+and never has to guess.
 
 ## Networks
 
@@ -698,6 +700,13 @@ today's standings, so a backdated run shows a race that reflects now, not then.
 - **Measure glyphs only after `document.fonts.ready`.** A reading taken before
   Source Sans 3 arrived described the fallback font and was out by 1.4px, which
   shipped as a correction that pushed the time visibly low.
+- **The score has to follow the order the teams are printed in.** It was built
+  away-home for every sport while soccer rows are written home side first, so
+  every soccer result read backwards -- Inter Miami's 5-1 showed as 1-5. It
+  went unnoticed because odds and scores only coexist on past dates.
+- **A build-time decision cannot know the reader's screen.** Anything sized
+  against a viewport -- shortening a name to fit, say -- is a guess that is
+  wrong for every phone that is not the one you picked. Let CSS handle it.
 - **Measure baselines, not box centres.** Centres matched exactly while the
   text still read as misaligned; a zero-size inline-block appended to an
   element sits on its baseline and gives the number that matters.

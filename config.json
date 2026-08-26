@@ -875,7 +875,8 @@
     "Syracuse": "f76900",
     "Michigan Wolverines": "ffcb05",
     "Detroit Tigers": "fa4616",
-    "Tottenham Hotspur": "132257"
+    "Tottenham Hotspur": "132257",
+    "Cornell Big Red": "b31b1b"
   },
   "streaming_networks": [
     "Peacock",
@@ -1012,8 +1013,5 @@
     "SEC Network": "SECN",
     "CBS Sports Network": "CBSSN",
     "ACC Network Extra": "ACCNX"
-  },
-  "team_short_names": {
-    "Nottingham Forest": "Forest"
   }
 }

@@ -75,8 +75,7 @@ h2 {
      room. The competition line below takes its own height. */
   grid-template-rows: minmax(var(--line-h), auto) minmax(var(--line-h), auto);
 }
-.teams a:hover .t, .teams a:hover .t-short { text-decoration: underline; }
-.t-short { display: none; }
+.teams a:hover .t { text-decoration: underline; }
 .s-logo { display: flex; align-items: center; height: 20px; }
 .s-logo img { width: 20px; height: 20px; object-fit: contain; }
 .s-rank { color: var(--rank); font-weight: 600; font-size: 11.5px;
@@ -155,12 +154,11 @@ h2 {
      perfectly well, so a quarter of the page turned into three-letter codes.
      Only one team in eighty-two is long enough to need two lines. */
   .s-name { display: block; }
-  .s-name .t, .s-name .t-short { display: inline; white-space: normal;
-    overflow: visible; text-overflow: clip; }
+  /* A name too long for the column wraps onto a second line rather than
+     being cut short or swapped for something briefer. */
+  .s-name .t { display: inline; white-space: normal; overflow: visible;
+    text-overflow: clip; }
   .s-spread { display: inline; }
-  /* Where a short name was offered, it stands in for the full one here. */
-  .swap .t { display: none; }
-  .swap .t-short { display: inline; }
   .s-rec { font-size: 11.5px; }
   .when, .nets { font-size: 12.5px; }
 }
@@ -190,82 +188,42 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-# Character widths as a fraction of the font size, measured from Source Sans 3
-# at weight 400. Grouped by width to stay readable. Summing these reproduces a
-# string's real width to within about one percent, and errs wide -- which is
-# the safe direction, since the cost of overestimating is a name shortened a
-# shade early rather than one that overflows.
-_WIDTHS = [
-    (0.200, " "), (0.247, "ijíî"), (0.249, "'.:"), (0.255, "l"),
-    (0.263, "IÍÎ"), (0.289, "!"), (0.292, "f"), (0.303, "()"),
-    (0.311, "-"), (0.338, "t"), (0.347, "r"), (0.350, "/"), (0.419, "s"),
-    (0.425, "z"), (0.426, "\""), (0.446, "x"), (0.456, "cç"),
-    (0.467, "vy"), (0.476, "Y"), (0.479, "J"), (0.486, "L"), (0.494, "F"),
-    (0.495, "k"), (0.496, "eéèê"), (0.497, "0123456789+"),
-    (0.504, "agáàâäå"), (0.513, "X"), (0.515, "V"), (0.527, "EÉÈÊ"),
-    (0.534, "S"), (0.536, "T"), (0.539, "Z"), (0.542, "oóôöø"),
-    (0.543, "AÁÀÂÄÅ"), (0.544, "huúü"), (0.547, "nñ"), (0.553, "b"),
-    (0.555, "dpq"), (0.566, "P"), (0.569, "R"), (0.571, "CÇ"),
-    (0.579, "K"), (0.588, "B"), (0.609, "&"), (0.615, "D"), (0.617, "G"),
-    (0.645, "UÚÜ"), (0.647, "NÑ"), (0.652, "H"), (0.664, "OQÓÔÖØ"),
-    (0.719, "w"), (0.727, "M"), (0.786, "W"), (0.829, "m")
-]
-CHAR_W = {ch: w for w, chars in _WIDTHS for ch in chars}
-
-# What a phone leaves for a name, in pixels. At a 375px viewport: 343 after the
-# body padding, 341 after the card border, 338 after the tint stripe, 316 after
-# the row padding; the right-hand column and its gap take 93, leaving 223 for
-# the teams; the crest, rank and their gaps take 58 and the record 22.
-NAME_BUDGET = 143
-LINE_MARGIN = 5      # the gap between a name and its betting line
-NAME_PX = 14         # both as the narrow stylesheet renders them
-LINE_PX = 12
-
-
-def _text_width(text, size):
-    """Roughly what `text` will measure at `size`, in pixels."""
-    return sum(CHAR_W.get(ch, 0.55) for ch in text) * size
-
-
 def _side_html(team, show_records, config, line=""):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
     that is what makes the names start at the same place whether or not a team
     is ranked, and the records finish at the same place whatever the names do.
+
+    Names are never shortened. Deciding that at build time meant guessing the
+    reader's screen -- the budget was worked out for a 375px phone, so on any
+    wider one it condensed names that had room to spare. A name that genuinely
+    cannot fit wraps instead, which costs a line only where it is really
+    needed and never has to guess.
     """
     rank = ('%d' % team["rank"]) if team.get("rank") else ""
     detail = team.get("detail") if show_records else ""
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
-
-    # Past what a phone fits, ESPN's short name is offered alongside and the
-    # narrow stylesheet picks it: "Manchester United" becomes "Man United",
-    # "Brighton & Hove Albion" becomes "Brighton". The test is the name's
-    # measured width, not its length -- counting characters shortened
-    # "Crystal Palace", which is narrow enough to fit even beside a moneyline,
-    # while letting wider names of the same length through.
-    short = team.get("short") or ""
-    cell, alt = "s-name", ""
-    needed = _text_width(label, NAME_PX)
-    if line:
-        needed += LINE_MARGIN + _text_width("(%s)" % line, LINE_PX)
-    if needed > NAME_BUDGET and short and len(short) < len(label):
-        alt = '<span class="t-short">%s</span>' % _esc(short)
-        cell = "s-name swap"     # marks the pair, so no :has() is needed
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
-        '<span class="%s"><span class="t">%s</span>%s%s</span>'
+        '<span class="s-name"><span class="t">%s</span>%s</span>'
         '<span class="s-rec">%s</span>'
-    ) % (_logo(team, config), rank, cell, _esc(label), alt, spread, _esc(detail))
+    ) % (_logo(team, config), rank, _esc(label), spread, _esc(detail))
 
 
 def _when(game):
     if game["state"] == "in":
         return game.get("status_detail") or "live"
     if game["state"] == "post":
-        score = "%s-%s" % (game["away"].get("score"), game["home"].get("score"))
+        # In the order the teams are printed: soccer is written home side
+        # first, everything else away at home. Reading them away-home while
+        # the row said home-away reported every soccer result backwards.
+        first, second = ((game["home"], game["away"])
+                         if (game.get("sport") or "") == "Soccer"
+                         else (game["away"], game["home"]))
+        score = "%s-%s" % (first.get("score"), second.get("score"))
         return "final" if "None" in score else "final %s" % score
     # %-I is not portable on Windows; strip the leading zero by hand.
     return game["start_local"].strftime("%I:%M %p").lstrip("0")
