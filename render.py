@@ -110,8 +110,18 @@ h2 {
    line plus the gap is exactly that offset. */
 .right.solo { padding-top: calc((var(--line-h) + var(--line-gap)) / 2); }
 /* Each of these is a box the height of a team line with its text centred, so
-   line one sits against the first team and line two against the second. */
-.when, .nets { min-height: var(--line-h); display: flex; align-items: center; }
+   line one sits against the first team and line two against the second.
+
+   Equal boxes are not quite enough: what the eye lines up is the baseline,
+   and text centred in a box baselines by its own size, so the 13px time sits
+   a shade higher than the 14.5px name beside it. Measured with the webfont
+   loaded, that residual is about half a pixel -- an earlier reading of 1.9px
+   was taken before the font arrived and over-corrected until the time sat
+   visibly low. 1px covers the residual plus a little for the smaller, muted
+   type, which reads high at matched geometry. Turn this knob if it is still
+   not sitting right; it disturbs nothing else. */
+.when, .nets { min-height: var(--line-h); display: flex; align-items: center;
+  position: relative; top: 1px; }
 .when { font-size: 13px; font-variant-numeric: tabular-nums; }
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
