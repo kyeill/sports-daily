@@ -509,8 +509,19 @@ def _colour(team, config, league=None):
     if borrowed:
         candidates.extend(borrowed)
     candidates = [c.lstrip("#") for c in candidates if c]
+
+    # White is a last resort, not a preference. A team with any colour at all
+    # shows it -- a white stripe says nothing about who is playing, and a
+    # page of them says less. So: a colour that shows, then any colour, then
+    # white because there is nothing else.
+    def white(value):
+        return value.lower() in ("ffffff", "fff")
+
     for candidate in candidates:
-        if not invisible_colour(candidate):
+        if not white(candidate) and not invisible_colour(candidate):
+            return candidate
+    for candidate in candidates:
+        if not white(candidate):
             return candidate
     return candidates[0] if candidates else ""
 

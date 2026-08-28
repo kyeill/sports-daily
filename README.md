@@ -367,7 +367,18 @@ relegated has no place at all when you browse an old date.
 
 ## The colour stripe
 
-**A stripe that would read as black is swapped for the team's alternate.** The
+**White is a last resort, never a preference.** A team with any colour at all
+shows it: a white stripe says nothing about who is playing, and a page of them
+says less. So the order is a colour that shows, then any colour, then white
+because there is nothing else. Exactly one team ends up white -- Tottenham,
+and only because that is chosen.
+
+The cost is accepted deliberately: 34 stripes in the leagues that matter now
+read as near-black, the Nets, the White Sox, the Colts, the Leafs and the
+Lightning among them. Their own colour, dim, beats a white stripe that could
+be anyone.
+
+**A stripe that would read as black is otherwise swapped for the alternate.** The
 Steelers become gold, the Raiders silver, the Broncos orange, the Seahawks
 green -- 254 teams in all, against 615 whose primary is kept.
 
