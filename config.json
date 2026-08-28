@@ -328,7 +328,8 @@
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
-      ]
+      ],
+      "colour_from": "mens-college-basketball"
     },
     {
       "key": "mls",

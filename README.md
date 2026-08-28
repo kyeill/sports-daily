@@ -367,6 +367,24 @@ relegated has no place at all when you browse an old date.
 
 ## The colour stripe
 
+**A stripe that would read as black is swapped for the team's alternate.** The
+Steelers become gold, the Raiders silver, the Broncos orange, the Seahawks
+green -- 254 teams in all, against 615 whose primary is kept.
+
+The test is not brightness. Indiana's crimson and Michigan State's green sit
+at the same luminance as a navy that vanishes, so a colour is only rejected
+when it is **near-neutral** (channel spread under 40) or a **genuine navy**
+(r < g < b). A purple of the same darkness runs g < r < b and reads perfectly
+well, which is why the Jazz keep theirs. An explicit `team_colors` override
+still wins outright -- Tottenham stays navy because that was chosen.
+
+**College hockey borrows its colours from basketball** (`colour_from`). ESPN
+publishes no colour at all for any of the 115 hockey teams, so a stripe there
+was simply blank. The same universities have one in basketball, which covers
+16 of the 18-team NCAA tournament field; Minnesota Duluth and Bentley are the
+two that stay blank.
+
+
 The stripe down the left of each row is:
 
 1. **your team's colour** when you are involved

@@ -415,18 +415,93 @@ def stamp_details(game, league, config):
 RIVAL_NOTE = "rival"
 
 
-def _colour(team, config):
-    """A team's stripe colour, honouring any override in config.
+def _rgb(value):
+    text = (value or "").lstrip("#")
+    if len(text) != 6:
+        return None
+    try:
+        return int(text[0:2], 16), int(text[2:4], 16), int(text[4:6], 16)
+    except ValueError:
+        return None
 
-    ESPN's primary colour is not always the one people picture: Syracuse comes
-    back navy, not orange.
+
+def invisible_colour(value):
+    """True when a colour reads as black on the page's own near-black ground.
+
+    Brightness alone is the wrong question -- Indiana's crimson and Michigan
+    State's green sit at the same luminance as a navy that vanishes. So a
+    colour is only rejected when it is near-neutral, or a genuine navy:
+    navy runs r < g < b, while a purple of the same darkness runs g < r < b
+    and reads perfectly well.
+    """
+    parts = _rgb(value)
+    if not parts:
+        return False
+    red, green, blue = parts
+    if 0.2126 * red + 0.7152 * green + 0.0722 * blue >= 55:
+        return False
+    if max(parts) - min(parts) < 40:
+        return True
+    return blue > red and blue > green and green >= red
+
+
+_borrowed = {}
+
+
+def _borrowed_colours(config, league):
+    """{label: (colour, alternate)} from a sport that shares its schools.
+
+    ESPN publishes no colour at all for college hockey -- not one of the 115
+    teams -- but the same universities have one in basketball.
+    """
+    key = (league or {}).get("colour_from")
+    if not key:
+        return {}
+    if key in _borrowed:
+        return _borrowed[key]
+    other = next((l for l in config.get("leagues") or [] if l.get("key") == key), None)
+    table = {}
+    if other:
+        data = espn._get("%s/%s/teams" % (espn.SITE, other["path"]), {"limit": 1000},
+                         cache_key="teams-%s" % key, max_age_min=60 * 24 * 7)
+        try:
+            entries = data["sports"][0]["leagues"][0]["teams"]
+        except (KeyError, IndexError, TypeError):
+            entries = []
+        for entry in entries:
+            team = entry.get("team") or {}
+            label = _label({"name": team.get("displayName") or "",
+                            "short": team.get("shortDisplayName") or "",
+                            "location": team.get("location") or ""}, config, other)
+            if label:
+                table[label] = (team.get("color") or "", team.get("alternateColor") or "")
+    _borrowed[key] = table
+    return table
+
+
+def _colour(team, config, league=None):
+    """A team's stripe colour: the first candidate that will actually show.
+
+    ESPN's primary is not always the one people picture -- Syracuse comes back
+    navy, not orange -- so an override wins outright. Otherwise the primary is
+    used unless it would read as black, in which case the alternate stands in:
+    the Steelers become gold rather than a stripe you cannot see.
     """
     overrides = config.get("team_colors") or {}
     name = (team.get("name") or "").lower()
     for label, value in overrides.items():
         if label.lower() in name:
             return value.lstrip("#")
-    return team.get("color") or ""
+
+    candidates = [team.get("color") or "", team.get("alt_color") or ""]
+    borrowed = _borrowed_colours(config, league).get(team.get("label") or "")
+    if borrowed:
+        candidates.extend(borrowed)
+    candidates = [c.lstrip("#") for c in candidates if c]
+    for candidate in candidates:
+        if not invisible_colour(candidate):
+            return candidate
+    return candidates[0] if candidates else ""
 
 
 def _conference_of(league, team):
@@ -493,24 +568,24 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     """
     mine = [t for t in sides if any(_matches(t, f) for f in pinned)]
     if mine:
-        return _colour(mine[0], config)
+        return _colour(mine[0], config, league)
     if len(rivals) > 1:
         return "000000"
     if rivals:
         other = [t for t in sides if t is not rivals[0]]
         if other:
-            return _colour(other[0], config)
+            return _colour(other[0], config, league)
     preferred = _preferred_sides(game, sides, league)
     if len(preferred) == 1:
-        return _colour(preferred[0], config)
+        return _colour(preferred[0], config, league)
     if preferred:
-        return _colour(game["home"], config)     # two of them: no honest pick
+        return _colour(game["home"], config, league)     # two of them: no honest pick
 
     if len(notable) == 1:
-        return _colour(notable[0], config)
+        return _colour(notable[0], config, league)
     if notable:
-        return _colour(game["home"], config)
-    return _colour(_tint_fallback(game, sides, league, config), config)
+        return _colour(game["home"], config, league)
+    return _colour(_tint_fallback(game, sides, league, config), config, league)
 
 
 def _spread_points(game):
