@@ -534,6 +534,29 @@ Putting the score beside the status was tried and rejected: it reads well for
 baseball ("Bot 1st 0-0") but the NFL's status is already "12:10 - 2nd", and
 with a score that needs 82px in a column that holds 74.
 
+## Betting lines
+
+The line sits against the team it is about -- "Indiana (-40.5)" -- never
+trailing the networks. Which team that is comes from ESPN rather than from
+parsing the provider's abbreviation: point-spread sports flag the favourite
+per side, and `spread` is signed from the home team, so the favourite always
+reads as minus its magnitude.
+
+**A point spread always carries a decimal place**: "-7.0", not "-7". Beside
+"-7.5" the two read as different kinds of number otherwise, and `%g` was
+quietly dropping the trailing zero. Moneylines are whole by nature and keep
+none.
+
+**Soccer has neither field.** Its `details` string holds either a three-way
+moneyline ("LIV -205") or an Asian handicap ("TOT -0.5"), and names the team
+by an abbreviation -- which does match ESPN's own, verified across 33 priced
+fixtures. Only the moneylines are shown, labelled **ML** so they cannot be
+read as points; a moneyline is 100 or more in magnitude, a handicap always
+less. Where the scoreboard offers only a handicap, the core API carries every
+provider and the full market, and that fallback fires about twice a fortnight.
+A provider is trusted only when it prices **both** sides -- one price alone
+cannot tell a favourite from an underdog.
+
 ## Live scores
 
 The build sets the slate; the page keeps the numbers current. ESPN's API sends
