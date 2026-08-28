@@ -736,6 +736,21 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   away-home for every sport while soccer rows are written home side first, so
   every soccer result read backwards -- Inter Miami's 5-1 showed as 1-5. It
   went unnoticed because odds and scores only coexist on past dates.
+- **A page that is left open never refetches.** An installed app resumed from
+  the home screen shows its last render for as long as the phone keeps it
+  alive; a desktop tab restored from the back/forward cache does the same. The
+  service worker is network-first, so a real load always got fresh content --
+  there just was not one. The page now carries the day it was built for and
+  reloads on `visibilitychange` or `pageshow` if the date has moved on or it
+  has been hidden half an hour. Two hooks, because a bfcache restore fires no
+  `visibilitychange` at all.
+- **Scheduled runs can stop without any error.** No run of any kind was
+  created in any of the three repos on 2026-08-27 -- not scheduled, not from a
+  push -- while the workflows stayed `active`, Actions stayed enabled, the
+  crons were untouched and `workflow_dispatch` worked every time. Nothing
+  reports this: the last green run just sits there. Compare `gh run list`
+  against `git rev-parse HEAD`, and re-fire with
+  `gh workflow run "Build and publish" --ref main`.
 - **A build-time decision cannot know the reader's screen.** Anything sized
   against a viewport -- shortening a name to fit, say -- is a guess that is
   wrong for every phone that is not the one you picked. Let CSS handle it.
