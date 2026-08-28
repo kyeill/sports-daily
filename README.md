@@ -546,6 +546,10 @@ Every row carries `data-game`, `data-path` and `data-state`, and each side's
 name and score cell carry `data-side`, so the script can find the two halves of
 a row without depending on their order in the grid.
 
+**A game on now is bold.** That is keyed off the row's `data-state` rather
+than a class of its own, so the live script bolds and unbolds it simply by
+updating that attribute as a game starts and finishes.
+
 What it does: while the tab is **visible**, every **60s**, for the rows in
 **today's panel that are not already final**, one request per league (not per
 game), patching the status, the two scores, the strikethrough and the

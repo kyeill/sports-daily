@@ -133,6 +133,10 @@ h2 {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .when { font-size: 13px; font-variant-numeric: tabular-nums; }
+/* A game actually on now. Keyed off the row's state rather than a class of
+   its own, so the live script bolds and unbolds it just by updating that
+   attribute as a game starts and finishes. */
+.row[data-state="in"] .when { font-weight: 600; color: var(--ink); }
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
 .nets { font-size: 13px; color: var(--muted); }
