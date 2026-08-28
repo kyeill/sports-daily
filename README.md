@@ -492,22 +492,51 @@ it returns "SECN+" on some games and "SEC Network+" on others, and the short
 forms are what fit the phone's 84px column. MLB.TV is flagged *national* despite being a streaming service,
 so `hide_networks` still does real work, as does hiding `Universo` and `TUDN`.
 
-## Section order
+## The five sections
 
-Your teams first, then one section per sport **ordered by when that sport's
-first game starts**, so a 7:30am Premier League match leads and a 10pm West
-Coast game trails. Ties are broken by `sort_rank` in `config.json`: college
-football, college basketball, the Premier League, other soccer, NFL, MLB, NBA,
-NHL, college hockey.
+Fixed order, and a section with no games is not drawn:
 
-**Main Slate** is the top block; **Highlights** sits directly under it and
-holds three things:
+**Main Slate** — your teams. **Highlights** — directly under it, holding three
+things:
 
 * the rivals -- Ohio State, Michigan State, Notre Dame, Arsenal, Chelsea
 * your own teams whose games are not, in themselves, an event: the Tigers,
-  Pistons, Cavaliers, Red Wings, Atlanta United and Cornell (`highlight_teams`)
+  Pistons, Cavaliers, Red Wings, Atlanta United and Cornell (`highlight_teams`),
+  who move up to Main Slate once they reach a postseason
 * every European club fixture -- the Premier League, both domestic cups and all
-  three European competitions (`highlight_all`)
+  three UEFA competitions (`highlight_all`)
+
+**Football**
+
+* ranked college football in the regular season
+* the CFP in full
+* a bowl only if it has a Big Ten team, a ranked team, or Power Four on both
+  sides -- the rest of the bowl slate goes to National
+* the NFL's standalone windows, and its playoffs
+
+**Basketball**
+
+* ranked college basketball in the regular season
+* the NCAA tournament, the NIT and the Crown. No ranked test is needed: in the
+  bracket ESPN puts the **seed** in the rank field, so every tournament game
+  reads as ranked anyway
+
+**National** — everything else, in start-time order, mixing sports. So every
+row here names its competition, and the pro leagues say why they are there:
+`NBA - National TV`, `NFL - Playoff Race`. A row whose round already names
+itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is left alone.
+
+It holds the playoff races, the MLB/NBA/NHL/MLS postseasons, unranked college
+football and basketball, the minor bowls, the NCAA hockey tournament, the
+non-European cups -- and **national broadcasts**, which is the one rule that
+puts games on the page that nothing else would: about 1.3 a night in MLB, 2.3
+in the NBA, 1.1 in the NHL.
+
+**A national broadcast cannot be read from ESPN's `national` flag.** It marks
+every NHL game, because ESPN+ carries all the out-of-market ones, and MLB.TV
+likewise. `NATIONAL_TV` in `filters.py` is an explicit list instead, written
+the way `_flat()` leaves a name -- lowercase, no spaces -- because that is what
+it is compared against. "apple tv" in that set would never match anything.
 
 **Postseason promotes the demoted teams back to Main Slate.** A Tigers game in
 June is a highlight; a Tigers playoff game is the main slate.
@@ -529,7 +558,7 @@ Open Cup stays in Highlights throughout, deliberately.
 In **Main Slate** the league is not named, since the team implies it -- except in
 soccer, where Tottenham and Atlanta United appear across half a dozen
 competitions and the badge is the only way to tell the Carabao Cup from the
-league.
+league. **College hockey always names itself**, wherever it lands.
 
 **Lopsided games are dropped** from the ordinary sections: college football
 over **30** points, college basketball over **15** (`max_spread`). Three things
@@ -548,12 +577,22 @@ in its window, so the tolerance costs nothing.
 so the rule shapes the fortnight the app actually shows and quietly does
 nothing when you browse a past date. A game with no spread is always kept.
 
-College football and basketball each split in two (`split_ranked`): **Ranked
-College Football** for anything with a top-25 team, then **College Football**
-for the rest. Same for basketball.
+## College hockey is three teams and a bracket
 
-Highlighted teams sit in their own sport rather than a separate block — the tag
-on the row already says why the game is there.
+Michigan on the Main Slate, Cornell in Highlights, and the NCAA tournament.
+Nothing else -- `only_my_teams_outside_postseason`.
+
+**Its conference tournaments cannot be told from the regular season.** ESPN
+files them as season type 2 with no round and no headline, so they are treated
+as regular season and only Michigan and Cornell appear. Only the NCAA
+tournament carries the postseason flag: 15 games, regionals and the Frozen
+Four, all at neutral sites.
+
+**The FCS bracket is excluded** (`postseason_top_division_only`). College
+football's blanket postseason rule would otherwise admit it alongside the
+bowls -- Montana against Montana State on a December Saturday. Membership of
+the top division comes from the core API, since the teams endpoint ignores
+`?groups=`.
 
 ## The playoff race (derived highlights)
 

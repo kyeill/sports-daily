@@ -295,30 +295,20 @@ def _section(title, games, show_league, config):
 
 
 def sections_for(games, config):
-    """[(heading, games)] for everything outside the pinned blocks.
+    """[(heading, games)] in the fixed five-section order, empties dropped.
 
     Shared by the page and the console output so the two cannot drift -- they
-    already had, with the console missing the ranked split entirely.
+    already had once, with the console missing a split the page had.
     """
-    rank = {lg["label"]: lg.get("sort_rank", 99) for lg in config.get("leagues", [])}
-    split = {lg["label"] for lg in config.get("leagues", []) if lg.get("split_ranked")}
-    by_league = {}
+    buckets = {name: [] for name in filters.SECTIONS}
     for game in games:
-        label = game["league_label"]
-        if label in split:
-            # A top-25 game is a different proposition from the rest of a
-            # college slate, so it gets its own heading.
-            ranked = any(t.get("rank") for t in (game["home"], game["away"]))
-            label = ("Ranked %s" % label) if ranked else label
-            # Ranked leads when both start at the same minute.
-            rank[label] = rank.get(game["league_label"], 99) + (0 if ranked else 0.5)
-        by_league.setdefault(label, []).append(game)
-    # Sports come in the order their first game starts; the configured rank
-    # only breaks ties between sports starting at the same minute.
-    order = sorted(by_league,
-                   key=lambda label: (min(g["start_local"] for g in by_league[label]),
-                                      rank.get(label, 99), label))
-    return [(label, by_league[label]) for label in order]
+        section = filters.section_of(game, config)
+        # The row needs to know, so its detail line can name the sport in
+        # National without naming it everywhere else.
+        game["_section"] = section
+        buckets[section].append(game)
+    return [(name, sorted(buckets[name], key=lambda g: g["start_local"]))
+            for name in filters.SECTIONS if buckets[name]]
 
 
 def day_body(day, games, config, notes=None, info=None):
@@ -343,30 +333,19 @@ def summary(games):
 
 
 def _body(games, config, notes=None, info=None):
-    games = sorted(games, key=lambda g: (g["start_local"], g["league_label"]))
-    pinned = [g for g in games if g.get("tier") == "favorite"]
-    # Rivals get their own block under My Teams -- but a rival playing one of
-    # your teams is already up there, so it is not repeated.
-    rivals = [g for g in games if g.get("tier") != "favorite" and g.get("highlight")]
-    rest = [g for g in games if g.get("tier") != "favorite" and not g.get("highlight")]
-
     parts = []
     for note in notes or []:
         parts.append('<div class="warn">%s</div>' % _esc(note))
     for line in info or []:
         parts.append('<div class="info">%s</div>' % _esc(line))
-    if pinned:
-        parts.append('<div class="pinned">%s</div>' %
-                     _section("Main Slate", pinned, True, config))
-    if rivals:
-        parts.append('<div class="watching">%s</div>' %
-                     _section("Highlights", rivals, True, config))
 
-    # Everything else sits in its own sport, highlights included -- the tag on
-    # the row already says why it is there, so a separate section was just an
-    # extra heading to scroll past.
-    for label, block in sections_for(rest, config):
-        parts.append(_section(label, block, False, config))
+    # Main Slate and Highlights keep their tinted cards; the three sport
+    # sections are plain.
+    wrapper = {"Main Slate": "pinned", "Highlights": "watching"}
+    for name, block in sections_for(games, config):
+        html = _section(name, block, True, config)
+        cls = wrapper.get(name)
+        parts.append('<div class="%s">%s</div>' % (cls, html) if cls else html)
 
     if not games:
         parts.append('<div class="card"><div class="empty">'

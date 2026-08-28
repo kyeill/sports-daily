@@ -39,13 +39,14 @@
       "include": {
         "favorites": true,
         "all": false,
-        "include_postseason": true
+        "include_postseason": true,
+        "national_broadcast": true
       },
       "playoff_spots": 10,
       "playoff_race": true,
       "race_only_last_spot": true,
       "race_until_settled": true,
-      "race_spot_label": "Playoff Spot Chase",
+      "race_spot_label": "Playoff Race",
       "race_from_month": 3,
       "race_until_season_end": true,
       "sort_rank": 8,
@@ -65,7 +66,8 @@
       "include": {
         "favorites": true,
         "all": false,
-        "include_postseason": true
+        "include_postseason": true,
+        "national_broadcast": true
       },
       "playoff_spots": 6,
       "playoff_race": true,
@@ -88,7 +90,8 @@
       "include": {
         "favorites": true,
         "all": false,
-        "include_postseason": true
+        "include_postseason": true,
+        "national_broadcast": true
       },
       "playoff_spots": 8,
       "playoff_race": true,
@@ -167,7 +170,8 @@
         ],
         "power_conference_extra_dates": [
           "08-23..08-29"
-        ]
+        ],
+        "postseason_top_division_only": true
       },
       "sort_rank": 1,
       "split_ranked": true,
@@ -209,7 +213,13 @@
           "network": "ABC"
         }
       ],
-      "spread_window_minutes": 60
+      "spread_window_minutes": 60,
+      "top_division": {
+        "sport": "football",
+        "league": "college-football",
+        "group": "80",
+        "season": 2025
+      }
     },
     {
       "key": "mens-college-basketball",
@@ -311,7 +321,8 @@
           "quarterfinal",
           "final",
           "championship"
-        ]
+        ],
+        "only_my_teams_outside_postseason": true
       },
       "sort_rank": 3,
       "team_detail": "record",
@@ -920,6 +931,7 @@
     "Ajax": "Ajax"
   },
   "round_spellings": {
+    "College Football Playoff": "CFP",
     "1st Round": "First Round",
     "2nd Round": "Second Round",
     "3rd Round": "Third Round",

@@ -21,7 +21,7 @@ TIERS = ("favorite", "watch", "interest")
 # purpose: a game kept only because its whole league is shown would tag every
 # row with the same word, which is noise, not information.
 # The only notes that still earn a tag: they say something the row does not.
-CHASE_NOTES = ("Division Chase", "Wild Card Chase", "Playoff Spot Chase")
+CHASE_NOTES = ("Division Race", "Wild Card Race", "Playoff Race")
 MAX_TAGS = 2
 
 
@@ -682,6 +682,25 @@ def evaluate(game, league, config):
     if fav_hit and rules.get("favorites") is False:
         keep = bool(reasons)  # a league can opt out of favorite-forcing
 
+    # A national broadcast is reason enough on its own: it is the game the
+    # whole country is being shown, whoever is playing.
+    if rules.get("national_broadcast") and on_national_tv(game):
+        keep = True
+        if "national tv" not in reasons:
+            reasons.append("national tv")
+
+    # College hockey is Michigan and Cornell, and the NCAA tournament. Its
+    # conference tournaments are filed as regular season by ESPN -- no round,
+    # no headline -- so they cannot be told apart and are treated as such.
+    if rules.get("only_my_teams_outside_postseason") and not game.get("postseason"):
+        if not (fav_hit or watch_note):
+            keep = False
+
+    # The FCS bracket rides in on the blanket postseason rule; it is not wanted.
+    if (rules.get("postseason_top_division_only") and game.get("postseason")
+            and not is_fbs(game, league)):
+        keep = False
+
     if config.get("hide_finished") and game.get("state") == "post" and tier == "interest":
         keep = False
 
@@ -759,6 +778,120 @@ def _round_tag(game):
     return pretty
 
 
+# The five sections, in the order they appear. A section with no games is not
+# drawn at all.
+SECTIONS = ("Main Slate", "Highlights", "Football", "Basketball", "National")
+
+# Leagues that name their reason in National, because "NBA" alone says nothing
+# about why the game is there.
+REASON_LEAGUES = ("NFL", "MLB", "NBA", "NHL", "MLS")
+
+# Truly national: watchable without a local package. ESPN's own `national`
+# flag cannot be used -- it marks every NHL game (ESPN+ carries all
+# out-of-market) and MLB.TV likewise.
+# Written the way _flat() leaves them -- lowercase, no spaces -- because that
+# is what they are compared against. "apple tv" here would never match.
+NATIONAL_TV = frozenset((
+    "espn", "espn2", "espnu", "espnews", "abc", "fox", "fs1", "fs2", "cbs",
+    "cbssn", "cbssportsnetwork", "nbc", "usanet", "usanetwork", "tnt", "tbs",
+    "trutv", "hbomax", "max", "peacock", "appletv", "appletv+", "primevideo",
+    "amazonprimevideo", "netflix", "mlbnetwork", "nbatv", "nhlnetwork"))
+
+
+def on_national_tv(game):
+    """Carried by a channel or service anyone can watch."""
+    return any(_flat(n) in NATIONAL_TV for n in (game.get("tv") or []))
+
+
+def _both_power(game, league, wanted):
+    """Both sides in a power conference -- each team's own, not the pair's."""
+    names = espn.conference_names(league.get("path") or "")
+    confs = [names.get(t.get("conference_id"), "") for t in (game["home"], game["away"])]
+    return all(any(w.lower() in (c or "").lower() for w in wanted) for c in confs)
+
+
+def bowl_in_football(game, league):
+    """A bowl worth putting with the football, rather than in National.
+
+    A Big Ten team, a ranked team, or Power Four against Power Four. The rest
+    of the bowl slate is filler and goes to National.
+    """
+    if any(t.get("rank") for t in (game["home"], game["away"])):
+        return True
+    rules = league.get("include") or {}
+    if matching_conference(game, rules.get("conferences")):
+        return True
+    return _both_power(game, league, rules.get("power_conferences") or [])
+
+
+def section_of(game, config):
+    """Which of the five a game belongs to.
+
+    Main Slate and Highlights are decided by tier, exactly as before. The rest
+    is by sport, with the college split turning on whether a game is ranked --
+    except in the postseason, where the bracket decides instead.
+    """
+    if game.get("tier") == "favorite":
+        return "Main Slate"
+    if game.get("highlight"):
+        return "Highlights"
+
+    label = game.get("league_label") or ""
+    league = game.get("_league") or {}
+    ranked = any(t.get("rank") for t in (game["home"], game["away"]))
+
+    if label == "College Football":
+        if game.get("postseason"):
+            # The CFP in full; a bowl only if it clears the bar.
+            return "Football" if (is_cfp(game) or bowl_in_football(game, league))                 else "National"
+        return "Football" if ranked else "National"
+    if label == "NFL":
+        reasons = game.get("reasons") or []
+        return "Football" if ("standalone" in reasons or game.get("postseason"))             else "National"
+    if label == "College Basketball":
+        # The postseason rules already say who is worth showing, so anything
+        # that survives them belongs with the basketball.
+        return "Basketball" if (game.get("postseason") or ranked) else "National"
+    return "National"
+
+
+def is_cfp(game):
+    return "college football playoff" in (game.get("note") or "").lower()
+
+
+def is_fbs(game, league):
+    """Either side in the top division. The FCS bracket is not wanted."""
+    ids = fbs_team_ids(league)
+    if not ids:
+        return True
+    return any(str(t.get("id")) in ids for t in (game["home"], game["away"]))
+
+
+_fbs_cache = {}
+
+
+def fbs_team_ids(league):
+    """Team ids in college football's top division, from the core API.
+
+    The teams endpoint ignores ?groups=, so this is the only way to ask.
+    """
+    spec = league.get("top_division")
+    if not spec:
+        return set()
+    key = spec.get("group")
+    if key in _fbs_cache:
+        return _fbs_cache[key]
+    data = espn._get("%s/%s/leagues/%s/seasons/%s/types/2/groups/%s/teams"
+                     % (espn.CORE, spec["sport"], spec["league"],
+                        spec.get("season", 2025), key),
+                     {"limit": 500}, cache_key="division-%s-%s" % (spec["league"], key),
+                     max_age_min=60 * 24 * 30)
+    ids = {(item.get("$ref") or "").rsplit("/", 1)[-1].split("?")[0]
+           for item in (data or {}).get("items") or []}
+    _fbs_cache[key] = ids
+    return ids
+
+
 def _spell_out(label, config):
     """Numerals and league shorthand written the way people say them."""
     for short, full in (config.get("round_spellings") or {}).items():
@@ -830,6 +963,46 @@ def _series_short(summary):
     return "%s %s" % (who.group(1), score.group(0)) if who else score.group(0)
 
 
+HOCKEY_REGIONS = ("Worcester", "Sioux Falls", "Allentown", "Fort Wayne",
+                  "Toledo", "Providence", "Manchester", "Bridgeport",
+                  "Springfield", "Loveland", "Albany", "Grand Rapids")
+
+
+def _hockey_round(text):
+    """'NCAA Men's Hockey Championship - Worcester Regional Semifinal' is a
+    mouthful, and the host city says nothing. -> 'NCAA Hockey - Regional
+    Semifinal'."""
+    if "Hockey Championship" not in text and "Hockey National Championship" not in text:
+        return text
+    tail = text.split(" - ", 1)[1] if " - " in text else "National Championship"
+    for city in HOCKEY_REGIONS:
+        tail = tail.replace(city + " ", "")
+    return "NCAA Hockey - %s" % tail
+
+
+def label_for(game, section):
+    """The competition named on the detail line, or "".
+
+    College hockey always says so, and everything in National does -- that
+    section mixes every sport, so a row that does not name itself is a
+    guess. The pro leagues add why they are there, because "NBA" alone
+    answers nothing.
+    """
+    label = game.get("league_label") or ""
+    if not label:
+        return ""
+    if not (section == "National" or label == "College Hockey"):
+        return ""
+    if label in REASON_LEAGUES:
+        reasons = game.get("reasons") or []
+        chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
+        if "national tv" in reasons:
+            return "%s - National TV" % label
+        if chase:
+            return "%s - Playoff Race" % label
+    return label
+
+
 def detail_of(game, config=None, league=None):
     """The single line under a matchup.
 
@@ -849,6 +1022,16 @@ def detail_of(game, config=None, league=None):
 
     if game.get("aggregate"):
         lead = ("%s (%s)" % (lead, game["aggregate"])).strip()
+
+    lead = _hockey_round(lead)
+
+    # The competition, where the section does not already say it. Skipped when
+    # the round names itself -- "College Hockey NCAA Hockey - Regional Final"
+    # is nobody's idea of a caption.
+    named = label_for(game, game.get("_section") or "")
+    if named and not (lead.startswith("NCAA") or lead.startswith("CFP")
+                      or lead.lower().startswith(named.split(" - ")[0].lower())):
+        lead = ("%s · %s" % (named, lead)) if lead else named
 
     parts = [lead]
     if game.get("watch_context"):
