@@ -534,6 +534,34 @@ Putting the score beside the status was tried and rejected: it reads well for
 baseball ("Bot 1st 0-0") but the NFL's status is already "12:10 - 2nd", and
 with a score that needs 82px in a column that holds 74.
 
+## Live scores
+
+The build sets the slate; the page keeps the numbers current. ESPN's API sends
+`Access-Control-Allow-Origin: *` and `cache-control: max-age=6`, so the browser
+can ask it directly and the data is fresh to within seconds. **No Actions run,
+no deploy, no server cost** -- which also means it keeps working on a morning
+when the scheduled build does not.
+
+Every row carries `data-game`, `data-path` and `data-state`, and each side's
+name and score cell carry `data-side`, so the script can find the two halves of
+a row without depending on their order in the grid.
+
+What it does: while the tab is **visible**, every **60s**, for the rows in
+**today's panel that are not already final**, one request per league (not per
+game), patching the status, the two scores, the strikethrough and the
+italicised draw.
+
+**It can never change which games are listed.** The filters run at build time
+against standings and odds, so a game that becomes interesting at 3pm still
+will not appear until the next build. Porting those to JavaScript is a far
+bigger job and was judged not worth it.
+
+**Failure is silent by design.** The fetch is wrapped, and on any error the
+page simply keeps the build's numbers -- exactly what it showed before any of
+this existed. Worth knowing which risk is which: the API changing breaks the
+morning build too, so that is not new; CORS being withdrawn would break only
+this, and only back to today's behaviour.
+
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,

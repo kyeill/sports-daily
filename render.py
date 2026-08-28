@@ -197,7 +197,8 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-def _side_html(team, show_records, config, line="", score=None, lost=False):
+def _side_html(team, show_records, config, line="", score=None, lost=False,
+               side=""):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -216,14 +217,18 @@ def _side_html(team, show_records, config, line="", score=None, lost=False):
     detail = score if score is not None else (team.get("detail") if show_records else "")
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
-    name = '<span class="t%s">%s</span>' % (" lost" if lost else "", _esc(label))
+    # data-side lets the live script find the two halves of a row without
+    # depending on their order in the grid.
+    at = ' data-side="%s"' % side if side else ""
+    name = '<span class="t%s"%s>%s</span>' % (
+        " lost" if lost else "", at, _esc(label))
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
         '<span class="s-name">%s%s</span>'
-        '<span class="s-rec%s">%s</span>'
+        '<span class="s-rec%s"%s>%s</span>'
     ) % (_logo(team, config), rank, name, spread,
-         " score" if score is not None else "", _esc(detail))
+         " score" if score is not None else "", at, _esc(detail))
 
 
 def _when(game):
@@ -300,6 +305,12 @@ def _game_html(game, show_league, config):
     # the game interesting; black when both sides do.
     tint = (game.get("tint") or "").strip()
     attrs = (' class="row tinted" style="--tint:#%s"' % _esc(tint))         if tint and config.get("show_colors", True) else ' class="row"'
+    # What the live script needs to refresh this row: which game, which
+    # scoreboard to ask, and whether it is worth asking at all.
+    league = game.get("_league") or {}
+    attrs += ' data-game="%s" data-path="%s" data-state="%s"' % (
+        _esc(game.get("id") or ""), _esc(league.get("path") or ""),
+        _esc(game.get("state") or ""))
 
     # An empty network line would still occupy a team line's worth of height,
     # so it is left out entirely -- and when nothing else is there, the time
@@ -318,9 +329,9 @@ def _game_html(game, show_league, config):
         '</div>'
     ) % (attrs, _esc(game["link"]),
          _side_html(first, show_records, config, lines[order[0]],
-                    scores.get(order[0]), loser == order[0]),
+                    scores.get(order[0]), loser == order[0], order[0]),
          _side_html(second, show_records, config, lines[order[1]],
-                    scores.get(order[1]), loser == order[1]),
+                    scores.get(order[1]), loser == order[1], order[1]),
          note, solo, when, nets, tags)
 
 

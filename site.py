@@ -126,6 +126,118 @@ APP_JS = """
   window.addEventListener('pageshow', function (e) {
     if (e.persisted && stale()) { location.reload(); }
   });
+
+  // ---- live scores -------------------------------------------------------
+  // ESPN's API sends Access-Control-Allow-Origin: *, so the page can ask it
+  // directly, and cache-control: max-age=6 says they expect to be polled. The
+  // build sets the slate; this only keeps the numbers current.
+  //
+  // It can never change WHICH games are listed -- the filters run at build
+  // time against standings and odds. Scores and status only.
+  var LIVE_MS = 60000;
+  var live = null;
+
+  function todayPanel() {
+    // The panel for the day this page was built for; nothing else can be live.
+    var panels = document.querySelectorAll('.day');
+    return panels.length ? panels[0] : null;
+  }
+
+  function rowsToWatch() {
+    var panel = todayPanel();
+    if (!panel) { return []; }
+    return Array.prototype.filter.call(
+      panel.querySelectorAll('.row[data-game][data-path]'),
+      function (row) { return row.dataset.state !== 'post'; });
+  }
+
+  function paint(row, event) {
+    var comp = (event.competitions || [])[0];
+    if (!comp) { return; }
+    var type = ((comp.status || {}).type) || {};
+    var state = type.state || '';
+    var when = row.querySelector('.when');
+    if (when) {
+      var text = state === 'post' ? 'Final'
+        : state === 'in' ? (type.shortDetail || 'live')
+        : when.textContent;
+      // A draw has no losing side, so the word carries it.
+      var scores = {};
+      (comp.competitors || []).forEach(function (c) {
+        scores[c.homeAway] = c.score;
+      });
+      var drawn = state === 'post' && scores.home != null
+        && String(scores.home) === String(scores.away);
+      when.innerHTML = '';
+      if (drawn) {
+        var em = document.createElement('em');
+        em.textContent = text;
+        when.appendChild(em);
+      } else {
+        when.textContent = text;
+      }
+      var losing = null;
+      if (state === 'post' && !drawn && scores.home != null && scores.away != null) {
+        losing = Number(scores.home) < Number(scores.away) ? 'home' : 'away';
+      }
+      ['home', 'away'].forEach(function (side) {
+        var cell = row.querySelector('.s-rec[data-side="' + side + '"]');
+        var name = row.querySelector('.t[data-side="' + side + '"]');
+        if (cell && scores[side] != null && state !== 'pre') {
+          cell.textContent = scores[side];
+          cell.classList.add('score');
+        }
+        if (name) { name.classList.toggle('lost', losing === side); }
+      });
+    }
+    row.dataset.state = state;
+  }
+
+  function refresh() {
+    var rows = rowsToWatch();
+    if (!rows.length) { return; }
+    // One request per league, not per game.
+    var byPath = {};
+    rows.forEach(function (row) {
+      (byPath[row.dataset.path] = byPath[row.dataset.path] || []).push(row);
+    });
+    var when = new Date();
+    var stamp = when.getFullYear()
+      + ('0' + (when.getMonth() + 1)).slice(-2) + ('0' + when.getDate()).slice(-2);
+    Object.keys(byPath).forEach(function (path) {
+      var url = 'https://site.api.espn.com/apis/site/v2/sports/' + path
+        + '/scoreboard?dates=' + stamp + '&limit=400';
+      fetch(url, { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data) { return; }
+          var byId = {};
+          (data.events || []).forEach(function (ev) { byId[ev.id] = ev; });
+          byPath[path].forEach(function (row) {
+            var ev = byId[row.dataset.game];
+            if (ev) { paint(row, ev); }
+          });
+        })
+        // Silence is the right failure: the page keeps the build's numbers,
+        // which is exactly what it showed before any of this existed.
+        .catch(function () {});
+    });
+  }
+
+  function start() {
+    if (live) { clearInterval(live); }
+    if (document.visibilityState !== 'visible') { return; }
+    refresh();
+    live = setInterval(function () {
+      if (document.visibilityState === 'visible') { refresh(); }
+    }, LIVE_MS);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') { start(); }
+    else if (live) { clearInterval(live); live = null; }
+  });
+  start();
 })();
 """
 
