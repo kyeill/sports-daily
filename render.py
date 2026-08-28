@@ -52,6 +52,9 @@ h2 {
   background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   overflow: hidden;
 }
+/* The two halves of National. The gap matches the one between a heading and
+   its card, so the break reads as deliberate rather than as a mistake. */
+.card.second { margin-top: 10px; }
 .pinned .card { background: var(--pin); border-color: var(--pin-line); }
 .watching .card { background: var(--watch); border-color: var(--watch-line); }
 /* One game is two stacked team lines sharing a four-column grid -- crest,
@@ -294,6 +297,26 @@ def _section(title, games, show_league, config):
     return '<h2>%s</h2><div class="card">%s</div>' % (_esc(title), rows)
 
 
+def _national(block, config):
+    """National under one heading, in two cards with a gap between them.
+
+    The second card is only drawn when there is something in it, so an
+    all-playoff night looks like any other section.
+    """
+    lead = [g for g in block if filters.national_bucket(g) == 1]
+    rest = [g for g in block if filters.national_bucket(g) == 2]
+    cards = []
+    for group in (lead, rest):
+        if not group:
+            continue
+        # The gap belongs between the two halves, so it is only asked for when
+        # there is something above to be separated from.
+        cls = "card second" if cards else "card"
+        cards.append('<div class="%s">%s</div>'
+                     % (cls, "".join(_game_html(g, True, config) for g in group)))
+    return "<h2>National</h2>" + "".join(cards)
+
+
 def sections_for(games, config):
     """[(heading, games)] in the fixed five-section order, empties dropped.
 
@@ -307,8 +330,14 @@ def sections_for(games, config):
         # National without naming it everywhere else.
         game["_section"] = section
         buckets[section].append(game)
-    return [(name, sorted(buckets[name], key=lambda g: g["start_local"]))
-            for name in filters.SECTIONS if buckets[name]]
+    out = []
+    for name in filters.SECTIONS:
+        block = buckets[name]
+        if not block:
+            continue
+        key = filters.national_order if name == "National"             else (lambda g: g["start_local"])
+        out.append((name, sorted(block, key=key)))
+    return out
 
 
 def day_body(day, games, config, notes=None, info=None):
@@ -343,6 +372,9 @@ def _body(games, config, notes=None, info=None):
     # sections are plain.
     wrapper = {"Main Slate": "pinned", "Highlights": "watching"}
     for name, block in sections_for(games, config):
+        if name == "National":
+            parts.append(_national(block, config))
+            continue
         html = _section(name, block, True, config)
         cls = wrapper.get(name)
         parts.append('<div class="%s">%s</div>' % (cls, html) if cls else html)

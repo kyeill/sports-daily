@@ -653,11 +653,7 @@ def evaluate(game, league, config):
     # promotes them back.
     # Soccer has no postseason flag, so a competition can nominate the rounds
     # that count as one: the Leagues Cup knockouts, every Concacaf round.
-    promoted = bool(game.get("postseason"))
-    if not promoted and league.get("promote_rounds"):
-        current = (game.get("round") or "").lower()
-        promoted = bool(current) and any(
-            fnmatch.fnmatch(current, r.lower()) for r in league["promote_rounds"])
+    promoted = is_event_round(game, league)
 
     demoted = False
     if fav_hit and not promoted:
@@ -822,6 +818,54 @@ def bowl_in_football(game, league):
     if matching_conference(game, rules.get("conferences")):
         return True
     return _both_power(game, league, rules.get("power_conferences") or [])
+
+
+# National mixes every sport, so it runs in two halves: the things that are
+# an event in themselves, then the ordinary nightly slate. Each half is in
+# start-time order; these lists only break a tie between two games starting
+# the same minute.
+NATIONAL_LEAD = ("College Football", "College Basketball", "College Hockey",
+                 "NFL", "MLB", "NBA", "NHL", "MLS")
+NATIONAL_REST = ("MLB", "NBA", "NHL", "MLS", "Leagues Cup")
+
+
+def is_event_round(game, league):
+    """A game that is an event in itself: a postseason game, or a round the
+    competition has named as one.
+
+    Soccer carries no postseason flag -- ESPN files the MLS bracket as regular
+    season -- so a competition names its own knockouts in `promote_rounds`.
+    """
+    if game.get("postseason"):
+        return True
+    rounds = (league or {}).get("promote_rounds") or []
+    current = (game.get("round") or "").lower()
+    return bool(current) and any(fnmatch.fnmatch(current, r.lower()) for r in rounds)
+
+
+def national_bucket(game):
+    """1 leads, 2 follows after a gap.
+
+    A postseason game from the pro leagues belongs with the first half -- a
+    playoff game is an event; a Tuesday night on TNT is not.
+    """
+    label = game.get("league_label") or ""
+    # Deliberately before the postseason test: the Leagues Cup knockouts are
+    # named rounds, but he wants the whole competition in the second half.
+    if label == "Leagues Cup":
+        return 2
+    if label in ("MLB", "NBA", "NHL", "MLS"):
+        return 1 if is_event_round(game, game.get("_league")) else 2
+    return 1
+
+
+def national_order(game):
+    """(bucket, start, tiebreak) -- the sort key for the National section."""
+    bucket = national_bucket(game)
+    order = NATIONAL_LEAD if bucket == 1 else NATIONAL_REST
+    label = game.get("league_label") or ""
+    rank = order.index(label) if label in order else len(order)
+    return (bucket, game["start_local"], rank, label)
 
 
 def section_of(game, config):
