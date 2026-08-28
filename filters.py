@@ -22,6 +22,10 @@ TIERS = ("favorite", "watch", "interest")
 # row with the same word, which is noise, not information.
 # The only notes that still earn a tag: they say something the row does not.
 CHASE_NOTES = ("Division Race", "Wild Card Race", "Playoff Race")
+
+# Two rivals in one game has no honest answer, so the stripe takes neither
+# side. Black said that too, but said it invisibly.
+RIVAL_GREY = "9a9a95"
 MAX_TAGS = 2
 
 
@@ -438,6 +442,13 @@ def invisible_colour(value):
     if not parts:
         return False
     red, green, blue = parts
+    # A vivid colour shows however dark the luminance figure says it is. Blue
+    # contributes almost nothing to luminance, so Brighton's #0606fa scores 24
+    # -- darker than a navy -- while being a bright blue anyone can see. What
+    # separates them is the strongest channel: a navy peaks around 64, that
+    # blue at 250.
+    if max(parts) >= 140:
+        return False
     if 0.2126 * red + 0.7152 * green + 0.0722 * blue >= 55:
         return False
     if max(parts) - min(parts) < 40:
@@ -570,7 +581,7 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     if mine:
         return _colour(mine[0], config, league)
     if len(rivals) > 1:
-        return "000000"
+        return RIVAL_GREY
     if rivals:
         other = [t for t in sides if t is not rivals[0]]
         if other:

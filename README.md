@@ -371,10 +371,17 @@ relegated has no place at all when you browse an old date.
 Steelers become gold, the Raiders silver, the Broncos orange, the Seahawks
 green -- 254 teams in all, against 615 whose primary is kept.
 
-The test is not brightness. Indiana's crimson and Michigan State's green sit
-at the same luminance as a navy that vanishes, so a colour is only rejected
-when it is **near-neutral** (channel spread under 40) or a **genuine navy**
-(r < g < b). A purple of the same darkness runs g < r < b and reads perfectly
+The test is not brightness, and it took two passes to get right. Indiana's
+crimson and Michigan State's green sit at the same luminance as a navy that
+vanishes, so a colour is only rejected when it is **near-neutral** (channel
+spread under 40) or a **genuine navy** (r < g < b). And a **vivid** colour is
+always kept, whatever its luminance: blue contributes almost nothing to that
+figure, so Brighton's #0606fa scores 24 -- darker than a navy -- while being a
+bright blue anyone can see. What separates them is the strongest channel, 64
+for a navy against 250 for that blue, so anything peaking at 140 or above is
+left alone. That exemption puts 53 teams back on their own colour, the royal
+blues: the Bills, the Rams, Florida, Kentucky, Inter and four Premier League
+clubs. A purple of the same darkness runs g < r < b and reads perfectly
 well, which is why the Jazz keep theirs. An explicit `team_colors` override
 still wins outright -- Tottenham stays navy because that was chosen.
 
