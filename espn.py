@@ -362,7 +362,10 @@ def _odds(comp):
         if (first.get("%sTeamOdds" % name) or {}).get("favorite"):
             points = first.get("spread")
             if isinstance(points, (int, float)):
-                return details, over_under, name, "-%g" % abs(points)
+                # Always a decimal place: "-7" and "-7.5" side by side read
+                # as different kinds of number. Moneylines below are whole by
+                # nature and keep no decimal.
+                return details, over_under, name, "-%.1f" % abs(points)
             break
 
     match = re.match(r"^(.+?)\s+([+-]\d+(?:\.\d+)?)$", details)
