@@ -101,6 +101,26 @@ APP_JS = """
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }
+
+  // An installed app resumed from the home screen does not reload -- it shows
+  // whatever it last rendered, for days, however fresh the server is. So when
+  // it comes back into view, reload if the page was built for another day or
+  // has simply been sitting a while. BUILT is the day this page was made, in
+  // the same timezone the page prints its times in.
+  var BUILT = '%%BUILT%%';
+  var seen = Date.now();
+  function stale() {
+    var now = new Date();
+    var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString().slice(0, 10);
+    return local !== BUILT || (Date.now() - seen) > 30 * 60 * 1000;
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') { seen = Date.now(); return; }
+    // reload(true) is long gone; a plain reload still revalidates, and the
+    // service worker is network-first, so this fetches the current build.
+    if (stale()) { location.reload(); }
+  });
 })();
 """
 
@@ -212,7 +232,8 @@ def build(config, days=8, out=SITE):
         '<footer>From ESPN. Times in %s.</footer>'
         '</div><script>%s</script></body></html>'
     ) % (render.CSS, APP_CSS, "".join(tabs), "".join(panels),
-         config.get("timezone", "local"), APP_JS)
+         config.get("timezone", "local"),
+         APP_JS.replace("%%BUILT%%", today.isoformat()))
 
     manifest = {
         "name": "Sports Daily", "short_name": "Games",
