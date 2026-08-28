@@ -514,6 +514,26 @@ wider one it condensed names that had room to spare. A name that genuinely
 does not fit now **wraps**, which costs a line only where it is really needed
 and never has to guess.
 
+## Scores
+
+Once a game starts, the score takes the record's place beside each team --
+where a scoreboard puts it, and the thing worth reading by then. The status
+column carries only the state: ESPN's own line while it is on ("Bot 1st",
+"9:45 - 2nd"), then "Final".
+
+The score is read **per team**, never built as one string. Soccer prints the
+home side first and every other sport away at home, so a combined "1-4" has to
+know the print order -- and when it did not, every soccer result was reported
+backwards for months. A score attached to its own team cannot be flipped.
+
+**The losing team is struck through**, dimmed as well since a line alone is
+easy to miss at this size. A draw has no losing side, so the word **Final** is
+italicised instead.
+
+Putting the score beside the status was tried and rejected: it reads well for
+baseball ("Bot 1st 0-0") but the NFL's status is already "12:10 - 2nd", and
+with a score that needs 82px in a column that holds 74.
+
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,

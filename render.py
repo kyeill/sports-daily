@@ -95,6 +95,12 @@ h2 {
   margin-left: 5px; }
 .s-rec { color: var(--muted); font-size: 12px; text-align: right;
   white-space: nowrap; }
+/* A score, once there is one, is worth more than the record it replaces. */
+.s-rec.score { color: var(--ink); font-size: 13px;
+  font-variant-numeric: tabular-nums; }
+/* The team that lost. Struck through and dimmed -- the line alone is easy to
+   miss at this size. */
+.t.lost { text-decoration: line-through; color: var(--muted); }
 /* Third row of the same grid, starting at the name column, so it lines up
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
@@ -191,7 +197,7 @@ def _logo(team, config):
             % (_esc(src), swap))
 
 
-def _side_html(team, show_records, config, line=""):
+def _side_html(team, show_records, config, line="", score=None, lost=False):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -205,31 +211,53 @@ def _side_html(team, show_records, config, line=""):
     needed and never has to guess.
     """
     rank = ('%d' % team["rank"]) if team.get("rank") else ""
-    detail = team.get("detail") if show_records else ""
+    # Once a game starts the score takes the record's place: that is where a
+    # scoreboard puts it, and it is the thing worth reading by then.
+    detail = score if score is not None else (team.get("detail") if show_records else "")
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
+    name = '<span class="t%s">%s</span>' % (" lost" if lost else "", _esc(label))
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
-        '<span class="s-name"><span class="t">%s</span>%s</span>'
-        '<span class="s-rec">%s</span>'
-    ) % (_logo(team, config), rank, _esc(label), spread, _esc(detail))
+        '<span class="s-name">%s%s</span>'
+        '<span class="s-rec%s">%s</span>'
+    ) % (_logo(team, config), rank, name, spread,
+         " score" if score is not None else "", _esc(detail))
 
 
 def _when(game):
     if game["state"] == "in":
         return game.get("status_detail") or "live"
     if game["state"] == "post":
-        # In the order the teams are printed: soccer is written home side
-        # first, everything else away at home. Reading them away-home while
-        # the row said home-away reported every soccer result backwards.
-        first, second = ((game["home"], game["away"])
-                         if (game.get("sport") or "") == "Soccer"
-                         else (game["away"], game["home"]))
-        score = "%s-%s" % (first.get("score"), second.get("score"))
-        return "final" if "None" in score else "final %s" % score
+        # The score sits beside each team now, so this only names the state.
+        return "Final"
     # %-I is not portable on Windows; strip the leading zero by hand.
     return game["start_local"].strftime("%I:%M %p").lstrip("0")
+
+
+def _scores(game):
+    """(per-side score strings, losing side, whether it was a draw).
+
+    Scores are read per team, so the soccer print order cannot flip them --
+    which is the mistake that reported every soccer result backwards when the
+    score was built as one string.
+    """
+    if game.get("state") not in ("in", "post"):
+        return {}, None, False
+    out = {}
+    for side in ("home", "away"):
+        value = game[side].get("score")
+        out[side] = "" if value is None else str(value)
+    if game.get("state") != "post":
+        return out, None, False
+    try:
+        home, away = int(out["home"]), int(out["away"])
+    except (TypeError, ValueError):
+        return out, None, False
+    if home == away:
+        return out, None, True
+    return out, ("home" if home < away else "away"), False
 
 
 def _game_html(game, show_league, config):
@@ -279,15 +307,21 @@ def _game_html(game, show_league, config):
     nets = ('<div class="nets">%s</div>' % _esc(networks)) if networks else ""
     solo = " solo" if not networks and not tags else ""
 
+    scores, loser, drawn = _scores(game)
+    # A draw has no losing side to strike through, so the word itself says so.
+    when = ('<em>%s</em>' % _esc(_when(game))) if drawn else _esc(_when(game))
+
     return (
         '<div%s>'
         '<div class="teams"><a href="%s">%s%s%s</a></div>'
         '<div class="right%s"><div class="when">%s</div>%s%s</div>'
         '</div>'
     ) % (attrs, _esc(game["link"]),
-         _side_html(first, show_records, config, lines[order[0]]),
-         _side_html(second, show_records, config, lines[order[1]]),
-         note, solo, _esc(_when(game)), nets, tags)
+         _side_html(first, show_records, config, lines[order[0]],
+                    scores.get(order[0]), loser == order[0]),
+         _side_html(second, show_records, config, lines[order[1]],
+                    scores.get(order[1]), loser == order[1]),
+         note, solo, when, nets, tags)
 
 
 def _section(title, games, show_league, config):

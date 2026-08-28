@@ -220,11 +220,21 @@ def as_text(day, games, config, notes=None):
         elif game["state"] == "post":
             when = "final"
 
+        # Once a game has started the score takes the record's place, the same
+        # swap the page makes -- the console showing records beside a finished
+        # game was the two drifting apart again.
+        started = game.get("state") in ("in", "post")
+
         def side(team):
             rank = "#%d " % team["rank"] if team["rank"] else ""
-            rec = " (%s)" % team["detail"] if (
-                team.get("detail") and config.get("show_records", True)) else ""
-            return "%s%s%s" % (rank, team.get("label") or team["short"] or team["name"], rec)
+            score = team.get("score")
+            if started and score is not None:
+                extra = " (%s)" % score
+            elif team.get("detail") and config.get("show_records", True):
+                extra = " (%s)" % team["detail"]
+            else:
+                extra = ""
+            return "%s%s%s" % (rank, team.get("label") or team["short"] or team["name"], extra)
 
         tail = []
         tail += game.get("tags") or []
