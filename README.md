@@ -369,14 +369,19 @@ relegated has no place at all when you browse an old date.
 
 **White is a last resort, never a preference.** A team with any colour at all
 shows it: a white stripe says nothing about who is playing, and a page of them
-says less. So the order is a colour that shows, then any colour, then white
-because there is nothing else. Exactly one team ends up white -- Tottenham,
-and only because that is chosen.
+says less. So the order is a colour that shows, then any colour, then a washed
+-out one because there is nothing else. Exactly one team ends up white --
+Tottenham, and only because that is chosen.
 
-The cost is accepted deliberately: 34 stripes in the leagues that matter now
-read as near-black, the Nets, the White Sox, the Colts, the Leafs and the
-Lightning among them. Their own colour, dim, beats a white stripe that could
-be anyone.
+**Silver counts as white.** The Yankees' #c4ced4 and the Cowboys' #b0b7bc read
+as white on this page whatever the swatch calls them, so `washed_out()` rejects
+anything light with no colour left in it. Saturation is what separates those
+from a pale but real colour: Leeds' #ffcd00 is brighter than the Yankees'
+silver and obviously yellow.
+
+The cost is accepted deliberately. Stripes for the Nets, the White Sox, the
+Raiders, the Spurs, the Yankees and the Cowboys now read as near-black. Their
+own colour, dim, beats a stripe that could belong to anyone.
 
 **A stripe that would read as black is otherwise swapped for the alternate.** The
 Steelers become gold, the Raiders silver, the Broncos orange, the Seahawks

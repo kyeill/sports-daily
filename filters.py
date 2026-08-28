@@ -456,6 +456,22 @@ def invisible_colour(value):
     return blue > red and blue > green and green >= red
 
 
+def washed_out(value):
+    """True when a colour reads as white on the page: white itself, or a
+    light grey with no colour left in it.
+
+    Saturation is what separates them from a pale but real colour -- Leeds'
+    #ffcd00 is brighter than the Yankees' silver and obviously yellow.
+    """
+    parts = _rgb(value)
+    if not parts:
+        return False
+    red, green, blue = parts
+    if max(parts) - min(parts) >= 45:
+        return False
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue >= 170
+
+
 _borrowed = {}
 
 
@@ -510,18 +526,17 @@ def _colour(team, config, league=None):
         candidates.extend(borrowed)
     candidates = [c.lstrip("#") for c in candidates if c]
 
-    # White is a last resort, not a preference. A team with any colour at all
-    # shows it -- a white stripe says nothing about who is playing, and a
-    # page of them says less. So: a colour that shows, then any colour, then
-    # white because there is nothing else.
-    def white(value):
-        return value.lower() in ("ffffff", "fff")
-
+    # White is a last resort, not a preference: a white stripe says nothing
+    # about who is playing, and a page of them says less. Silver counts as
+    # white here -- the Yankees' #c4ced4 and the Cowboys' #b0b7bc read as
+    # white on this page whatever the swatch calls them. So: a colour that
+    # shows, then any colour, then a washed-out one because there is nothing
+    # else.
     for candidate in candidates:
-        if not white(candidate) and not invisible_colour(candidate):
+        if not washed_out(candidate) and not invisible_colour(candidate):
             return candidate
     for candidate in candidates:
-        if not white(candidate):
+        if not washed_out(candidate):
             return candidate
     return candidates[0] if candidates else ""
 
