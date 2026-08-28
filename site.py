@@ -121,6 +121,11 @@ APP_JS = """
     // service worker is network-first, so this fetches the current build.
     if (stale()) { location.reload(); }
   });
+  // A desktop tab restored from the back/forward cache fires no
+  // visibilitychange, so it needs its own hook -- same problem, same test.
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && stale()) { location.reload(); }
+  });
 })();
 """
 
