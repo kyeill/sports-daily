@@ -521,7 +521,27 @@ things:
   bracket ESPN puts the **seed** in the rank field, so every tournament game
   reads as ranked anyway
 
-**National** — everything else, in start-time order, mixing sports. So every
+**National** runs in **two halves**, with a gap between them the same height as
+the one between a heading and its card. The lead half holds the games that are
+an event in themselves; the second holds the ordinary nightly slate:
+
+| half | what is in it |
+| --- | --- |
+| lead | college football, college basketball, college hockey, the NFL, and the MLB/NBA/NHL/MLS **postseasons** |
+| second | MLB, NBA, NHL, MLS and the Leagues Cup otherwise |
+
+Each half is in start-time order; that listed order only breaks a tie between
+two games starting the same minute. The second card is drawn only when it has
+something in it, and takes the gap only when something sits above it.
+
+**Soccer has no postseason flag** -- ESPN files the MLS bracket as regular
+season -- so MLS Cup would otherwise sort beside a Wednesday night. Rounds that
+count are named per competition and tested by `is_event_round()`, shared with
+the rule that promotes a demoted favourite to the Main Slate. The Leagues Cup
+is checked before it: its knockouts are named rounds, but the competition
+belongs in the second half.
+
+It mixes sports, so every
 row here names its competition, and the pro leagues say why they are there:
 `NBA - National TV`, `NFL - Playoff Race`. A row whose round already names
 itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is left alone.
