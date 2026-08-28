@@ -1,6 +1,6 @@
 # Sports Daily — to-do
 
-Last refreshed 2026-08-26. The design itself lives in `README.md`; this file is
+Last refreshed 2026-08-28. The design itself lives in `README.md`; this file is
 only what is *not done*. If something here is unclear, the "Traps" section of
 the README explains why most of it is the way it is.
 
@@ -48,6 +48,24 @@ A game with no spread is always kept, so the failure mode is "rule silently
 does nothing", not "games disappear".
 
 ## Recently closed — do not reopen
+
+Settled on 2026-08-28.
+
+* **Five sections** — Main Slate, Highlights, Football, Basketball, National, in
+  that fixed order, replacing one section per league ordered by kickoff. The
+  rules are written out in the README; the bowl test (Big Ten, ranked, or
+  Power Four both sides) and the two halves of National are the parts worth
+  re-reading before changing anything.
+* **National broadcasts** for MLB/NBA/NHL are an inclusion rule of their own,
+  roughly 4-5 games a night when all three are in season. ESPN's `national`
+  flag is useless for this and must not be used.
+* **College hockey** is Michigan, Cornell and the NCAA tournament. Conference
+  tournaments are indistinguishable from regular season in ESPN's data.
+* **Stripe colours** — three tests, each of which earned its place:
+  `invisible_colour` (too dark), `washed_out` (too pale, which is what silver
+  is), and the vivid exemption for bright colours whose luminance lies.
+  Brightness alone was wrong twice; ask what kind of colour it is.
+* **Display names** live in `team-names.json`, shared with the standings page.
 
 Settled on 2026-08-26.
 

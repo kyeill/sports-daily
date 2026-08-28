@@ -145,7 +145,7 @@ def derive(config, league, today=None):
         rival = (division[1] if len(division) > 1 else None) \
             if leader["team"] in seen else leader
         if rival and rival["team"] not in seen:
-            out.append({"team": rival["team"], "note": "Division Chase",
+            out.append({"team": rival["team"], "note": "Division Race",
                         "context": _context(mine, rival, points_league)})
             seen.add(rival["team"])
 
@@ -155,7 +155,7 @@ def derive(config, league, today=None):
     target = by_seed.get(spots + 1 if mine.get("seed") == spots else spots)
     if target and target["team"] not in seen:
         out.append({"team": target["team"],
-                    "note": league.get("race_spot_label") or "Wild Card Chase",
+                    "note": league.get("race_spot_label") or "Wild Card Race",
                     "context": _context(mine, target, points_league)})
 
     return out
