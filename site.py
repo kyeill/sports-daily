@@ -17,7 +17,7 @@ import json
 import os
 import struct
 import zlib
-from datetime import timedelta
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import espn
@@ -174,6 +174,37 @@ APP_JS = """
   // live state is kept per game and painted back at once on load; the fetch
   // that follows usually just confirms it.
   var MEMORY = 'live:' + BUILT;
+  // When the numbers below the date were last confirmed against ESPN. The
+  // build writes its own time into the page; every successful poll replaces
+  // it, and it is stored so a reload shows the real last update rather than
+  // jumping back to 6am.
+  var STAMPED = 'updated:' + BUILT;
+  var TZ = '%%TZ%%';
+
+  function clockText(ms) {
+    try {
+      return new Date(ms).toLocaleTimeString('en-US', {
+        timeZone: TZ, hour: 'numeric', minute: '2-digit'
+      }).replace('AM', 'am').replace('PM', 'pm');
+    } catch (e) { return null; }
+  }
+
+  function setStamp(ms, store) {
+    var el = document.getElementById('updated');
+    var text = clockText(ms);
+    if (!el || !text) { return; }
+    el.textContent = 'Updated ' + text;
+    if (!store) { return; }
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('updated:') === 0 && k !== STAMPED) {
+          localStorage.removeItem(k);
+        }
+      });
+      localStorage.setItem(STAMPED, String(ms));
+    } catch (e) {}
+  }
+
   var remembered = {};
   try {
     remembered = JSON.parse(localStorage.getItem(MEMORY) || '{}') || {};
@@ -255,6 +286,11 @@ APP_JS = """
   }
 
   function primeFromMemory() {
+    try {
+      var was = Number(localStorage.getItem(STAMPED) || 0);
+      // Anything older than the build is the build's own line already.
+      if (was) { setStamp(was, false); }
+    } catch (e) {}
     var panel = todayPanel();
     if (!panel) { return; }
     Array.prototype.forEach.call(
@@ -288,6 +324,7 @@ APP_JS = """
             var ev = byId[row.dataset.game];
             if (ev) { paint(row, ev); }
           });
+          setStamp(Date.now(), true);
         })
         // Silence is the right failure: the page keeps the build's numbers,
         // which is exactly what it showed before any of this existed.
@@ -401,6 +438,11 @@ def _png(size):
             + chunk(b"IEND", b""))
 
 
+def _clock(when):
+    """'9:10 am' -- %-I is not portable on Windows, so strip the zero by hand."""
+    return when.strftime("%I:%M %p").lstrip("0").lower()
+
+
 def build(config, days=8, out=SITE):
     tz = ZoneInfo(config.get("timezone", "America/New_York"))
     today = sports_daily.parse_day(None, tz)
@@ -432,9 +474,13 @@ def build(config, days=8, out=SITE):
             '<button data-day="%s" aria-current="false"><b>%s</b>'
             '<small>%s</small></button>'
             % (ident, label, day.strftime("%b %d").replace(" 0", " ")))
+        # Only today's panel carries the stamp: no other day has numbers that
+        # can go out of date while you are looking at them.
+        stamp = ('<div class="updated" id="updated">Updated %s</div>'
+                 % _clock(datetime.now(tz))) if offset == 0 else ""
         panels.append(
-            '<section class="day" id="%s"><h1>%s</h1>%s</section>'
-            % (ident, day.strftime("%A, %B %d").replace(" 0", " "), body))
+            '<section class="day" id="%s"><h1>%s</h1>%s%s</section>'
+            % (ident, day.strftime("%A, %B %d").replace(" 0", " "), stamp, body))
         print("  %s  %d games" % (day.isoformat(), len(games)))
 
     page = (
@@ -447,13 +493,17 @@ def build(config, days=8, out=SITE):
         '<meta name="apple-mobile-web-app-capable" content="yes">'
         '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
         '<link rel="apple-touch-icon" href="icon-180.png">'
+        # Without this a desktop browser asks for /favicon.ico, which the site
+        # does not ship, and shows a blank tab icon after the 404.
+        '<link rel="icon" href="icon-192.png">'
         '<style>%s%s</style></head><body><div class="wrap">'
         '<nav class="days" id="days">%s</nav>%s'
         '<footer>From ESPN. Times in %s.</footer>'
         '</div><script>%s</script></body></html>'
     ) % (render.CSS, APP_CSS, "".join(tabs), "".join(panels),
          config.get("timezone", "local"),
-         APP_JS.replace("%%BUILT%%", today.isoformat()))
+         APP_JS.replace("%%BUILT%%", today.isoformat())
+                .replace("%%TZ%%", config.get("timezone", "America/New_York")))
 
     manifest = {
         "name": "Sports Daily", "short_name": "Games",

@@ -46,3 +46,19 @@ stale page is far better than a reload loop.
 Verified in a browser with a stale build date and a 2-second tick: eleven
 ticks produced exactly one reload, and backdating the throttle past the
 window produced exactly one more.
+
+## 2026-08-29 (later still) — "Updated" stamp, and a favicon
+
+- **`Updated 9:10 am` under the date on today's panel only** — no other day
+  has numbers that can go stale while you look at them. It is the time the
+  numbers were last confirmed against ESPN, not the build time: the build
+  writes its own clock into the page, every successful poll replaces it, and
+  the value is stored so a reload shows the real last update instead of
+  jumping back to 6am. Formatted in the page's own timezone via `Intl`, so a
+  PC set to another zone still reads ET.
+- Styled with the section headings' font, size and colour but **not** their
+  uppercase tracking — directly under the date, that reads as a heading for
+  the day rather than a note about it.
+- **Added `<link rel="icon">`.** The page declared only an
+  `apple-touch-icon`, so desktop browsers asked for `/favicon.ico`, took a
+  404 and showed a blank tab icon. The icons were already being shipped.

@@ -44,6 +44,13 @@ h1 { font-size: 26px; margin: 0 0 2px; letter-spacing: -0.01em; }
   padding: 8px 12px; font-size: 13px; margin-bottom: 18px;
 }
 .info { color: var(--muted); font-size: 12.5px; margin: -14px 0 20px; }
+/* Sits under the date on today's panel only, saying when the numbers below
+   it were last confirmed against ESPN. Same font, size and colour as a
+   section heading, but not its uppercase tracking: directly beneath the date
+   that would read as a heading for the day rather than a note about it. */
+.updated { color: var(--muted); font-size: 13px; font-weight: 600; margin: 0; }
+/* .info pulls itself up under the date; with the stamp there it must not. */
+.updated + .info { margin-top: 6px; }
 h2 {
   font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--muted); margin: 30px 0 10px; font-weight: 600;
