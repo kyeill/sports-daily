@@ -80,9 +80,11 @@ def display_networks(game, config, limit=1):
     """
     hidden = {_flat(n) for n in (config.get("hide_networks") or [])}
     wanted = {_flat(n) for n in (config.get("national_networks") or [])}
-    # Some leagues only want the national feed: a regional sports network tells
-    # you nothing useful unless it happens to be the one you get.
-    pool = game.get("tv_national") if game.get("national_only") else game.get("tv")
+    # Only ever the national feed. A regional sports network tells you nothing
+    # unless it happens to be the one you get, so the regional entries are never
+    # considered -- ESPN labels the market on every broadcast, and no genuinely
+    # national channel is mislabelled, so nothing worth printing is lost.
+    pool = game.get("tv_national")
     names = [n for n in (pool or []) if _flat(n) not in hidden]
     # Streaming only earns a mention when it is the only way to watch: if a
     # game is on NBC there is no point also saying Peacock.

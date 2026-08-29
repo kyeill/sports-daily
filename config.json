@@ -27,7 +27,6 @@
       "race_until_month": 2,
       "race_min_odds": 20,
       "sort_rank": 6,
-      "national_only_display": true,
       "team_detail": "conference_place"
     },
     {
@@ -50,7 +49,6 @@
       "race_from_month": 3,
       "race_until_season_end": true,
       "sort_rank": 8,
-      "national_only_display": true,
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Pistons",
@@ -75,7 +73,6 @@
       "race_until_month": 10,
       "race_min_odds": 20,
       "sort_rank": 7,
-      "national_only_display": true,
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Tigers"
@@ -1033,6 +1030,7 @@
   },
   "network_names": {
     "ACC Network": "ACCN",
+    "MLS Season Pass": "Apple TV",
     "ACC Network Extra": "ACCNX",
     "CBS Sports Network": "CBSSN",
     "SEC Network": "SECN",

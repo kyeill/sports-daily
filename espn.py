@@ -563,7 +563,6 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             # Series state for a playoff tie: "LAD lead series 2-1".
             "series": ((comp.get("series") or {}).get("summary") or ""),
             "aggregate": _aggregate(comp, home, away),
-            "national_only": bool(league.get("national_only_display")),
             "spread": spread,
             "spread_side": spread_side,
             "spread_label": spread_label,

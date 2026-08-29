@@ -1,7 +1,10 @@
-"""Build the installable web app: eight days in one page, plus PWA plumbing.
+"""Build the installable web app: a fortnight in one page, plus PWA plumbing.
 
     python site.py                 -> output/site/
     python site.py --days 8
+
+--days counts from today, and yesterday is always added in front of it, so
+--days 15 builds 16 tabs. The app still opens on today.
 
 One HTML file holds every day, with a day picker that toggles between them.
 No fetch, no JSON round trip: once the page is open, switching days is instant
@@ -55,6 +58,8 @@ APP_CSS = """
 
 APP_JS = """
 (function () {
+  // The day this page was built for, in the timezone it prints times in.
+  var BUILT = '%%BUILT%%';
   var bar = document.getElementById('days');
   var days = Array.prototype.slice.call(document.querySelectorAll('.day'));
   function show(id) {
@@ -70,9 +75,20 @@ APP_JS = """
     if (b) { show(b.dataset.day); }
   });
   // Deliberately not restoring the stored day: opening the app should always
-  // land on today, which is the whole point of it.
-  var first = document.querySelector('.day');
-  if (first) { show(first.id); }
+  // land on today, which is the whole point of it. Today is no longer the
+  // first panel -- yesterday sits ahead of it -- so it is asked for by name.
+  var start_id = 'd' + BUILT;
+  var opening = document.getElementById(start_id) || document.querySelector('.day');
+  if (opening) {
+    show(opening.id);
+    var here = bar.querySelector('button[data-day="' + opening.id + '"]');
+    // Yesterday is off to the left; bring today into view without moving the
+    // page itself.
+    if (here && here.scrollIntoView) {
+      here.scrollIntoView({ inline: 'center', block: 'nearest' });
+      window.scrollTo(0, 0);
+    }
+  }
   // Swipe between days. Only horizontal gestures count, so a normal vertical
   // scroll never changes the day by accident.
   var x0 = null, y0 = null;
@@ -107,7 +123,6 @@ APP_JS = """
   // it comes back into view, reload if the page was built for another day or
   // has simply been sitting a while. BUILT is the day this page was made, in
   // the same timezone the page prints its times in.
-  var BUILT = '%%BUILT%%';
   var seen = Date.now();
   function stale() {
     var now = new Date();
@@ -138,9 +153,9 @@ APP_JS = """
   var live = null;
 
   function todayPanel() {
-    // The panel for the day this page was built for; nothing else can be live.
-    var panels = document.querySelectorAll('.day');
-    return panels.length ? panels[0] : null;
+    // The panel for the day this page was built for; nothing else can be
+    // live. Not panels[0] any more -- that one is yesterday.
+    return document.getElementById('d' + BUILT);
   }
 
   function rowsToWatch() {
@@ -151,46 +166,91 @@ APP_JS = """
       function (row) { return row.dataset.state !== 'post'; });
   }
 
+  // What a reload paints first is the build's own numbers -- a start time and
+  // two records, hours stale by evening -- and the fetch only replaces them a
+  // moment later, which reads as a flash of yesterday's page. So the last
+  // live state is kept per game and painted back at once on load; the fetch
+  // that follows usually just confirms it.
+  var MEMORY = 'live:' + BUILT;
+  var remembered = {};
+  try {
+    remembered = JSON.parse(localStorage.getItem(MEMORY) || '{}') || {};
+  } catch (e) { remembered = {}; }
+
+  function remember(id, st) {
+    remembered[id] = st;
+    try {
+      // Only ever this build's key, so nothing accumulates day after day.
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('live:') === 0 && k !== MEMORY) { localStorage.removeItem(k); }
+      });
+      localStorage.setItem(MEMORY, JSON.stringify(remembered));
+    } catch (e) {}
+  }
+
+  function applyState(row, st) {
+    var when = row.querySelector('.when');
+    if (!when) { return; }
+    when.innerHTML = '';
+    if (st.drawn) {
+      var em = document.createElement('em');
+      em.textContent = st.text;
+      when.appendChild(em);
+    } else {
+      when.textContent = st.text;
+    }
+    ['home', 'away'].forEach(function (side) {
+      var cell = row.querySelector('.s-rec[data-side="' + side + '"]');
+      var name = row.querySelector('.t[data-side="' + side + '"]');
+      if (cell && st[side] != null && st.state !== 'pre') {
+        cell.textContent = st[side];
+        cell.classList.add('score');
+      }
+      if (name) { name.classList.toggle('lost', st.losing === side); }
+    });
+    row.dataset.state = st.state;
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
     var type = ((comp.status || {}).type) || {};
     var state = type.state || '';
     var when = row.querySelector('.when');
-    if (when) {
-      var text = state === 'post' ? 'Final'
-        : state === 'in' ? (type.shortDetail || 'live')
-        : when.textContent;
-      // A draw has no losing side, so the word carries it.
-      var scores = {};
-      (comp.competitors || []).forEach(function (c) {
-        scores[c.homeAway] = c.score;
-      });
-      var drawn = state === 'post' && scores.home != null
-        && String(scores.home) === String(scores.away);
-      when.innerHTML = '';
-      if (drawn) {
-        var em = document.createElement('em');
-        em.textContent = text;
-        when.appendChild(em);
-      } else {
-        when.textContent = text;
-      }
-      var losing = null;
-      if (state === 'post' && !drawn && scores.home != null && scores.away != null) {
-        losing = Number(scores.home) < Number(scores.away) ? 'home' : 'away';
-      }
-      ['home', 'away'].forEach(function (side) {
-        var cell = row.querySelector('.s-rec[data-side="' + side + '"]');
-        var name = row.querySelector('.t[data-side="' + side + '"]');
-        if (cell && scores[side] != null && state !== 'pre') {
-          cell.textContent = scores[side];
-          cell.classList.add('score');
-        }
-        if (name) { name.classList.toggle('lost', losing === side); }
-      });
+    if (!when) { return; }
+    var scores = {};
+    (comp.competitors || []).forEach(function (c) {
+      scores[c.homeAway] = c.score;
+    });
+    // A draw has no losing side, so the word carries it.
+    var drawn = state === 'post' && scores.home != null
+      && String(scores.home) === String(scores.away);
+    var losing = null;
+    if (state === 'post' && !drawn && scores.home != null && scores.away != null) {
+      losing = Number(scores.home) < Number(scores.away) ? 'home' : 'away';
     }
-    row.dataset.state = state;
+    var st = {
+      state: state,
+      text: state === 'post' ? 'Final'
+        : state === 'in' ? (type.shortDetail || 'live')
+        : when.textContent,
+      home: scores.home, away: scores.away,
+      drawn: drawn, losing: losing
+    };
+    applyState(row, st);
+    // A game still to start has nothing worth remembering: the build's own
+    // time is already the right answer.
+    if (state !== 'pre') { remember(row.dataset.game, st); }
+  }
+
+  function primeFromMemory() {
+    var panel = todayPanel();
+    if (!panel) { return; }
+    Array.prototype.forEach.call(
+      panel.querySelectorAll('.row[data-game]'), function (row) {
+        var st = remembered[row.dataset.game];
+        if (st) { applyState(row, st); }
+      });
   }
 
   function refresh() {
@@ -237,6 +297,7 @@ APP_JS = """
     if (document.visibilityState === 'visible') { start(); }
     else if (live) { clearInterval(live); live = null; }
   });
+  primeFromMemory();
   start();
 })();
 """
@@ -314,8 +375,11 @@ def build(config, days=8, out=SITE):
     info = [line for line in (race.status(lg) for lg in config.get("leagues", []))
             if line]
 
+    # Yesterday is kept as an extra tab -- last night's finals are the thing
+    # you most want on waking -- so the run covers `days` from today, plus one
+    # behind it. Today stays the tab the app opens on; it is now the second.
     tabs, panels = [], []
-    for offset in range(days):
+    for offset in range(-1, days):
         day = today + timedelta(days=offset)
         games, _ = sports_daily.collect(config, day, tz)
         today_info = list(info) if offset == 0 else None
@@ -324,7 +388,8 @@ def build(config, days=8, out=SITE):
                               % ", ".join(sorted(espn.FAILURES)))
         body = render.day_body(day, games, config, info=today_info)
         ident = "d%s" % day.isoformat()
-        label = "Today" if offset == 0 else day.strftime("%a")
+        label = ("Today" if offset == 0 else
+                 "Yest" if offset == -1 else day.strftime("%a"))
         tabs.append(
             '<button data-day="%s" aria-current="false"><b>%s</b>'
             '<small>%s</small></button>'
@@ -385,7 +450,8 @@ def build(config, days=8, out=SITE):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Build the Sports Daily web app")
-    ap.add_argument("--days", type=int, default=15)
+    ap.add_argument("--days", type=int, default=15,
+                    help="days from today; yesterday is always added as well")
     ap.add_argument("--out", default=SITE)
     args = ap.parse_args(argv)
 
