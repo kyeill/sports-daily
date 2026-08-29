@@ -17,3 +17,14 @@
   game is kept in `localStorage` under `live:<build-date>` and painted on
   load, so a reload shows what the page last knew instead of a 6am start
   time and two records. Older keys are pruned on write.
+
+## 2026-08-29 (later) — weekday label, spread at final
+
+- Yesterday's tab reads **"Fri"** like every other day; only today is named.
+- **ESPN drops the odds node the moment a game is final** — measured over 315
+  finished games across seven leagues and four dates, not one kept a spread.
+  So a build never prints a line on a finished game, and the spread survives
+  through the whole of live play, which is the wanted behaviour. A page left
+  open through the final whistle was the exception: the live script rewrote
+  the status and struck the loser but left the spread. It now removes it on
+  the same pass.
