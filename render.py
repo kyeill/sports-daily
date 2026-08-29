@@ -320,9 +320,11 @@ def _game_html(game, show_league, config):
     # What the live script needs to refresh this row: which game, which
     # scoreboard to ask, and whether it is worth asking at all.
     league = game.get("_league") or {}
-    attrs += ' data-game="%s" data-path="%s" data-state="%s"' % (
+    attrs += ' data-game="%s" data-path="%s" data-state="%s" data-start="%s"' % (
         _esc(game.get("id") or ""), _esc(league.get("path") or ""),
-        _esc(game.get("state") or ""))
+        _esc(game.get("state") or ""),
+        # The order finished games take once they sink. ISO sorts as text.
+        _esc(game["start_local"].isoformat()))
 
     # An empty network line would still occupy a team line's worth of height,
     # so it is left out entirely -- and when nothing else is there, the time
@@ -392,7 +394,9 @@ def sections_for(games, config):
         block = buckets[name]
         if not block:
             continue
-        key = filters.national_order if name == "National"             else (lambda g: g["start_local"])
+        # Finished games sink to the bottom of their section, in the order
+        # they started. Everything still to come keeps its place.
+        key = filters.national_order if name == "National"             else (lambda g: (filters.finished(g), g["start_local"]))
         out.append((name, sorted(block, key=key)))
     return out
 

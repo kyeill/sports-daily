@@ -62,3 +62,23 @@ window produced exactly one more.
 - **Added `<link rel="icon">`.** The page declared only an
   `apple-touch-icon`, so desktop browsers asked for `/favicon.ico`, took a
   404 and showed a blank tab icon. The icons were already being shipped.
+
+## 2026-08-29 (later still) — finished games sink
+
+A game that is over now falls to the bottom of its section, with several
+finals ordered among themselves by original start time. Games still to come,
+and games in progress, keep the order the build gave them.
+
+Done in **both** places, by the same rule, so a reload changes nothing: the
+build sorts on `(finished, start)`, and the live script re-sorts a card when
+a row reaches `post`. For National the flag sits *after* the bucket in the
+sort key — the two halves are separate cards, so a final sinks within its own
+half rather than crossing the gap into the other one.
+
+Rows carry `data-start` so the client can reproduce the build's order. The
+`.row:last-child` border rule reapplies by itself when rows move.
+
+Verified: 15 section/bucket groups across three dates sort correctly with
+mixed states, and in the browser a first-row game moved to the bottom on
+going final, with two finals landing in start order rather than the order
+they ended.

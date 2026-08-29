@@ -221,6 +221,23 @@ APP_JS = """
     } catch (e) {}
   }
 
+  // A finished game sinks to the bottom of its card, in the order it
+  // started -- the same rule the build sorts by, so a reload changes nothing.
+  // Rows are direct children of the card, and the two halves of National are
+  // separate cards, so a final never crosses the gap between them.
+  function resort(card) {
+    var rows = Array.prototype.slice.call(card.children);
+    var done = rows.filter(function (r) { return r.dataset.state === 'post'; });
+    if (!done.length || done.length === rows.length) { return; }
+    done.sort(function (a, b) {
+      var x = a.dataset.start || '', y = b.dataset.start || '';
+      return x < y ? -1 : x > y ? 1 : 0;
+    });
+    // Re-appending in order leaves everything still to come untouched and in
+    // the order the build gave it.
+    done.forEach(function (r) { card.appendChild(r); });
+  }
+
   function applyState(row, st) {
     var when = row.querySelector('.when');
     if (!when) { return; }
@@ -251,6 +268,7 @@ APP_JS = """
         function (el) { el.parentNode.removeChild(el); });
     }
     row.dataset.state = st.state;
+    if (st.state === 'post' && row.parentNode) { resort(row.parentNode); }
   }
 
   function paint(row, event) {

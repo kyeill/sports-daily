@@ -973,13 +973,23 @@ def national_bucket(game):
     return 1
 
 
+def finished(game):
+    """A game with nothing left to watch, which sinks below the rest."""
+    return (game.get("state") or "") == "post"
+
+
 def national_order(game):
-    """(bucket, start, tiebreak) -- the sort key for the National section."""
+    """(bucket, done, start, tiebreak) -- the sort key for National.
+
+    `done` sits after the bucket, not before it: the two buckets are drawn as
+    separate cards, so a finished game sinks within its own card rather than
+    past the gap into the other one.
+    """
     bucket = national_bucket(game)
     order = NATIONAL_LEAD if bucket == 1 else NATIONAL_REST
     label = game.get("league_label") or ""
     rank = order.index(label) if label in order else len(order)
-    return (bucket, game["start_local"], rank, label)
+    return (bucket, finished(game), game["start_local"], rank, label)
 
 
 def section_of(game, config):
