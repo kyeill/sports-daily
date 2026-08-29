@@ -108,6 +108,10 @@ h2 {
 /* The team that lost. Struck through and dimmed -- the line alone is easy to
    miss at this size. */
 .t.lost { text-decoration: line-through; color: var(--muted); }
+/* A drawn game has no loser to strike through, so both names lean instead.
+   Marking the teams rather than the word "Final" puts the fact where you are
+   already looking -- and reads at a glance, which a one-word cue did not. */
+.t.drew { font-style: italic; }
 /* Third row of the same grid, starting at the name column, so it lines up
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
@@ -210,7 +214,7 @@ def _logo(team, config):
 
 
 def _side_html(team, show_records, config, line="", score=None, lost=False,
-               side=""):
+               side="", drew=False):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -232,8 +236,8 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
     # data-side lets the live script find the two halves of a row without
     # depending on their order in the grid.
     at = ' data-side="%s"' % side if side else ""
-    name = '<span class="t%s"%s>%s</span>' % (
-        " lost" if lost else "", at, _esc(label))
+    name = '<span class="t%s%s"%s>%s</span>' % (
+        " lost" if lost else "", " drew" if drew else "", at, _esc(label))
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
@@ -333,8 +337,8 @@ def _game_html(game, show_league, config):
     solo = " solo" if not networks and not tags else ""
 
     scores, loser, drawn = _scores(game)
-    # A draw has no losing side to strike through, so the word itself says so.
-    when = ('<em>%s</em>' % _esc(_when(game))) if drawn else _esc(_when(game))
+    # A draw is marked on the two team names, not on the word "Final".
+    when = _esc(_when(game))
 
     return (
         '<div%s>'
@@ -343,9 +347,9 @@ def _game_html(game, show_league, config):
         '</div>'
     ) % (attrs, _esc(game["link"]),
          _side_html(first, show_records, config, lines[order[0]],
-                    scores.get(order[0]), loser == order[0], order[0]),
+                    scores.get(order[0]), loser == order[0], order[0], drawn),
          _side_html(second, show_records, config, lines[order[1]],
-                    scores.get(order[1]), loser == order[1], order[1]),
+                    scores.get(order[1]), loser == order[1], order[1], drawn),
          note, solo, when, nets, tags)
 
 

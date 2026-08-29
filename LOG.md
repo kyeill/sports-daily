@@ -82,3 +82,16 @@ Verified: 15 section/bucket groups across three dates sort correctly with
 mixed states, and in the browser a first-row game moved to the bottom on
 going final, with two finals landing in start order rather than the order
 they ended.
+
+## 2026-08-29 (later still) — draws mark the teams, not the word
+
+A drawn game used to italicise "Final". Both team names now lean instead, so
+the outcome sits where you are already reading -- and among rows whose losers
+are struck through, "both leaning" reads as a different result at a glance in
+a way that one italic word did not. Done in the build and in the live script
+by the same rule, so a game drawn while the page is open looks like one that
+was drawn before it loaded.
+
+Checked against three real draws (Brentford 1-1 Liverpool, Everton 2-2
+Brentford, Burnley 1-1 Chelsea): both names carry the class, neither carries
+the loser's, and no `<em>` is emitted anywhere.

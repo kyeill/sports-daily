@@ -241,14 +241,7 @@ APP_JS = """
   function applyState(row, st) {
     var when = row.querySelector('.when');
     if (!when) { return; }
-    when.innerHTML = '';
-    if (st.drawn) {
-      var em = document.createElement('em');
-      em.textContent = st.text;
-      when.appendChild(em);
-    } else {
-      when.textContent = st.text;
-    }
+    when.textContent = st.text;
     ['home', 'away'].forEach(function (side) {
       var cell = row.querySelector('.s-rec[data-side="' + side + '"]');
       var name = row.querySelector('.t[data-side="' + side + '"]');
@@ -256,7 +249,11 @@ APP_JS = """
         cell.textContent = st[side];
         cell.classList.add('score');
       }
-      if (name) { name.classList.toggle('lost', st.losing === side); }
+      if (name) {
+        name.classList.toggle('lost', st.losing === side);
+        // A draw has no loser, so both names lean rather than one striking.
+        name.classList.toggle('drew', !!st.drawn);
+      }
     });
     // ESPN drops the odds node the moment a game is final -- checked over 315
     // finished games, not one kept a spread -- so a build never prints one on
