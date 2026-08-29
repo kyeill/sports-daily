@@ -208,6 +208,15 @@ APP_JS = """
       }
       if (name) { name.classList.toggle('lost', st.losing === side); }
     });
+    // ESPN drops the odds node the moment a game is final -- checked over 315
+    // finished games, not one kept a spread -- so a build never prints one on
+    // a finished game. A page open through the final whistle has to do the
+    // same thing itself, or it would sit there showing a line to bet on a
+    // game that is over.
+    if (st.state === 'post') {
+      Array.prototype.forEach.call(row.querySelectorAll('.s-spread'),
+        function (el) { el.parentNode.removeChild(el); });
+    }
     row.dataset.state = st.state;
   }
 
@@ -388,8 +397,7 @@ def build(config, days=8, out=SITE):
                               % ", ".join(sorted(espn.FAILURES)))
         body = render.day_body(day, games, config, info=today_info)
         ident = "d%s" % day.isoformat()
-        label = ("Today" if offset == 0 else
-                 "Yest" if offset == -1 else day.strftime("%a"))
+        label = "Today" if offset == 0 else day.strftime("%a")
         tabs.append(
             '<button data-day="%s" aria-current="false"><b>%s</b>'
             '<small>%s</small></button>'
