@@ -1032,9 +1032,10 @@
     "South Korea": "https://a.espncdn.com/i/teamlogos/countries/500/kors.png"
   },
   "network_names": {
-    "SEC Network+": "SECN+",
-    "SEC Network": "SECN",
+    "ACC Network": "ACCN",
+    "ACC Network Extra": "ACCNX",
     "CBS Sports Network": "CBSSN",
-    "ACC Network Extra": "ACCNX"
+    "SEC Network": "SECN",
+    "SEC Network+": "SECN+"
   }
 }
