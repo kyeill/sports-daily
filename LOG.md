@@ -28,3 +28,21 @@
   open through the final whistle was the exception: the live script rewrote
   the status and struck the loser but left the spread. It now removes it on
   the same pass.
+
+## 2026-08-29 (later still) — reload on the day rolling over
+
+A page left on screen across midnight kept showing the finished day's slate:
+the reload that fires on returning to the app never ran, because you never
+left. The 60-second tick now checks the date too.
+
+It cannot simply reload until the date matches — the new build does not
+publish until 6am, so from midnight the reload would fetch the same page and
+go round again every minute. The time of the last reload is kept in
+`sessionStorage` (it survives a reload, where a variable would not) and holds
+the next off for half an hour, which also picks the morning's build up
+shortly after it lands. With no storage available it does nothing at all: a
+stale page is far better than a reload loop.
+
+Verified in a browser with a stale build date and a 2-second tick: eleven
+ticks produced exactly one reload, and backdating the throttle past the
+window produced exactly one more.

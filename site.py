@@ -124,11 +124,13 @@ APP_JS = """
   // has simply been sitting a while. BUILT is the day this page was made, in
   // the same timezone the page prints its times in.
   var seen = Date.now();
-  function stale() {
+  function localDay() {
     var now = new Date();
-    var local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
       .toISOString().slice(0, 10);
-    return local !== BUILT || (Date.now() - seen) > 30 * 60 * 1000;
+  }
+  function stale() {
+    return localDay() !== BUILT || (Date.now() - seen) > 30 * 60 * 1000;
   }
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'hidden') { seen = Date.now(); return; }
@@ -293,12 +295,40 @@ APP_JS = """
     });
   }
 
+  // A page kept on screen across midnight shows a slate for a day that has
+  // ended, and the reload that fires on returning to the app never runs
+  // because you never left. So the tick watches the date as well.
+  //
+  // It cannot just reload until the date matches: the new build does not
+  // publish until 6am, so from midnight onwards the reload would fetch the
+  // same page and go round again every minute. The time of the last one
+  // therefore lives in sessionStorage -- which survives a reload, where a
+  // variable would not -- and holds the next off for half an hour. That also
+  // picks the morning's build up shortly after it lands.
+  var ROLL_MS = 30 * 60 * 1000;
+  function mayReloadForNewDay() {
+    if (localDay() === BUILT) { return false; }
+    try {
+      var last = Number(sessionStorage.getItem('rolled') || 0);
+      if (Date.now() - last < ROLL_MS) { return false; }
+      sessionStorage.setItem('rolled', String(Date.now()));
+      return true;
+    } catch (e) {
+      // With no storage there is no way to hold the next reload off, and a
+      // loop is far worse than a stale page: returning to the app still
+      // catches the new day.
+      return false;
+    }
+  }
+
   function start() {
     if (live) { clearInterval(live); }
     if (document.visibilityState !== 'visible') { return; }
     refresh();
     live = setInterval(function () {
-      if (document.visibilityState === 'visible') { refresh(); }
+      if (document.visibilityState !== 'visible') { return; }
+      if (mayReloadForNewDay()) { location.reload(); return; }
+      refresh();
     }, LIVE_MS);
   }
 
