@@ -498,6 +498,21 @@
             ],
             "note": "Top 5"
           }
+        ],
+        "national_rules": [
+          {
+            "standalone": true,
+            "days": [
+              "Sat"
+            ]
+          },
+          {
+            "standalone": true,
+            "days": [
+              "Sun"
+            ],
+            "from_hour": 11
+          }
         ]
       },
       "sort_rank": 4,

@@ -666,6 +666,31 @@ def is_blowout(game, league):
     return True
 
 
+def national_rules_hit(rules, game):
+    """A game its competition wants in National on its own terms.
+
+    Deliberately not one of the ordinary `rules`: those feed the tier, and a
+    league carrying `highlight_all` sweeps everything they match into
+    Highlights -- which is the one thing these must not do. A match qualifies
+    only when nothing else has already claimed it, so the sections it is
+    meant to sit beside keep every game they had.
+
+    `from_hour` is a floor on the local kickoff, not a fixed slot: Britain and
+    the States change their clocks on different dates, so the early Sunday
+    match drifts between 9:00, 9:30 and 10:00 Eastern across a season.
+    """
+    for rule in rules.get("national_rules") or []:
+        if rule.get("standalone") and not game.get("standalone"):
+            continue
+        if not _on_day(game, rule.get("days")):
+            continue
+        floor = rule.get("from_hour")
+        if floor is not None and game["start_local"].hour < floor:
+            continue
+        return rule.get("note") or "standalone"
+    return ""
+
+
 def evaluate(game, league, config):
     """Returns (keep, tier, reasons). Also stamps the game dict."""
     rules = league.get("include") or {}
@@ -779,7 +804,14 @@ def evaluate(game, league, config):
     # A whole competition can live in Highlights -- every European club
     # fixture -- but never at the expense of your own team, who stays on the
     # main slate wherever they are playing.
-    in_highlight_league = bool(league.get("highlight_all")) and not fav_hit
+    # A game here only because of a national rule must not be swept into
+    # Highlights by highlight_all: sidestepping that catch-all is the whole
+    # point of it. It stays tier "interest", which section_of files under
+    # National.
+    national_note = national_rules_hit(rules, game)
+    national_only = bool(national_note) and not (fav_hit or watch_note or reasons)
+    in_highlight_league = (bool(league.get("highlight_all")) and not fav_hit
+                           and not national_only)
 
     if fav_hit and not demoted:
         tier = "favorite"
@@ -788,7 +820,7 @@ def evaluate(game, league, config):
     else:
         tier = "interest"
 
-    keep = bool(fav_hit or watch_note or reasons)
+    keep = bool(fav_hit or watch_note or reasons or national_only)
     if fav_hit and rules.get("favorites") is False:
         keep = bool(reasons)  # a league can opt out of favorite-forcing
 

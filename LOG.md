@@ -95,3 +95,28 @@ was drawn before it loaded.
 Checked against three real draws (Brentford 1-1 Liverpool, Everton 2-2
 Brentford, Burnley 1-1 Chelsea): both names carry the class, neither carries
 the loser's, and no `<em>` is emitted anywhere.
+
+## 2026-08-30 — Premier League matches in National
+
+A standalone Saturday match, or a standalone Sunday match kicking off at
+11am ET or later, now appears in National when no other rule has claimed it.
+Roughly two a month: 17 across the whole 2025-26 season, out of 114
+standalone matches, the other 91 being ones the existing rules already show.
+
+**Nothing already shown moved.** Swept the full season before and after:
+266 matches kept before (38 Main Slate, 228 Highlights), 283 after (38, 228,
+plus 17 National) -- zero changed section, zero disappeared.
+
+The mechanism is a new `national_rules` block on a league's `include`, kept
+deliberately separate from the ordinary `rules`. Those feed the tier, and EPL
+carries `highlight_all`, which sweeps everything they match into Highlights --
+precisely the catch-all these have to sidestep. A match qualifies only when
+nothing else claimed it, stays tier "interest", and so files under National.
+
+`from_hour` is a floor on the local kickoff rather than a named slot: Britain
+and the States change their clocks on different dates, so the early Sunday
+match drifts between 9:00, 9:30 and 10:00 Eastern across a season. The floor
+turns away six matches a season, all of them that early kickoff.
+
+EPL falls in National's **lead half**, which is what `national_bucket`
+returns for any competition it does not name.
