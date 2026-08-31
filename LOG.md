@@ -120,3 +120,12 @@ turns away six matches a season, all of them that early kickoff.
 
 EPL falls in National's **lead half**, which is what `national_bucket`
 returns for any competition it does not name.
+
+## 2026-08-31 — USA Network spelled out
+
+`USA Net` is ESPN's own short name; the page now prints `USA Network`.
+Measured at the phone's 12.5px after the webfont loaded: 68.5px against the
+74px the column allows, so it fits with 5.5px to spare -- but it is now the
+widest thing in that column, where the time used to set the width. Anything
+longer would need a short form in `network_names`, as ACC Network and CBS
+Sports Network already have.

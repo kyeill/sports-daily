@@ -163,12 +163,12 @@ h2 {
 @media (max-width: 640px) {
   /* A phone has about 200px for the teams once the right-hand column is paid
      for, so everything gives up a little: the columns, the gaps, the type. */
-  /* Measured in the page at mobile sizes: the widest network actually shown
-     is "Apple TV" at 46px, against a 49px time -- the long-form names are
-     renamed in config (SECN+, CBSSN, ACCN) and regional feeds never print at
-     all, so the time is what sets the width now. 74px of content plus the
-     padding and rule is 84px; the headroom is deliberate, since a network is
-     only ever as short as ESPN's own name for it. */
+  /* Measured in the page at 12.5px, after the webfont has loaded: the widest
+     network shown is "USA Network" at 68.5px, against a 46.6px time. 84px of
+     column less the 9px padding and the 1px rule leaves 74px, so it fits with
+     5.5px to spare -- but it is now the thing setting this width, where the
+     time used to be. Anything longer needs a shorter name in config, the way
+     ACC Network and CBS Sports Network already have one. */
   .row { grid-template-columns: 1fr 84px; gap: 9px; padding: 9px 11px; }
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
