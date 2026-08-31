@@ -129,3 +129,14 @@ Measured at the phone's 12.5px after the webfont loaded: 68.5px against the
 widest thing in that column, where the time used to set the width. Anything
 longer would need a short form in `network_names`, as ACC Network and CBS
 Sports Network already have.
+
+## 2026-08-31 (later) — ACC Network and SEC Network spelled out too
+
+Their `ACCN` / `SECN` renames are gone, so ESPN's own names print in full.
+Measured at 12.5px with the webfont loaded, against the 74px the column
+allows: ACC Network 67.7px, SEC Network 67.5px, both clear.
+
+The rest stay short because they do not fit: CBS Sports Network 104.7px,
+ACC Network Extra 96.3px, Big Ten Network 85.3px (never renamed -- ESPN calls
+it BTN already), and SEC Network+ at 73.7px, inside the budget by 0.3px and
+so not worth trusting to a different font stack.

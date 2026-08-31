@@ -167,8 +167,10 @@ h2 {
      network shown is "USA Network" at 68.5px, against a 46.6px time. 84px of
      column less the 9px padding and the 1px rule leaves 74px, so it fits with
      5.5px to spare -- but it is now the thing setting this width, where the
-     time used to be. Anything longer needs a shorter name in config, the way
-     ACC Network and CBS Sports Network already have one. */
+     time used to be. "ACC Network" (67.7) and "SEC Network" (67.5) clear it
+     too; the ones that cannot are shortened in config -- CBS Sports Network
+     at 104.7, ACC Network Extra at 96.3, SEC Network+ at 73.7, which is
+     inside the budget by 0.3px and so not worth trusting. */
   .row { grid-template-columns: 1fr 84px; gap: 9px; padding: 9px 11px; }
   .right { padding-left: 9px; }
   .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
