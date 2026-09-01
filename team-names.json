@@ -172,6 +172,7 @@
     "SMU Mustangs": "Southern Methodist",
     "TCU Horned Frogs": "Texas Christian",
     "UCF Knights": "Central Florida",
+    "UConn Huskies": "Connecticut",
     "USC Trojans": "Southern California",
     "VMI Keydets": "Virginia Military"
   },
@@ -183,13 +184,16 @@
     "SMU Mustangs": "Southern Methodist",
     "TCU Horned Frogs": "Texas Christian",
     "UCF Knights": "Central Florida",
+    "UConn Huskies": "Connecticut",
     "UIC Flames": "Illinois Chicago",
     "UMBC Retrievers": "Maryland Baltimore County",
     "USC Trojans": "Southern California",
     "VCU Rams": "Virginia Commonwealth",
     "VMI Keydets": "Virginia Military"
   },
-  "mens-college-hockey": {},
+  "mens-college-hockey": {
+    "UConn Huskies": "Connecticut"
+  },
   "epl": {
     "AFC Bournemouth": "Bournemouth"
   },

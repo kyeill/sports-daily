@@ -140,3 +140,13 @@ The rest stay short because they do not fit: CBS Sports Network 104.7px,
 ACC Network Extra 96.3px, Big Ten Network 85.3px (never renamed -- ESPN calls
 it BTN already), and SEC Network+ at 73.7px, inside the budget by 0.3px and
 so not worth trusting to a different font stack.
+
+## 2026-08-31 (later) — UConn reads as Connecticut
+
+Added `"UConn Huskies": "Connecticut"` to `team-names.json` for all three
+college sports UConn plays -- football, basketball and hockey -- following
+the same pattern as BYU, LSU, SMU and the rest. The hockey section had been
+empty until now.
+
+Checked against a real fixture: Maryland at UConn on 2026-09-12 renders as
+"Maryland" and "Connecticut".
