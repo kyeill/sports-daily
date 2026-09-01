@@ -162,6 +162,13 @@ def parse_colors(text, warn=True):
         value = (row.get("color") or "").lstrip("#")
         if not team:
             continue
+    # Google Sheets reads an all-digit cell as a NUMBER and eats the leading
+    # zero: "061440" comes back as "61440". It only happens to values with no
+    # letters in them, which is why "0a2240" survives and Penn State's navy did
+    # not. Pad rather than reject -- the alternative is a row that vanishes
+    # with nothing to say why.
+        if value.isdigit() and len(value) < 6:
+            value = value.zfill(6)
         if len(value) == 6 and all(c in "0123456789abcdefABCDEF" for c in value):
             out[team] = value.lower()
         elif warn and value:
