@@ -223,3 +223,18 @@ brackets across all six competitions.
 
 Kyle noted he may revisit this later -- possibly colouring by sport rather
 than defaulting to grey.
+
+## 2026-09-01 (later still) — Tigers in navy
+
+`Detroit Tigers` overridden to **#0a2240**, which is ESPN's own primary; the
+orange it replaces was the override put in because the navy trips
+`invisible_colour`. An explicit `team_colors` entry outranks that test, so it
+applies as written.
+
+It is faint by design of the palette, not by accident: 1.04:1 against the
+card. The Penn State override already in use (#061440) sits at 1.07:1, so
+this is no worse than something already accepted. A lighter navy (#1c3f6e)
+would read at 1.57:1 if it ever wants raising.
+
+Ipswich has no usable alternate: ESPN offers only #F5F2DC, a cream that
+`washed_out` rejects, so it would be swapped straight back to the blue.
