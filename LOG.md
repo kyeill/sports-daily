@@ -160,7 +160,7 @@ answers with `RIVAL_GREY`. Only clubs named in `tint_prefer_teams` count: an
 all-English tie in Europe is a weaker coincidence and still takes the home
 side, as before. Verified on all three head-to-heads in the season.
 
-**The showcase windows print their network in the accent orange.** New
+**The showcase windows print their network in the rank blue.** New
 `marquee_windows` on a league, matched on network AND kickoff together:
 college football's FOX noon, CBS 3:30 and NBC 7:30 on Saturdays, and the
 Saturday Premier League match on NBC. Bounds are ranges, not times, because a
@@ -172,3 +172,10 @@ correctly leaves alone FOX's own Saturday 3:30 window (11 games), NBC's 3:30
 (3), CBS's 7:30 (3), every Friday game, and the Premier League's Sunday NBC
 matches. The one judgement call is a 7:00 PM NBC kickoff, caught by the
 wiggle room on the 7:30 window.
+
+## 2026-08-31 (later still) — marquee networks are blue, not orange
+
+Switched `.nets.marquee` from `--accent` to `--rank`, the same #8fb0d8 the
+rank numbers use. Verified in the page that the two computed colours are
+identical, so a marquee network and a team's rank read as one signal rather
+than two.
