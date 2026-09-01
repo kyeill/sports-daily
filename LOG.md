@@ -238,3 +238,11 @@ would read at 1.57:1 if it ever wants raising.
 
 Ipswich has no usable alternate: ESPN offers only #F5F2DC, a cream that
 `washed_out` rejects, so it would be swapped straight back to the blue.
+
+## 2026-09-01 (later still) — Ipswich to a truer blue
+
+`Ipswich Town` overridden to **#3a64a3**. ESPN gives #0000fa, a pure
+electric blue; there was no alternate to take instead, since the only one on
+offer (#F5F2DC, cream) is rejected by `washed_out` and would have been
+swapped straight back. The override reads at 2.79:1 against the card, against
+1.88:1 for the ESPN blue, and passes both the invisible and washed-out tests.
