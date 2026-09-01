@@ -216,7 +216,39 @@
         "league": "college-football",
         "group": "80",
         "season": 2025
-      }
+      },
+      "marquee_windows": [
+        {
+          "networks": [
+            "FOX"
+          ],
+          "days": [
+            "Sat"
+          ],
+          "from": "11:30",
+          "to": "12:30"
+        },
+        {
+          "networks": [
+            "CBS"
+          ],
+          "days": [
+            "Sat"
+          ],
+          "from": "15:00",
+          "to": "16:00"
+        },
+        {
+          "networks": [
+            "NBC"
+          ],
+          "days": [
+            "Sat"
+          ],
+          "from": "19:00",
+          "to": "20:00"
+        }
+      ]
     },
     {
       "key": "mens-college-basketball",
@@ -522,6 +554,18 @@
         "Liverpool",
         "Manchester City",
         "Manchester United"
+      ],
+      "marquee_windows": [
+        {
+          "networks": [
+            "NBC"
+          ],
+          "days": [
+            "Sat"
+          ],
+          "from": "12:00",
+          "to": "13:45"
+        }
       ]
     },
     {

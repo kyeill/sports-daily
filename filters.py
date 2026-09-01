@@ -99,6 +99,41 @@ def display_networks(game, config, limit=1):
     return [renames.get(n, n) for n in names[:limit]]
 
 
+def _clock_minutes(text):
+    """'15:30' -> 930. Minutes since midnight, for a window bound."""
+    hours, minutes = str(text).split(":")
+    return int(hours) * 60 + int(minutes)
+
+
+def marquee_window(game, league, config, networks):
+    """One of the showcase windows a competition names for itself.
+
+    Matched on the network AND the kickoff together, never either alone: the
+    same channel carries ordinary games at other hours -- FOX has a 3:30
+    window of its own, NBC its Saturday night -- and only the named windows
+    are meant to stand out. The bounds are a range rather than a time because
+    a window occasionally shifts, and because Britain and the States change
+    their clocks on different dates, which moves the Saturday match an hour.
+    """
+    windows = (league or {}).get("marquee_windows") or []
+    if not windows or not networks:
+        return False
+    shown = set(networks)
+    minutes = game["start_local"].hour * 60 + game["start_local"].minute
+    for window in windows:
+        if not _on_day(game, window.get("days")):
+            continue
+        if shown.isdisjoint(window.get("networks") or []):
+            continue
+        first, last = window.get("from"), window.get("to")
+        if first and minutes < _clock_minutes(first):
+            continue
+        if last and minutes > _clock_minutes(last):
+            continue
+        return True
+    return False
+
+
 def _on_day(game, days):
     """True when the game falls on one of the named days ('Sat', 'Fri', ...).
 
@@ -618,7 +653,16 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     if len(preferred) == 1:
         return _colour(preferred[0], config, league)
     if preferred:
-        return _colour(game["home"], config, league)     # two of them: no honest pick
+        # Two of them and no honest pick between them. Where both are clubs
+        # the league names outright -- a Manchester derby, either of them
+        # against Liverpool -- that is the same standoff as two rivals, so it
+        # takes the same grey. An all-English tie in Europe is a weaker
+        # coincidence and still falls to the home side.
+        named = [t for t in sides
+                 if any(_matches(t, n) for n in league.get("tint_prefer_teams") or [])]
+        if len(named) > 1:
+            return RIVAL_GREY
+        return _colour(game["home"], config, league)
 
     if len(notable) == 1:
         return _colour(notable[0], config, league)

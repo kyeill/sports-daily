@@ -151,6 +151,12 @@ h2 {
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
 .nets { font-size: 13px; color: var(--muted); }
+/* The showcase windows a competition names for itself -- FOX's noon kickoff,
+   CBS at 3:30, NBC on Saturday night, the Saturday Premier League match --
+   carry the network in the accent colour, so the week's marquee games are
+   findable without reading every row. Matched on network AND kickoff: the
+   same channels carry ordinary games at other hours. */
+.nets.marquee { color: var(--accent); }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .chip {
   background: var(--chip); border-radius: 999px; padding: 1px 8px;
@@ -314,7 +320,9 @@ def _game_html(game, show_league, config):
         detail = "Neutral site"
     note = ('<span class="s-note">%s</span>' % _esc(detail)) if detail else ""
 
-    networks = "/".join(filters.display_networks(game, config))
+    shown = filters.display_networks(game, config)
+    networks = "/".join(shown)
+    marquee = filters.marquee_window(game, game.get("_league"), config, shown)
     tags = "".join('<span class="chip why">%s</span>' % _esc(t)
                    for t in game.get("tags") or [])
     tags = ('<div class="tags">%s</div>' % tags) if tags else ""
@@ -335,7 +343,8 @@ def _game_html(game, show_league, config):
     # An empty network line would still occupy a team line's worth of height,
     # so it is left out entirely -- and when nothing else is there, the time
     # centres rather than sitting against the first team.
-    nets = ('<div class="nets">%s</div>' % _esc(networks)) if networks else ""
+    nets = ('<div class="nets%s">%s</div>'
+            % (" marquee" if marquee else "", _esc(networks))) if networks else ""
     solo = " solo" if not networks and not tags else ""
 
     scores, loser, drawn = _scores(game)

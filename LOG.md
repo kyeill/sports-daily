@@ -150,3 +150,25 @@ empty until now.
 
 Checked against a real fixture: Maryland at UConn on 2026-09-12 renders as
 "Maryland" and "Connecticut".
+
+## 2026-08-31 (later still) — grey standoffs, orange marquee windows
+
+**Two of the named clubs against each other now takes the rival grey.** A
+Manchester derby, or either against Liverpool, had been falling to the home
+side's colour -- the same "no honest pick" the two-rivals case already
+answers with `RIVAL_GREY`. Only clubs named in `tint_prefer_teams` count: an
+all-English tie in Europe is a weaker coincidence and still takes the home
+side, as before. Verified on all three head-to-heads in the season.
+
+**The showcase windows print their network in the accent orange.** New
+`marquee_windows` on a league, matched on network AND kickoff together:
+college football's FOX noon, CBS 3:30 and NBC 7:30 on Saturdays, and the
+Saturday Premier League match on NBC. Bounds are ranges, not times, because a
+window can shift and because the two countries change their clocks on
+different dates.
+
+Measured over the 2025 season before choosing them. It lights 61 games and
+correctly leaves alone FOX's own Saturday 3:30 window (11 games), NBC's 3:30
+(3), CBS's 7:30 (3), every Friday game, and the Premier League's Sunday NBC
+matches. The one judgement call is a 7:00 PM NBC kickoff, caught by the
+wiggle room on the 7:30 window.
