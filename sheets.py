@@ -128,6 +128,64 @@ def _rows(text):
     return out
 
 
+COLORS_EXPECT = ("team", "color")
+
+
+def parse_colors(text, warn=True):
+    """{team: hex} from the shared Colors tab -- the MASTER LIST.
+
+    The same tab is read by k-money and standings, so a colour is decided once
+    and three sites agree. config.json's `team_colors` is the committed
+    fallback, not the source: three builds read this, and a sheet outage must
+    not be able to break all three at once.
+
+    The header is CHECKED. Asking Google for a tab that does not exist hands
+    back the FIRST tab instead of erroring, so without this a sheet with no
+    Colors tab is parsed as if some other tab were team colours.
+    """
+    # The HEADER is read directly rather than inferred from the rows: a tab
+    # with the right header and nothing under it yet is fine and silent, while
+    # the wrong tab entirely has to say so.
+    header = []
+    if text:
+        first = csv.reader(io.StringIO(text))
+        header = [(h or "").strip().lower() for h in next(first, [])]
+    if not all(key in header for key in COLORS_EXPECT):
+        if warn and text:
+            print("  ! Colors tab has no Team/Color header (got %r); ignoring it"
+                  % (header[:4],))
+        return {}
+    rows = _rows(text)
+    out = {}
+    for row in rows:
+        team = row.get("team") or ""
+        value = (row.get("color") or "").lstrip("#")
+        if not team:
+            continue
+        if len(value) == 6 and all(c in "0123456789abcdefABCDEF" for c in value):
+            out[team] = value.lower()
+        elif warn and value:
+            print("  ! Colors: %r is not a hex colour, for %r" % (value, team))
+    return out
+
+
+def load_colors(config, use_sheet=True):
+    """Merge the shared list over config.json's `team_colors`."""
+    block = config.get("colors_sheet") or {}
+    sheet_id = sheet_id_from(block.get("sheet_id"))
+    if not use_sheet or not sheet_id:
+        return "colours from config.json only"
+    text, source = fetch_tab(sheet_id, block.get("tab", "Colors"),
+                             block.get("cache_minutes", 720))
+    shared = parse_colors(text)
+    if not shared:
+        return "shared colour list empty or unreadable; using config.json"
+    merged = dict(config.get("team_colors") or {})
+    merged.update(shared)
+    config["team_colors"] = merged
+    return "%d colour(s) from the shared list (%s)" % (len(shared), source)
+
+
 def _truthy(value):
     lowered = (value or "").strip().lower()
     if lowered in TRUE_WORDS:

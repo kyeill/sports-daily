@@ -589,6 +589,26 @@ this existed. Worth knowing which risk is which: the API changing breaks the
 morning build too, so that is not new; CORS being withdrawn would break only
 this, and only back to today's behaviour.
 
+## The shared colour list
+
+`team_colors` overrides ESPN where its value is not the one people picture --
+Syracuse comes back navy rather than orange. Those overrides are the **master
+list**, read from the `Colors` tab of the sheet (`Team | Color`) and shared
+with **standings** and **k-money**, so a colour is decided once.
+
+They had already drifted: Tottenham was `ffffff` here and `132257` in
+standings, the Tigers `0a2240` and `fa4616`, and standings carried a comment
+admitting it copied these rather than trusting them.
+
+`team_colors` in `config.json` stays as the **committed fallback**, because
+three builds now read that tab and one outage must not be able to break all
+three. The header is checked: asking Google for a tab that does not exist hands
+back the *first* tab, so an unchecked read would parse someone else's tab as
+team colours.
+
+This is `colors_sheet`, separate from the abandoned `control_sheet` on purpose
+-- enabling one must not enable the other.
+
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,

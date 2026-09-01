@@ -2,6 +2,12 @@
   "timezone": "America/New_York",
   "output": "output/today.html",
   "_comment_sheet": "Optional. Leave sheet_id empty to run entirely from this file, which is the normal case. Setting it makes a Google Sheet override the three team lists and the per-league options.",
+  "_comment_colors_sheet": "The MASTER team-colour list, shared with k-money and standings so a colour is decided once. Read from the Colors tab (Team | Color) and merged OVER team_colors below, which is the committed fallback -- three builds read this list and a sheet outage must not break all three. Separate from control_sheet on purpose: that one expects Teams/Options tabs and is switched off.",
+  "colors_sheet": {
+    "sheet_id": "1v9ErfF8bZ-jpboTz6cHth1sZf8VlCQa2DOufH74OJmk",
+    "tab": "Colors",
+    "cache_minutes": 720
+  },
   "control_sheet": {
     "sheet_id": "",
     "teams_tab": "Teams",

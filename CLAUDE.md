@@ -41,8 +41,17 @@ Two of his standing preferences, since they are easy to miss:
 
 ## The shape of the thing
 
-`config.json` is the source of truth for teams and rules -- no database, no
-Google Sheet (that was built, then deliberately abandoned). `filters.py` decides
+`config.json` is the source of truth for teams and rules -- no database, and no
+Google Sheet for them (that was built, then deliberately abandoned; the
+`control_sheet` block is switched off and should stay that way).
+
+**One narrow exception, added 2026-08-30 at his request:** team COLOURS are read
+from the `Colors` tab of his sheet, because the same overrides are needed by
+standings and k-money and had already drifted apart between them -- Tottenham
+was ffffff here and 132257 there. That is `colors_sheet`, deliberately separate
+from `control_sheet` so enabling one cannot enable the other, and
+`team_colors` in config.json remains the committed fallback. Do not read this
+as the sheet coming back for teams and rules. `filters.py` decides
 what is kept and which of the three buckets it lands in; `render.py` draws it;
 `espn.py` is the only thing that talks to the network.
 

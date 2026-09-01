@@ -299,6 +299,10 @@ def main(argv=None):
 
     config = load_config(args.config)
     notes = sheets.load(config, use_sheet=not args.no_sheet)
+    # The shared colour list, read separately from the control sheet: that one
+    # expects Teams/Options tabs and is switched off, and enabling it by
+    # accident would parse the wrong tab as a watchlist.
+    print("  " + sheets.load_colors(config, use_sheet=not args.no_sheet))
     tz = ZoneInfo(config.get("timezone", "America/New_York"))
     day = parse_day(args.date, tz)
     only = set(args.league) if args.league else None
