@@ -654,9 +654,8 @@ def _worth_colouring(game, sides, mine, notable, rivals, preferred, league, conf
         return True
     if mine or notable or rivals or preferred:
         return True
-    # A playoff game is an event whoever is in it -- the Super Bowl is not
-    # grey for want of the Lions. A bowl game is not an event in that sense,
-    # which is why college football does not ask for this one.
+    # Kept as an option, though nothing asks for it now: a playoff run you are
+    # not in is still someone else's, and greys out like any other game.
     if "postseason" in rules and game.get("postseason"):
         return True
     if "ranked" in rules and any(t.get("rank") for t in sides):

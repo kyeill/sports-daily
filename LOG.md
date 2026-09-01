@@ -189,9 +189,9 @@ it, via `tint_grey_unless`:
 | League | Saved by |
 |---|---|
 | Premier League, the English cups, UCL/UEL/UECL | nothing beyond the big six (or an English club in Europe) |
-| NFL, MLB, NBA, NHL, MLS | my team, a playoff race, or a playoff game |
+| NFL, MLB, NBA, NHL, MLS | my team or a playoff race -- a playoff *game* does not save it |
 | College football, basketball | ranked, Big Ten, a rival, or Syracuse |
-| College hockey | Michigan, Cornell, or the NCAA tournament |
+| College hockey | Michigan or Cornell |
 
 Absent means the league never greys out; an **empty list** means nothing
 beyond the names already checked can save it. The two are different, so the
@@ -210,3 +210,16 @@ named list, so the two cases stay separate. Verified: Forest v Liverpool
 takes Forest's red, Ipswich v United takes Ipswich's blue, while in the
 Champions League Leverkusen v City stays City's blue and PSV v Liverpool
 stays Liverpool's red.
+
+## 2026-09-01 (later) — playoff games grey out too
+
+Dropped the postseason exemption from the five pro leagues and college
+hockey. A playoff run you are not in is still someone else's, so an NFL
+playoff game, a World Series game or an NCAA hockey tournament game without
+Detroit, Michigan or Cornell now greys out like any other. Verified on real
+brackets across all six competitions.
+
+`tint_grey_unless` still understands `"postseason"`; nothing asks for it.
+
+Kyle noted he may revisit this later -- possibly colouring by sport rather
+than defaulting to grey.

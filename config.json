@@ -28,9 +28,7 @@
       "race_min_odds": 20,
       "sort_rank": 6,
       "team_detail": "conference_place",
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "nba",
@@ -57,9 +55,7 @@
         "Detroit Pistons",
         "Cleveland Cavaliers"
       ],
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "mlb",
@@ -83,9 +79,7 @@
       "highlight_teams": [
         "Detroit Tigers"
       ],
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "nhl",
@@ -110,9 +104,7 @@
       "highlight_teams": [
         "Detroit Red Wings"
       ],
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "college-football",
@@ -379,9 +371,7 @@
         "Cornell Big Red"
       ],
       "colour_from": "mens-college-basketball",
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "mls",
@@ -416,9 +406,7 @@
         "*playoffs*",
         "mls-cup"
       ],
-      "tint_grey_unless": [
-        "postseason"
-      ]
+      "tint_grey_unless": []
     },
     {
       "key": "usopen",
