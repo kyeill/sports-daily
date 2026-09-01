@@ -179,3 +179,34 @@ Switched `.nets.marquee` from `--accent` to `--rank`, the same #8fb0d8 the
 rank numbers use. Verified in the page that the two computed colours are
 identical, so a marquee network and a team's rank read as one signal rather
 than two.
+
+## 2026-09-01 — grey as the default, and the trio back their opponent
+
+**Grey is now what a game gets when nothing in it is worth rooting for**,
+rather than the home side's colour by default. A league declares what saves
+it, via `tint_grey_unless`:
+
+| League | Saved by |
+|---|---|
+| Premier League, the English cups, UCL/UEL/UECL | nothing beyond the big six (or an English club in Europe) |
+| NFL, MLB, NBA, NHL, MLS | my team, a playoff race, or a playoff game |
+| College football, basketball | ranked, Big Ten, a rival, or Syracuse |
+| College hockey | Michigan, Cornell, or the NCAA tournament |
+
+Absent means the league never greys out; an **empty list** means nothing
+beyond the names already checked can save it. The two are different, so the
+test is for absence, not emptiness -- an empty dict would have read as
+"never grey" and quietly disabled the whole rule.
+
+Bowls deliberately do **not** get the postseason exemption: the rule is that
+unranked and not-Big-Ten goes grey, and most bowls are exactly that. The CFP
+is unaffected because those teams carry a rank.
+
+**Liverpool, Manchester City and Manchester United now back their opponent**
+in the Premier League and the English cups -- watched the way a rival is,
+where the interest is in who can beat them. In Europe they keep their own
+colour, which they reach through `tint_prefer_clubs_from` rather than the
+named list, so the two cases stay separate. Verified: Forest v Liverpool
+takes Forest's red, Ipswich v United takes Ipswich's blue, while in the
+Champions League Leverkusen v City stays City's blue and PSV v Liverpool
+stays Liverpool's red.

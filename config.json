@@ -27,7 +27,10 @@
       "race_until_month": 2,
       "race_min_odds": 20,
       "sort_rank": 6,
-      "team_detail": "conference_place"
+      "team_detail": "conference_place",
+      "tint_grey_unless": [
+        "postseason"
+      ]
     },
     {
       "key": "nba",
@@ -53,6 +56,9 @@
       "highlight_teams": [
         "Detroit Pistons",
         "Cleveland Cavaliers"
+      ],
+      "tint_grey_unless": [
+        "postseason"
       ]
     },
     {
@@ -76,6 +82,9 @@
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Tigers"
+      ],
+      "tint_grey_unless": [
+        "postseason"
       ]
     },
     {
@@ -100,6 +109,9 @@
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Red Wings"
+      ],
+      "tint_grey_unless": [
+        "postseason"
       ]
     },
     {
@@ -248,6 +260,10 @@
           "from": "19:00",
           "to": "20:00"
         }
+      ],
+      "tint_grey_unless": [
+        "ranked",
+        "conference"
       ]
     },
     {
@@ -329,6 +345,10 @@
       "max_spread": 15,
       "spread_exempt_teams": [
         "Syracuse Orange"
+      ],
+      "tint_grey_unless": [
+        "ranked",
+        "conference"
       ]
     },
     {
@@ -358,7 +378,10 @@
       "highlight_teams": [
         "Cornell Big Red"
       ],
-      "colour_from": "mens-college-basketball"
+      "colour_from": "mens-college-basketball",
+      "tint_grey_unless": [
+        "postseason"
+      ]
     },
     {
       "key": "mls",
@@ -392,6 +415,9 @@
       "promote_rounds": [
         "*playoffs*",
         "mls-cup"
+      ],
+      "tint_grey_unless": [
+        "postseason"
       ]
     },
     {
@@ -566,7 +592,9 @@
           "from": "12:00",
           "to": "13:45"
         }
-      ]
+      ],
+      "tint_grey_unless": [],
+      "tint_named_backs_opponent": true
     },
     {
       "key": "facup",
@@ -598,7 +626,14 @@
       },
       "sort_rank": 5,
       "team_detail": "none",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_grey_unless": [],
+      "tint_prefer_teams": [
+        "Liverpool",
+        "Manchester City",
+        "Manchester United"
+      ],
+      "tint_named_backs_opponent": true
     },
     {
       "key": "eflcup",
@@ -630,7 +665,14 @@
       },
       "sort_rank": 5,
       "team_detail": "none",
-      "highlight_all": true
+      "highlight_all": true,
+      "tint_grey_unless": [],
+      "tint_prefer_teams": [
+        "Liverpool",
+        "Manchester City",
+        "Manchester United"
+      ],
+      "tint_named_backs_opponent": true
     },
     {
       "key": "ucl",
@@ -675,7 +717,8 @@
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
-      "tint_prefer_clubs_from": "soccer/eng.1"
+      "tint_prefer_clubs_from": "soccer/eng.1",
+      "tint_grey_unless": []
     },
     {
       "key": "uel",
@@ -714,7 +757,8 @@
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
-      "tint_prefer_clubs_from": "soccer/eng.1"
+      "tint_prefer_clubs_from": "soccer/eng.1",
+      "tint_grey_unless": []
     },
     {
       "key": "uecl",
@@ -753,7 +797,8 @@
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
-      "tint_prefer_clubs_from": "soccer/eng.1"
+      "tint_prefer_clubs_from": "soccer/eng.1",
+      "tint_grey_unless": []
     },
     {
       "key": "wcq",

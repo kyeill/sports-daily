@@ -632,6 +632,44 @@ def _preferred_sides(game, sides, league):
     return found
 
 
+def _worth_colouring(game, sides, mine, notable, rivals, preferred, league, config):
+    """Whether anything in this game earns a colour, or it goes grey.
+
+    Reached only once nobody obvious has claimed the stripe, so the arguments
+    are all empty by definition -- they are taken anyway so the test reads as
+    the whole question rather than half of it.
+
+    Without `tint_grey_unless` a league behaves as it always did, backing the
+    home side rather than greying out. With it, the league says what counts:
+    for the Premier League nothing beyond the big six, for a pro league its
+    own team or a playoff race, for a college game a rank, the conference, a
+    rival or Syracuse. Nothing qualifying means nothing to root for, and the
+    stripe says so instead of picking the home side for want of an answer.
+    """
+    rules = league.get("tint_grey_unless")
+    # Absent means the league never greys out; an empty list means nothing
+    # beyond the names above can save it. The two are not the same, so this
+    # tests for absence rather than emptiness.
+    if rules is None:
+        return True
+    if mine or notable or rivals or preferred:
+        return True
+    # A playoff game is an event whoever is in it -- the Super Bowl is not
+    # grey for want of the Lions. A bowl game is not an event in that sense,
+    # which is why college football does not ask for this one.
+    if "postseason" in rules and game.get("postseason"):
+        return True
+    if "ranked" in rules and any(t.get("rank") for t in sides):
+        return True
+    if "conference" in rules:
+        # The same list the fallback roots with, rather than a second copy.
+        wanted = (config.get("tint_rules") or {}).get("prefer_conference") or []
+        if any(c.lower() in _conference_of(league, t).lower()
+               for c in wanted for t in sides):
+            return True
+    return False
+
+
 def _tint(game, sides, pinned, notable, rivals, config, league):
     """The colour stripe.
 
@@ -650,24 +688,34 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
         if other:
             return _colour(other[0], config, league)
     preferred = _preferred_sides(game, sides, league)
+    named = [t for t in sides
+             if any(_matches(t, n) for n in league.get("tint_prefer_teams") or [])]
+    # Two clubs the league names outright -- a Manchester derby, either of
+    # them against Liverpool -- is the same standoff as two rivals, and takes
+    # the same grey. An all-English tie in Europe is a weaker coincidence and
+    # still falls through to the home side.
+    if len(named) > 1:
+        return RIVAL_GREY
+    # At home these three are watched the way a rival is: the interest is in
+    # who can beat them, so the stripe goes to the other side. In Europe they
+    # are the reason you are watching at all, and keep their own colour --
+    # which they reach through `tint_prefer_clubs_from`, not this list.
+    if len(named) == 1 and league.get("tint_named_backs_opponent"):
+        other = [t for t in sides if t is not named[0]]
+        if other:
+            return _colour(other[0], config, league)
     if len(preferred) == 1:
         return _colour(preferred[0], config, league)
     if preferred:
-        # Two of them and no honest pick between them. Where both are clubs
-        # the league names outright -- a Manchester derby, either of them
-        # against Liverpool -- that is the same standoff as two rivals, so it
-        # takes the same grey. An all-English tie in Europe is a weaker
-        # coincidence and still falls to the home side.
-        named = [t for t in sides
-                 if any(_matches(t, n) for n in league.get("tint_prefer_teams") or [])]
-        if len(named) > 1:
-            return RIVAL_GREY
         return _colour(game["home"], config, league)
 
     if len(notable) == 1:
         return _colour(notable[0], config, league)
     if notable:
         return _colour(game["home"], config, league)
+    if not _worth_colouring(game, sides, mine, notable, rivals, preferred,
+                            league, config):
+        return RIVAL_GREY
     return _colour(_tint_fallback(game, sides, league, config), config, league)
 
 
