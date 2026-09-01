@@ -560,6 +560,9 @@ def main(argv=None):
 
     config = sports_daily.load_config()
     sheets.load(config)
+    # The shared colour list. THIS is the build the workflow runs -- putting it
+    # only in sports_daily.main() left it in a path that never executes.
+    print("  " + sheets.load_colors(config))
     out, size = build(config, days=args.days, out=args.out)
     print("wrote %s (%.0f KB page)" % (out, size / 1024.0))
     return 0
