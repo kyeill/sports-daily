@@ -9,3 +9,7 @@ __pycache__/
 
 # The optional Sheet template; regenerate with make_template.py
 sports-daily-control.xlsx
+
+# The Colors-tab write endpoint and its token. The Sheet is the master colour
+# list; this is the only way to write to it, since the CSV endpoint READS.
+secrets.json

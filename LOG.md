@@ -246,3 +246,29 @@ electric blue; there was no alternate to take instead, since the only one on
 offer (#F5F2DC, cream) is rejected by `washed_out` and would have been
 swapped straight back. The override reads at 2.79:1 against the card, against
 1.88:1 for the ESPN blue, and passes both the invisible and washed-out tests.
+
+## 2026-09-01 (later still) — three club colours, and a way to write to the Sheet
+
+ESPN gives Everton, Brighton and Crystal Palace virtually the same colour
+(#0606fa, #0606fa, #0202fb), so on the page they were indistinguishable, and
+the alternates were no help: Everton's is white and Palace's black, which the
+washed-out and invisible rules reject, and Brighton's teal is not a club
+colour. All three now carry overrides -- Everton #003399, Brighton #0057b8,
+Crystal Palace #1b458f.
+
+**The Colors tab can now be written to.** It is the master list -- three sites
+read it and it is merged OVER config.json -- but Google's CSV endpoint only
+reads, so every colour had to be pasted in by hand. `doGet` in
+`k-money/apps-script/reminders.gs` (the script bound to that Sheet) gained a
+`color` action, guarded by a token kept in Script Properties rather than in
+the repo, and `set_color.py` here calls it:
+
+    python set_color.py "Everton" 003399
+
+It writes config.json either way, so a missing or broken endpoint cannot lose
+the colour -- it prints the row to paste instead. The script forces the cell
+to plain text before writing, which stops Sheets eating the leading zero of an
+all-digit value: that is exactly how Penn State's 061440 became 61440.
+
+Needs `secrets.json` (gitignored) with `colors_endpoint` and `colors_token`,
+and the script redeployed as a web app.

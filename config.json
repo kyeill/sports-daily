@@ -985,10 +985,13 @@
   "show_logos": true,
   "show_colors": true,
   "team_colors": {
+    "Brighton & Hove Albion": "0057b8",
     "Chicago White Sox": "000000",
     "Cornell Big Red": "b31b1b",
+    "Crystal Palace": "1b458f",
     "Detroit Tigers": "#0a2240",
     "Eintracht Frankfurt": "e1000f",
+    "Everton": "003399",
     "Ipswich Town": "#3a64a3",
     "Michigan Wolverines": "ffcb05",
     "Minnesota Duluth": "5e0a2f",
