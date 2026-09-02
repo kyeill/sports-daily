@@ -596,9 +596,12 @@ Syracuse comes back navy rather than orange. Those overrides are the **master
 list**, read from the `Colors` tab of the sheet (`Team | Color`) and shared
 with **standings** and **k-money**, so a colour is decided once.
 
-They had already drifted: Tottenham was `ffffff` here and `132257` in
-standings, the Tigers `0a2240` and `fa4616`, and standings carried a comment
-admitting it copied these rather than trusting them.
+**standings deliberately does NOT share this list**, and that is not an
+oversight. It draws a WASH across a whole table row where this draws a 3px
+STRIPE, and the two want different answers: a navy that reads as a crisp edge
+disappears once it is lightened and spread out. Sharing it made the Tigers navy
+instead of orange there. So this tab is the master for **stripe** colours --
+sports-daily and k-money -- and standings keeps its own.
 
 `team_colors` in `config.json` stays as the **committed fallback**, because
 three builds now read that tab and one outage must not be able to break all
