@@ -383,11 +383,25 @@ def _odds(comp):
     return details, over_under, "", ""
 
 
-def _american(decimal_price):
-    """Decimal odds as an American moneyline: 2.15 -> +115, 1.5 -> -200."""
+def american_value(decimal_price):
+    """Decimal odds as a signed American number: 2.15 -> 115.0, 1.5 -> -200.0."""
     if decimal_price >= 2:
-        return "+%d" % round((decimal_price - 1) * 100)
-    return "-%d" % round(100 / (decimal_price - 1))
+        return (decimal_price - 1) * 100
+    return -100 / (decimal_price - 1)
+
+
+def _american(decimal_price, nearest=1):
+    """Decimal odds as an American moneyline: 2.15 -> +115, 1.5 -> -200.
+
+    `nearest` rounds the result, which is for DERIVED prices only. A quoted
+    moneyline is the book's own number and is printed as given; a double
+    chance is worked out here from three prices, so its last digit is
+    arithmetic rather than anything anyone is offering.
+    """
+    value = american_value(decimal_price)
+    if nearest > 1:
+        value = round(value / float(nearest)) * nearest
+    return "%+d" % round(value)
 
 
 def _decimal_price(entry):

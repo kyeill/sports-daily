@@ -306,3 +306,15 @@ handful of requests per build, cached three hours.
 ESPN prices about two weeks out, so more distant fixtures have no three-way
 market and keep whatever the scoreboard gave. Labels are `+289 x2` and
 `+185 ML`.
+
+## 2026-09-01 (later) — the favourite for Arsenal v Chelsea, and rounder x2
+
+Arsenal against Chelsea backs neither side, so the row now shows the plain
+favourite's moneyline. It is read from the same three-way market as
+everything else rather than from whichever single leg the scoreboard happened
+to carry, so it is right whichever of them is at home.
+
+Double chance is rounded to the nearest five. The last digit of a price
+worked out from three others is arithmetic, not something anyone is
+offering: +174 became +175, +112 became +110, -102 became -100. Quoted
+moneylines are the book's own numbers and are printed exactly as given.

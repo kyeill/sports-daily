@@ -738,44 +738,47 @@ def soccer_line(game, league, config):
     rules = config.get("soccer_odds") or {}
     if not rules or (game.get("sport") or "") != "Soccer":
         return "", ""
+    watched = rules.get("opponent_double_chance") or []
     mine = _side_of(game, rules.get("mine"))
-    theirs = _side_of(game, rules.get("opponent_double_chance"))
+    theirs = _side_of(game, watched)
     if not mine and not theirs:
         return "", ""
-
-    # Arsenal and Chelsea are watched for who can beat them, so the stripe and
-    # the price both go to the other side -- but never at the expense of one of
-    # my own teams, who are handled first, and not against each other, where
-    # there is no opponent to back.
-    if mine:
-        side = mine
-        want_double = bool(_side_of(game, rules.get("double_chance_vs_top_six")) == side
-                           and _side_of(game, rules.get("top_six")))
-        plus_money_only = bool(any(_matches(game[side], n)
-                                   for n in rules.get("double_chance_if_plus_money") or []))
-    else:
-        others = [s for s in ("home", "away") if s != theirs]
-        # Both sides on the list: Arsenal against Chelsea backs neither.
-        if _side_of(game, rules.get("opponent_double_chance")) and                 all(any(_matches(game[s], n)
-                        for n in rules.get("opponent_double_chance") or [])
-                    for s in ("home", "away")):
-            return "", ""
-        side = others[0]
-        want_double, plus_money_only = True, False
 
     prices = espn.three_way(league, game.get("id"), game.get("id"))
     if not prices:
         return "", ""
+
+    if mine:
+        side = mine
+        # Against a top-six club the moneyline on a match they may well lose
+        # says little, so the bet that also covers the draw is shown instead.
+        want_double = bool(
+            _side_of(game, rules.get("double_chance_vs_top_six")) == side
+            and _side_of(game, rules.get("top_six")))
+        plus_money_only = any(_matches(game[side], n)
+                              for n in rules.get("double_chance_if_plus_money") or [])
+    elif all(any(_matches(game[s], n) for n in watched) for s in ("home", "away")):
+        # Arsenal against Chelsea backs neither side, so the row shows the
+        # plain favourite -- read from this same three-way market rather than
+        # whichever single leg the scoreboard happened to carry.
+        side = min(("home", "away"), key=lambda s: prices.get(s) or 999)
+        return side, "%s ML" % espn._american(prices[side])
+    else:
+        # Arsenal and Chelsea are watched for who can beat them.
+        side = "away" if theirs == "home" else "home"
+        want_double, plus_money_only = True, False
+
     own = prices.get(side)
     if not own:
         return "", ""
-
     if want_double or plus_money_only:
         combined = espn.double_chance(own, prices.get("draw"))
-        # Plus money means the double chance is still worth a bet at all; below
-        # that it is a formality and the moneyline says more.
+        # Plus money means the double chance is still worth a bet at all;
+        # below that it is a formality and the moneyline says more.
         if combined and (want_double or combined >= 2):
-            return side, "%s x2" % espn._american(combined)
+            # Rounded to five: the last digit of a price worked out from three
+            # others is arithmetic, not something anyone is offering.
+            return side, "%s x2" % espn._american(combined, 5)
     return side, "%s ML" % espn._american(own)
 
 
