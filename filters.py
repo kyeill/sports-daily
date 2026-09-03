@@ -14,6 +14,7 @@ import re
 import unicodedata
 
 import espn
+import sheets
 
 TIERS = ("favorite", "watch", "interest")
 
@@ -68,8 +69,20 @@ def pinned_for(config, league_key):
 
 
 def watchlist_for(config, league_key):
-    """Watchlist entries: dicts of {team, note, expires}."""
-    return (config.get("watchlist") or {}).get(league_key, [])
+    """Watchlist entries: dicts of {team, note, expires}.
+
+    An `expires` date drops the entry once it has passed, which is what makes
+    a season-long interest safe to write down: a team followed for one year
+    stops being followed on its own, rather than waiting to be noticed and
+    deleted a season late. Until now only the Sheet honoured this, so an entry
+    added straight to config.json kept its expiry as decoration.
+
+    Read against today rather than the day on screen: the list says who is
+    worth following NOW, and browsing back to November should not resurrect
+    somebody dropped since.
+    """
+    entries = (config.get("watchlist") or {}).get(league_key, [])
+    return [e for e in entries if not sheets.expired(e.get("expires"))]
 
 
 def display_networks(game, config, limit=1):
@@ -910,8 +923,11 @@ def evaluate(game, league, config):
 
     # Power conferences, but only on the days you asked for -- college
     # football's midweek games are a different proposition from Saturday's.
-    # Week 0 is the exception: a Saturday, but with so little on that a
-    # Power Four pairing is worth having even unranked.
+    # A dated exception can add days the main list leaves out -- Week 0 was a
+    # Saturday with so little on that a Power Four pairing was worth having
+    # unranked. Nothing asks for it now: 2026 was the last Week 0, and the
+    # dates are MM-DD, so a rule left behind would have fired every August
+    # after it against a normal week's card.
     power_day = (_on_day(game, rules.get("power_conference_days"))
                  or (_on_day(game, rules.get("power_conference_extra_days"))
                      and _in_dates(game, rules.get("power_conference_extra_dates"))))

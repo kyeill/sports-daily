@@ -172,12 +172,6 @@
           }
         ],
         "power_conferences_both": true,
-        "power_conference_extra_days": [
-          "Sat"
-        ],
-        "power_conference_extra_dates": [
-          "08-23..08-29"
-        ],
         "postseason_top_division_only": true
       },
       "sort_rank": 1,

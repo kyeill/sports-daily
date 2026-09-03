@@ -202,7 +202,7 @@ def _truthy(value):
     return None
 
 
-def _expired(raw, today=None):
+def expired(raw, today=None):
     """True if an Expires cell is a date that has already passed."""
     raw = (raw or "").strip()
     if not raw:
@@ -229,7 +229,7 @@ def parse_teams(text, warn=True):
             if warn and row.get("sport"):
                 print("  ! unknown sport %r in Teams tab; row skipped" % row.get("sport"))
             continue
-        if _expired(row.get("expires")):
+        if expired(row.get("expires")):
             continue
         raw_tier = (row.get("tier") or "").strip().lower()
         if raw_tier.startswith("fav"):

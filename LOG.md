@@ -329,3 +329,20 @@ decimal or fractional price, where +383 and -141 were arithmetic artefacts
 rather than anything on offer.
 
 Point spreads are untouched: a half-point line is a real half point.
+
+## 2026-09-03 — Week 0 retired, and expiry dates that actually expire
+
+**The Week 0 rule is gone.** `power_conference_extra_days`/`_dates` admitted
+unranked Power-Four-vs-Power-Four on the Saturday of 08-23..08-29, when Week 0
+was the only thing on. 2026 was the last Week 0, and those dates are MM-DD, so
+left in place the rule would have fired every August afterwards against a
+normal week's card. The mechanism stays in `filters.py`; nothing sets it.
+
+**`expires` now works from config.json.** It had only ever been honoured on
+the Sheet path, so an entry written straight into `config.json` carried its
+expiry as decoration and stayed for good. `filters.watchlist_for` now drops
+expired entries, which is what makes a season-long interest safe to write
+down: it stops following the team on its own instead of waiting to be noticed
+a season late. Read against today, not the day on screen, so browsing back to
+November does not resurrect somebody since dropped. An unreadable date keeps
+the row and says so.
