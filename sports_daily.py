@@ -201,6 +201,13 @@ def collect(config, day, tz, only=None):
         games = [g for g in games if g["start_local"].date() == day]
         mark_standalone(games)
         passed = [g for g in games if filters.evaluate(g, league, config)[0]]
+        # Soccer shows a chosen team's price rather than the favourite's, which
+        # needs the three-way market. Asked for only on games being kept, so it
+        # costs a handful of requests rather than one per fixture on the card.
+        for game in passed:
+            side, label = filters.soccer_line(game, league, config)
+            if side and label:
+                game["spread_side"], game["spread_label"] = side, label
         kept.extend(passed)
         stats.append((league["label"], len(passed), len(games)))
     return kept, stats

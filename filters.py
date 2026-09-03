@@ -718,6 +718,67 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     return _colour(_tint_fallback(game, sides, league, config), config, league)
 
 
+def _side_of(game, names):
+    """Which side one of these teams is on, or ''."""
+    for side in ("home", "away"):
+        if any(_matches(game[side], n) for n in names or []):
+            return side
+    return ""
+
+
+def soccer_line(game, league, config):
+    """-> (side, label) for a soccer row, or ('', '') to leave it alone.
+
+    Which price a row shows is decided by WHO is playing, not by who is
+    favoured: the point is to read your own team's number every week, and the
+    favourite's line does not tell you that when they are the underdog.
+
+    Only asked for once a game is being kept, because it costs a request.
+    """
+    rules = config.get("soccer_odds") or {}
+    if not rules or (game.get("sport") or "") != "Soccer":
+        return "", ""
+    mine = _side_of(game, rules.get("mine"))
+    theirs = _side_of(game, rules.get("opponent_double_chance"))
+    if not mine and not theirs:
+        return "", ""
+
+    # Arsenal and Chelsea are watched for who can beat them, so the stripe and
+    # the price both go to the other side -- but never at the expense of one of
+    # my own teams, who are handled first, and not against each other, where
+    # there is no opponent to back.
+    if mine:
+        side = mine
+        want_double = bool(_side_of(game, rules.get("double_chance_vs_top_six")) == side
+                           and _side_of(game, rules.get("top_six")))
+        plus_money_only = bool(any(_matches(game[side], n)
+                                   for n in rules.get("double_chance_if_plus_money") or []))
+    else:
+        others = [s for s in ("home", "away") if s != theirs]
+        # Both sides on the list: Arsenal against Chelsea backs neither.
+        if _side_of(game, rules.get("opponent_double_chance")) and                 all(any(_matches(game[s], n)
+                        for n in rules.get("opponent_double_chance") or [])
+                    for s in ("home", "away")):
+            return "", ""
+        side = others[0]
+        want_double, plus_money_only = True, False
+
+    prices = espn.three_way(league, game.get("id"), game.get("id"))
+    if not prices:
+        return "", ""
+    own = prices.get(side)
+    if not own:
+        return "", ""
+
+    if want_double or plus_money_only:
+        combined = espn.double_chance(own, prices.get("draw"))
+        # Plus money means the double chance is still worth a bet at all; below
+        # that it is a formality and the moneyline says more.
+        if combined and (want_double or combined >= 2):
+            return side, "%s x2" % espn._american(combined)
+    return side, "%s ML" % espn._american(own)
+
+
 def _spread_points(game):
     """The number of points in 'IU -40.5', or None."""
     match = re.search(r"-\s*(\d+(?:\.\d+)?)", game.get("spread") or "")

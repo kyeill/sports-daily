@@ -1136,5 +1136,31 @@
     "ACC Network Extra": "ACCNX",
     "CBS Sports Network": "CBSSN",
     "SEC Network+": "SECN+"
+  },
+  "soccer_odds": {
+    "_comment": "Which side's price a soccer row shows, by team rather than by who is favoured. `mine` always show their own number. Tottenham against a top-six side shows double chance instead, because the moneyline on a match they are likely to lose says little. Atlanta and the USMNT show double chance only when it is plus money. Arsenal and Chelsea are watched for who can beat them, so the OPPONENT's double chance is shown -- except against Tottenham or each other, where the rules above decide. Needs the three-way market from the core API; without it the row keeps whatever the scoreboard gave.",
+    "mine": [
+      "Tottenham Hotspur",
+      "Atlanta United",
+      "United States"
+    ],
+    "top_six": [
+      "Arsenal",
+      "Chelsea",
+      "Liverpool",
+      "Manchester City",
+      "Manchester United"
+    ],
+    "double_chance_vs_top_six": [
+      "Tottenham Hotspur"
+    ],
+    "double_chance_if_plus_money": [
+      "Atlanta United",
+      "United States"
+    ],
+    "opponent_double_chance": [
+      "Arsenal",
+      "Chelsea"
+    ]
   }
 }

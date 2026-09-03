@@ -406,6 +406,51 @@ def _decimal_price(entry):
     return None
 
 
+def three_way(league, event_id, competition_id):
+    """{'home': d, 'away': d, 'draw': d} as decimal odds, or {}.
+
+    Soccer is a three-outcome market and the scoreboard carries only one leg
+    of it, so anything that needs the draw -- a double chance, or a price for
+    the side that is not favourite -- has to come from the core API.
+
+    The first provider pricing ALL THREE wins. A provider missing the draw is
+    no use: two legs cannot be combined into a bet that covers two outcomes,
+    and quietly falling back to a different provider for the missing leg would
+    mix two books' margins into one number.
+    """
+    path = league.get("path") or ""
+    if "/" not in path:
+        return {}
+    sport, code = path.split("/", 1)
+    data = _get("%s/%s/leagues/%s/events/%s/competitions/%s/odds"
+                % (CORE, sport, code, event_id, competition_id),
+                {"limit": 20}, cache_key="odds3-%s-%s" % (code, event_id),
+                max_age_min=180)
+    for item in (data or {}).get("items") or []:
+        prices = {}
+        for key, side in (("homeTeamOdds", "home"), ("awayTeamOdds", "away"),
+                          ("drawOdds", "draw")):
+            price = _decimal_price(item.get(key) or {})
+            if price:
+                prices[side] = price
+        if len(prices) == 3:
+            return prices
+    return {}
+
+
+def double_chance(team_price, draw_price):
+    """Decimal odds for 'this side wins OR draws'.
+
+    Two outcomes of the three, so the implied probabilities add:
+    1/((1/a) + (1/b)), which reduces to the usual ab/(a+b). The book's margin
+    rides along in both legs, so this sits slightly shorter than a book's own
+    double-chance price -- it is derived from the three-way market, not quoted.
+    """
+    if not team_price or not draw_price:
+        return None
+    return (team_price * draw_price) / (team_price + draw_price)
+
+
 def event_moneyline(league, event_id, competition_id):
     """-> (side, label) for a fixture the scoreboard priced only as a handicap.
 

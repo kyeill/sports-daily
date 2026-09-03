@@ -272,3 +272,37 @@ all-digit value: that is exactly how Penn State's 061440 became 61440.
 
 Needs `secrets.json` (gitignored) with `colors_endpoint` and `colors_token`,
 and the script redeployed as a web app.
+
+## 2026-09-01 — soccer shows a chosen team's price, not the favourite's
+
+Which number a soccer row carries is now decided by WHO is playing rather
+than by who is favoured: the favourite's line says nothing about your own
+team when they are the underdog.
+
+| Situation | Shows |
+|---|---|
+| Tottenham, Atlanta or the USMNT playing | their own price, always |
+| Tottenham vs a Top Six club | Tottenham's double chance |
+| Atlanta / USMNT | double chance only when it is >= +100, else moneyline |
+| Arsenal or Chelsea vs anyone else | the OPPONENT's double chance |
+| Arsenal vs Chelsea | left alone -- no opponent to back, and neither is mine |
+
+Top Six is Arsenal, Chelsea, Liverpool, Manchester City, Manchester United:
+five clubs, because Tottenham is the sixth and never its own opponent.
+
+Double chance is win-or-draw, two outcomes of three, so the implied
+probabilities add: `1/((1/a)+(1/b))`, which reduces to `ab/(a+b)` in decimal
+odds. Both derivations are cross-checked in `espn.double_chance`. The book's
+margin rides along in both legs, so it sits slightly shorter than a quoted
+double chance -- it is derived from the three-way market, not published.
+
+**The draw price is not in the scoreboard.** `espn.three_way()` reads the core
+API and takes the first provider pricing all three; a provider missing the
+draw is skipped rather than topped up from another, which would blend two
+books' margins into one number. In practice that is DraftKings; Bet 365 often
+omits the draw. Called only for games already being kept, so it costs a
+handful of requests per build, cached three hours.
+
+ESPN prices about two weeks out, so more distant fixtures have no three-way
+market and keep whatever the scoreboard gave. Labels are `+289 x2` and
+`+185 ML`.
