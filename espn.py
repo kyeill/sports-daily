@@ -377,8 +377,12 @@ def _odds(comp):
         if abs(value) >= 100:
             for competitor in comp.get("competitors") or []:
                 if ((competitor.get("team") or {}).get("abbreviation") or "") == token:
+                    # To the nearest five, as every other price here is. Books
+                    # quote moneylines in fives anyway, so this almost never
+                    # moves a number -- it stops the odd one that is not from
+                    # looking like a different kind of figure.
                     return (details, over_under, competitor.get("homeAway") or "",
-                            "%+g ML" % value)
+                            "%+d ML" % (int(round(value / 5.0)) * 5))
 
     return details, over_under, "", ""
 
@@ -493,7 +497,7 @@ def event_moneyline(league, event_id, competition_id):
                 prices[side] = price
         if len(prices) == 2:
             side = min(prices, key=prices.get)
-            return side, "%s ML" % _american(prices[side])
+            return side, "%s ML" % _american(prices[side], 5)
     return "", ""
 
 

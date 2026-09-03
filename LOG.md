@@ -318,3 +318,14 @@ Double chance is rounded to the nearest five. The last digit of a price
 worked out from three others is arithmetic, not something anyone is
 offering: +174 became +175, +112 became +110, -102 became -100. Quoted
 moneylines are the book's own numbers and are printed exactly as given.
+
+## 2026-09-01 (later still) — every price to the nearest five
+
+Moneylines are rounded like the double chances now, in all three places one
+can come from: the scoreboard's own `details`, the core-API fallback, and the
+soccer rules here. Books quote moneylines in fives anyway, so it rarely moves
+a number -- the ones it does move are those converted from a provider's
+decimal or fractional price, where +383 and -141 were arithmetic artefacts
+rather than anything on offer.
+
+Point spreads are untouched: a half-point line is a real half point.

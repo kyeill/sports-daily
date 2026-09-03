@@ -762,7 +762,7 @@ def soccer_line(game, league, config):
         # plain favourite -- read from this same three-way market rather than
         # whichever single leg the scoreboard happened to carry.
         side = min(("home", "away"), key=lambda s: prices.get(s) or 999)
-        return side, "%s ML" % espn._american(prices[side])
+        return side, "%s ML" % espn._american(prices[side], 5)
     else:
         # Arsenal and Chelsea are watched for who can beat them.
         side = "away" if theirs == "home" else "home"
@@ -779,7 +779,7 @@ def soccer_line(game, league, config):
             # Rounded to five: the last digit of a price worked out from three
             # others is arithmetic, not something anyone is offering.
             return side, "%s x2" % espn._american(combined, 5)
-    return side, "%s ML" % espn._american(own)
+    return side, "%s ML" % espn._american(own, 5)
 
 
 def _spread_points(game):
