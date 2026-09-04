@@ -370,3 +370,20 @@ rule then italicised as a draw on a game nobody played. They now show ESPN's
 own word ("Postponed") and carry no score, no loser and no draw. Cancelled
 and suspended games are treated the same way. Rare -- three across a season's
 sweep -- but wrong every time it happened.
+
+## 2026-09-04 — gviz guesses the header depth, so pin it
+
+`gviz/tq?tqx=out:csv` decides for itself how many leading rows are header, and
+when it decides more than one it does not skip them — it **merges them into a
+single space-joined row** and returns that as the header. Those rows are then
+missing from the read while sitting untouched in the Sheet.
+
+The guess is driven by column type, so it changes as the DATA changes. A tab
+that has read correctly for weeks starts dropping rows the moment a column
+gains a value of a different kind. It cost k-money six of eight tasks the day
+two were ticked and dates landed in a previously empty Done column.
+
+`&headers=1` pins it, and is now on `GVIZ` in `sheets.py`. The Teams and
+Options tabs each have exactly one header row, so there was never a reason to
+let it guess. Nothing here had gone wrong yet — this is the same latent bug,
+fixed before it fired.

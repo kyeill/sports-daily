@@ -27,7 +27,12 @@ import requests
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
 
-GVIZ = "https://docs.google.com/spreadsheets/d/%s/gviz/tq?tqx=out:csv&sheet=%s"
+# headers=1 is NOT optional. Without it gviz guesses how many leading rows
+# are header and MERGES them into one when it guesses more than one, so rows
+# disappear from the read while sitting untouched in the Sheet. It cost k-money
+# six tasks. The Colors tab has exactly one header row; pin it.
+GVIZ = ("https://docs.google.com/spreadsheets/d/%s"
+        "/gviz/tq?tqx=out:csv&headers=1&sheet=%s")
 
 TIER_FAVORITE = "favorite"
 TIER_FOLLOW = "follow"   # pinned like a favorite, but never drives the race

@@ -801,6 +801,16 @@ def _spread_points(game):
     return float(match.group(1)) if match else None
 
 
+def _final_margin(game):
+    """How far apart a finished game ended, or None if it did not finish."""
+    if (game.get("state") or "") != "post" or game.get("called_off"):
+        return None
+    try:
+        return abs(int(game["home"].get("score")) - int(game["away"].get("score")))
+    except (TypeError, ValueError):
+        return None
+
+
 def is_blowout(game, league):
     """A game nobody expects to be competitive, and no reason to keep it.
 
@@ -811,6 +821,14 @@ def is_blowout(game, league):
     if not limit:
         return False
     points = _spread_points(game)
+    if points is None:
+        # ESPN deletes the odds the moment a game goes final, so on any day
+        # already played the line is simply gone and this rule would never
+        # fire -- which is how three games that finished by 40 or more came
+        # back onto yesterday's tab after being filtered out on the day. The
+        # final margin answers the same question, with better evidence: before
+        # the game the line is a forecast, after it the score is the fact.
+        points = _final_margin(game)
     if points is None or points <= limit:
         return False
 
