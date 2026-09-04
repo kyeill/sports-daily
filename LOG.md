@@ -387,3 +387,20 @@ two were ticked and dates landed in a previously empty Done column.
 Options tabs each have exactly one header row, so there was never a reason to
 let it guess. Nothing here had gone wrong yet — this is the same latent bug,
 fixed before it fired.
+
+## 2026-09-04 (later) — the blowout filter was dead on every past day
+
+ESPN deletes the odds the moment a game goes final, so `_spread_points`
+returned None for everything already played and `is_blowout` never fired
+again. Games filtered out on the day quietly came back once they were over --
+on yesterday's tab that was Idaho 14-66 Utah, Arkansas-Pine Bluff 14-54
+Missouri and Eastern Illinois 7-59 Minnesota, three of the eight games kept.
+
+The final margin now stands in when the line has gone. It answers the same
+question with better evidence: before the game the spread is a forecast,
+after it the score is the fact. Measured across nine days, it changes exactly
+one of them -- dropping exactly those three -- and adds nothing anywhere.
+
+Note the rule still only bites at build time, so a game kept this morning
+stays on today's tab all day however it ends; it is tomorrow's build, seeing
+it finished, that leaves it out.
