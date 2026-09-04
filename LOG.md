@@ -346,3 +346,27 @@ down: it stops following the team on its own instead of waiting to be noticed
 a season late. Read against today, not the day on screen, so browsing back to
 November does not resurrect somebody since dropped. An unreadable date keeps
 the row and says so.
+
+## 2026-09-04 — delayed games say how far they got, and postponed ones stop lying
+
+**A delay now reads `Delay - 1st`.** ESPN keeps a delayed game at state "in"
+and buries the period in its own prose -- `STATUS_RAIN_DELAY`, shortDetail
+"Rain Delay, Top 1st". The reason does not matter; how far in it got does.
+Matched on `"DELAY" in type.name`, which covers `STATUS_RAIN_DELAY` and
+`STATUS_DELAYED` alike, with the period taken from `status.period`.
+
+Each sport names that period its own way -- innings and hockey periods as
+ordinals, football and the NBA in quarters, soccer and college basketball in
+halves, overtime beyond regulation and extra time in soccer. The live script
+carries the same table, keyed off the row's league path, so a game that goes
+into delay while the page is open reads the same as one built that way.
+
+Verified against a real Tigers-Guardians rain delay caught live: ESPN's
+"Rain Delay, Top 1st" renders as "Delay - 1st".
+
+**Postponed games no longer read as "Final".** ESPN files them as state
+"post", so they were showing as finished -- and carrying 0-0, which the draw
+rule then italicised as a draw on a game nobody played. They now show ESPN's
+own word ("Postponed") and carry no score, no loser and no draw. Cancelled
+and suspended games are treated the same way. Rare -- three across a season's
+sweep -- but wrong every time it happened.

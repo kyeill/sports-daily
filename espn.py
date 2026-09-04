@@ -615,6 +615,18 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             # e.g. "league-phase", "round-of-16", "mls-cup", "final".
             "round": ((event.get("season") or {}).get("slug") or ""),
             "status_detail": status.get("shortDetail") or "",
+            # A delay keeps state "in" and buries the period in prose --
+            # "Rain Delay, Top 1st". The period is carried separately so the
+            # page can say which part of the game it stopped in, whatever the
+            # reason: STATUS_RAIN_DELAY and STATUS_DELAYED both match.
+            "delayed": "DELAY" in (status.get("name") or "").upper(),
+            # A game that produced no result. ESPN files these as state
+            # "post", which would otherwise read as "Final" -- and at 0-0 the
+            # draw rule would italicise both sides of a game never played.
+            "called_off": any(word in (status.get("name") or "").upper()
+                              for word in ("POSTPONED", "CANCEL", "SUSPEND")),
+            "status_note": status.get("description") or "",
+            "period": (comp.get("status") or {}).get("period"),
             "home": home,
             "away": away,
             "tv": tv,

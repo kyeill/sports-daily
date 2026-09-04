@@ -255,7 +255,52 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
          " score" if score is not None else "", at, _esc(detail))
 
 
+def _ordinal(number):
+    """1 -> '1st', 2 -> '2nd', 11 -> '11th'."""
+    if 10 <= number % 100 <= 20:
+        return "%dth" % number
+    return "%d%s" % (number, {1: "st", 2: "nd", 3: "rd"}.get(number % 10, "th"))
+
+
+def _period_label(game):
+    """Which part of the game it is in, in that sport's own words.
+
+    Each sport counts differently and says so differently: innings and hockey
+    periods are ordinals, football and the NBA use quarters, soccer and
+    college basketball halves. Beyond regulation they all become OT, except
+    soccer, where it is extra time.
+    """
+    period = game.get("period") or 0
+    if period < 1:
+        return ""
+    sport = game.get("sport") or ""
+    if sport == "Baseball":
+        return _ordinal(period)
+    if sport == "Hockey":
+        return _ordinal(period) if period <= 3 else "OT"
+    if sport == "Football":
+        return "%dQ" % period if period <= 4 else "OT"
+    if sport == "Soccer":
+        return "%dH" % period if period <= 2 else "ET"
+    if sport == "Basketball":
+        # College plays halves, the NBA quarters.
+        if game.get("league") == "mens-college-basketball":
+            return "%dH" % period if period <= 2 else "OT"
+        return "%dQ" % period if period <= 4 else "OT"
+    return ""
+
+
 def _when(game):
+    # Postponed, cancelled or suspended: ESPN files these as state "post", so
+    # without this they read as "Final" on a game that was never played.
+    if game.get("called_off"):
+        return game.get("status_note") or "Postponed"
+    # A delay reads as in-progress and hides the period inside prose ESPN
+    # writes for it -- "Rain Delay, Top 1st". Whatever stopped it, what
+    # matters is how far in it got.
+    if game.get("delayed"):
+        label = _period_label(game)
+        return "Delay - %s" % label if label else "Delay"
     if game["state"] == "in":
         return game.get("status_detail") or "live"
     if game["state"] == "post":
@@ -273,6 +318,10 @@ def _scores(game):
     score was built as one string.
     """
     if game.get("state") not in ("in", "post"):
+        return {}, None, False
+    # A called-off game carries 0-0, which is not a result and certainly not
+    # the draw the equal scores would otherwise be read as.
+    if game.get("called_off"):
         return {}, None, False
     out = {}
     for side in ("home", "away"):

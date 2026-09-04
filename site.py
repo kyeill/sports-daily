@@ -268,6 +268,28 @@ APP_JS = """
     if (st.state === 'post' && row.parentNode) { resort(row.parentNode); }
   }
 
+  // The same rule the build uses: each sport counts its own way, and a delay
+  // is worth nothing without saying how far in it got. The league path on the
+  // row is enough to tell them apart.
+  function periodLabel(path, period) {
+    if (!period || period < 1) { return ''; }
+    function ord(n) {
+      if (n % 100 >= 10 && n % 100 <= 20) { return n + 'th'; }
+      return n + ({1: 'st', 2: 'nd', 3: 'rd'}[n % 10] || 'th');
+    }
+    if (path.indexOf('baseball/') === 0) { return ord(period); }
+    if (path.indexOf('hockey/') === 0) { return period <= 3 ? ord(period) : 'OT'; }
+    if (path.indexOf('football/') === 0) { return period <= 4 ? period + 'Q' : 'OT'; }
+    if (path.indexOf('soccer/') === 0) { return period <= 2 ? period + 'H' : 'ET'; }
+    if (path.indexOf('basketball/') === 0) {
+      if (path.indexOf('mens-college-basketball') >= 0) {
+        return period <= 2 ? period + 'H' : 'OT';
+      }
+      return period <= 4 ? period + 'Q' : 'OT';
+    }
+    return '';
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
@@ -286,9 +308,24 @@ APP_JS = """
     if (state === 'post' && !drawn && scores.home != null && scores.away != null) {
       losing = Number(scores.home) < Number(scores.away) ? 'home' : 'away';
     }
+    // A delay reads as in-progress and buries the period in ESPN's own prose
+    // ("Rain Delay, Top 1st"), so it is rewritten the way the build writes it.
+    var name = String(type.name || '').toUpperCase();
+    var delayed = name.indexOf('DELAY') >= 0;
+    // Never played: ESPN calls these "post", which would read as Final, and
+    // at 0-0 would be struck through as a draw.
+    var calledOff = name.indexOf('POSTPONED') >= 0 || name.indexOf('CANCEL') >= 0
+      || name.indexOf('SUSPEND') >= 0;
+    var stopped = periodLabel(row.dataset.path || '', (comp.status || {}).period);
+    if (calledOff) {
+      applyState(row, {state: state, text: type.description || 'Postponed',
+                       drawn: false, losing: null});
+      return;
+    }
     var st = {
       state: state,
-      text: state === 'post' ? 'Final'
+      text: delayed ? (stopped ? 'Delay - ' + stopped : 'Delay')
+        : state === 'post' ? 'Final'
         : state === 'in' ? (type.shortDetail || 'live')
         : when.textContent,
       home: scores.home, away: scores.away,
