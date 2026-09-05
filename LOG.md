@@ -404,3 +404,18 @@ one of them -- dropping exactly those three -- and adds nothing anywhere.
 Note the rule still only bites at build time, so a game kept this morning
 stays on today's tab all day however it ends; it is tomorrow's build, seeing
 it finished, that leaves it out.
+
+## 2026-09-04 (later still) — Arsenal and Chelsea only hand the number over when beatable
+
+Their opponent's double chance is now shown only while Arsenal or Chelsea are
+the underdog of the two. Favoured, they take their own moneyline back: the
+point of backing the other side is that somebody might beat them, and against
+a 6.00 outsider nobody is about to.
+
+The comparison is between the two teams, not against the draw, so a short
+draw price cannot make both of them underdogs at once.
+
+In practice this hands the number back most weeks -- all five priced fixtures
+in the current window have them favoured, including at Napoli in the
+Champions League. The opponent's double chance now appears only when it means
+something.

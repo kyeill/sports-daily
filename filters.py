@@ -777,9 +777,16 @@ def soccer_line(game, league, config):
         side = min(("home", "away"), key=lambda s: prices.get(s) or 999)
         return side, "%s ML" % espn._american(prices[side], 5)
     else:
-        # Arsenal and Chelsea are watched for who can beat them.
-        side = "away" if theirs == "home" else "home"
-        want_double, plus_money_only = True, False
+        other = "away" if theirs == "home" else "home"
+        # Watched for who can beat them -- but only while somebody might.
+        # Favoured, and their own price is the number worth reading; against a
+        # shorter-priced opponent, the bet on that opponent not losing is.
+        # Compared between the two sides, so a short draw price cannot make
+        # both of them underdogs.
+        if (prices.get(theirs) or 999) <= (prices.get(other) or 999):
+            side, want_double, plus_money_only = theirs, False, False
+        else:
+            side, want_double, plus_money_only = other, True, False
 
     own = prices.get(side)
     if not own:
