@@ -563,3 +563,14 @@ halves as periods 1 and 2, so `after_period: 1` is exactly that.
 Worth noting for anyone extending this: `after_clock` assumes a clock that
 counts DOWN, as the American sports do. Soccer's counts UP -- a finished match
 reads 5400 -- so a soccer rule must use `after_period` alone.
+
+### A finished match was still quoting a price
+
+Tottenham's row read "Final" and "+165 ML" together. My own doing: every other
+sport goes quiet at the whistle because the SCOREBOARD drops its odds there,
+which is the property the rest of the code leans on -- but the soccer rules
+read the three-way market from the CORE API instead, and that keeps serving a
+price for a match that is over. The bypass took the safeguard with it.
+
+`soccer_line` now declines a finished or called-off game outright, which is
+also one fewer request per such row.

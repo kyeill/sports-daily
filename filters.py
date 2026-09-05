@@ -751,6 +751,13 @@ def soccer_line(game, league, config):
     rules = config.get("soccer_odds") or {}
     if not rules or (game.get("sport") or "") != "Soccer":
         return "", ""
+    # Nothing to bet on once it is over. The scoreboard drops its odds at the
+    # whistle, which is why every other sport goes quiet on its own -- but the
+    # core API keeps serving a price for a finished match, so this path has to
+    # say no itself or a Final row sits there quoting a moneyline. It also
+    # saves the request.
+    if (game.get("state") or "") == "post" or game.get("called_off"):
+        return "", ""
     watched = rules.get("opponent_double_chance") or []
     mine = _side_of(game, rules.get("mine"))
     theirs = _side_of(game, watched)
