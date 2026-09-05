@@ -173,7 +173,10 @@ APP_JS = """
   // moment later, which reads as a flash of yesterday's page. So the last
   // live state is kept per game and painted back at once on load; the fetch
   // that follows usually just confirms it.
-  var MEMORY = 'live:' + BUILT;
+  // Versioned: a stored state is only as good as the fields the code that
+  // wrote it knew about, so widening what is remembered retires the old ones
+  // rather than trying to interpret them.
+  var MEMORY = 'live2:' + BUILT;
   // When the numbers below the date were last confirmed against ESPN. The
   // build writes its own time into the page; every successful poll replaces
   // it, and it is stored so a reload shows the real last update rather than
@@ -215,7 +218,9 @@ APP_JS = """
     try {
       // Only ever this build's key, so nothing accumulates day after day.
       Object.keys(localStorage).forEach(function (k) {
-        if (k.indexOf('live:') === 0 && k !== MEMORY) { localStorage.removeItem(k); }
+        if ((k.indexOf('live:') === 0 || k.indexOf('live2:') === 0) && k !== MEMORY) {
+          localStorage.removeItem(k);
+        }
       });
       localStorage.setItem(MEMORY, JSON.stringify(remembered));
     } catch (e) {}
@@ -249,7 +254,11 @@ APP_JS = """
         cell.textContent = st[side];
         cell.classList.add('score');
       }
-      if (cell) {
+      // Only when this state has an opinion. A remembered one from before
+      // these colours existed carries no `mood` at all, and clearing on that
+      // stripped the class the BUILD had put there -- on a finished game,
+      // which is never polled again, so it never came back.
+      if (cell && st.mood !== undefined) {
         cell.classList.toggle('good', st.mood === 'good');
         cell.classList.toggle('bad', st.mood === 'bad');
       }

@@ -536,3 +536,20 @@ rule accept its own period once the clock is down to that many seconds, and
 left in the half stays quiet, 8:00 left lights up.
 
 Two rivals playing each other cancels the rule, as everywhere else.
+
+### The grey was being stripped on load
+
+The build painted Tottenham's 0-0 at Forest grey correctly -- the class was in
+the served HTML -- and the live script then removed it. `applyState` toggled
+both colour classes from the state it was given, and a state remembered from
+before these colours existed carries no `mood` at all, so the toggle cleared
+what the build had put there. On a finished game, which is never polled again,
+nothing ever put it back.
+
+Two changes: the toggle now only fires when the state has an opinion
+(`mood !== undefined`), so a state that predates the feature leaves the
+build's own answer alone; and the memory key is versioned, so widening what
+gets remembered retires the old entries rather than trying to interpret them.
+
+Reproduced the original failure with a hand-seeded legacy state, then
+confirmed the row keeps its grey through it.
