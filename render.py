@@ -111,7 +111,15 @@ h2 {
 /* A drawn game has no loser to strike through, so both names lean instead.
    Marking the teams rather than the word "Final" puts the fact where you are
    already looking -- and reads at a glance, which a one-word cue did not. */
-.t.drew { font-style: italic; }
+/* The lean needs somewhere to land. A flex item is sized to the text's
+   ADVANCE width, which for an italic excludes the part of the last glyph
+   that overhangs it, and `overflow: hidden` on the cell then shaves that
+   overhang off -- the d of "Newcastle United" losing its tail. The padding
+   widens only the clip box; the negative margin takes the same space back
+   out of the layout, so nothing beside it moves. Below 640px the cell is
+   `overflow: visible` and none of this applies, which is why it only ever
+   showed above that width. */
+.t.drew { font-style: italic; padding-right: 0.16em; margin-right: -0.16em; }
 /* Third row of the same grid, starting at the name column, so it lines up
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;

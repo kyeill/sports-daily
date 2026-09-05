@@ -419,3 +419,22 @@ In practice this hands the number back most weeks -- all five priced fixtures
 in the current window have them favoured, including at Napoli in the
 Champions League. The opponent's double chance now appears only when it means
 something.
+
+## 2026-09-05 — the italic lean was being shaved off
+
+A drawn game's names are italic, and the d of "Newcastle United" was losing
+its tail on tablet. A flex item is sized to the text's ADVANCE width, which
+for an italic excludes the part of the last glyph hanging past it, and
+`overflow: hidden` on the name cell then clips exactly that overhang. It only
+ever showed above 640px because the phone layout sets the cell to
+`overflow: visible`.
+
+`.t.drew` now carries `padding-right: 0.16em` with an equal negative margin:
+the padding widens the clip box, the margin gives the space straight back to
+the layout. Measured: the box goes from 106px to 108px around a 106px name,
+so the lean has 1.9px to land in where it had 0.08px -- and across 113
+positioned elements on the page, nothing moved.
+
+Note the DOM cannot see this: `getBoundingClientRect` reports the advance
+width, not the inked extent, so the overflow measures as zero either way. The
+screenshot was the evidence.
