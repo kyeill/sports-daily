@@ -1284,7 +1284,9 @@
         "on": [
           "draw",
           "loss"
-        ]
+        ],
+        "after_period": 1,
+        "_note": "Second half onward. A goalless first half is the ordinary state of a football match and says nothing yet; by the second it is a result taking shape."
       },
       {
         "leagues": [

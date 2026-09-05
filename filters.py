@@ -964,6 +964,10 @@ def _period_reached(game, rule):
     same period count once its clock is down to that many seconds, which is
     the only way to say "ten minutes into a half" in a sport that has no
     quarters to count.
+
+    `after_clock` assumes a clock that counts DOWN, as the American sports do.
+    Soccer's counts up -- a finished match reads 5400 -- so a rule for it must
+    use `after_period` alone, as the one for Arsenal and Chelsea does.
     """
     wanted = rule.get("after_period")
     if not wanted:

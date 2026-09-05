@@ -553,3 +553,13 @@ gets remembered retires the old entries rather than trying to interpret them.
 
 Reproduced the original failure with a hand-seeded legacy state, then
 confirmed the row keeps its grey through it.
+
+### Arsenal and Chelsea wait for the second half
+
+A goalless first half is the ordinary state of a football match and says
+nothing yet; by the second it is a result taking shape. Soccer numbers its
+halves as periods 1 and 2, so `after_period: 1` is exactly that.
+
+Worth noting for anyone extending this: `after_clock` assumes a clock that
+counts DOWN, as the American sports do. Soccer's counts UP -- a finished match
+reads 5400 -- so a soccer rule must use `after_period` alone.
