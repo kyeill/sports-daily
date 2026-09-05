@@ -854,9 +854,92 @@ def upset_happening(game, favourite):
         return False
     other = "away" if favourite == "home" else "home"
     try:
-        return int(game[favourite].get("score")) <= int(game[other].get("score"))
+        mine, theirs = int(game[favourite].get("score")), int(game[other].get("score"))
     except (TypeError, ValueError):
         return False
+    if mine < theirs:
+        return True
+    # Level counts, but every game is level at 0-0 before anyone has done
+    # anything, and lighting up each armed row at kickoff said nothing at all.
+    return mine == theirs and mine + theirs > 0
+
+
+def _outcome_of(game, side):
+    """'loss', 'draw', 'win' or '' for one side of a finished game."""
+    if (game.get("state") or "") != "post" or game.get("called_off"):
+        return ""
+    other = "away" if side == "home" else "home"
+    try:
+        mine, theirs = int(game[side].get("score")), int(game[other].get("score"))
+    except (TypeError, ValueError):
+        return ""
+    return "draw" if mine == theirs else ("win" if mine > theirs else "loss")
+
+
+def _outcome_rule_hits(game, rule):
+    """The side this rule is watching, when its result has come in."""
+    named = [s for s in ("home", "away")
+             if any(_matches(game[s], n) for n in rule.get("teams") or [])]
+    if not named:
+        return ""
+    # Both sides on the same list cancels: one of them losing is not news.
+    if rule.get("skip_when_both") and len(named) > 1:
+        return ""
+    side = named[0]
+    other = "away" if side == "home" else "home"
+    against = rule.get("unless_against") or []
+    if against and any(_matches(game[other], n) for n in against):
+        return ""
+    return side if _outcome_of(game, side) in (rule.get("on") or []) else ""
+
+
+def outcome_colour(game, config):
+    """'good', 'bad' or '' -- how a finished game reads at a glance.
+
+    Orange for a result worth seeing: a rival beaten, or an upset. Grey for
+    one that went the wrong way. Good wins a tie between the two, because a
+    game can be both -- Michigan losing to Ohio State is only ever the bad
+    one, but Michigan BEATING them lights up rather than staying quiet.
+    """
+    rules = config.get("outcome_colours") or {}
+    for key in ("good", "bad"):
+        for rule in rules.get(key) or []:
+            if _outcome_rule_hits(game, rule):
+                return key
+    return ""
+
+
+def outcome_watch(game, config):
+    """[(mood, side, 'LD')] -- what would colour this row, at any score.
+
+    Who is playing is fixed; only the result is not. Resolving the rules here
+    leaves the live script with nothing but a comparison of two numbers, and
+    keeps one copy of the team lists rather than shipping them to the browser.
+    """
+    out = []
+    rules = config.get("outcome_colours") or {}
+    for key in ("good", "bad"):
+        for rule in rules.get(key) or []:
+            named = [s for s in ("home", "away")
+                     if any(_matches(game[s], n) for n in rule.get("teams") or [])]
+            if not named or (rule.get("skip_when_both") and len(named) > 1):
+                continue
+            side = named[0]
+            other = "away" if side == "home" else "home"
+            against = rule.get("unless_against") or []
+            if against and any(_matches(game[other], n) for n in against):
+                continue
+            letters = "".join(o[0].upper() for o in (rule.get("on") or []))
+            if letters:
+                out.append((key, side, letters))
+    return out
+
+
+def score_highlight(game, config, favourite):
+    """Which colour the two scores take, if any."""
+    if upset_happening(game, favourite):
+        return "good"
+    return outcome_colour(game, config)
 
 
 def _final_margin(game):

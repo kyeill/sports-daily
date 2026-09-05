@@ -250,10 +250,8 @@ APP_JS = """
         cell.classList.add('score');
       }
       if (cell) {
-        // The row says which side would be the upset victim; only whether it
-        // is happening changes while you watch.
-        var victim = row.dataset.upset;
-        cell.classList.toggle('upset', !!victim && st.upset);
+        cell.classList.toggle('good', st.mood === 'good');
+        cell.classList.toggle('bad', st.mood === 'bad');
       }
       if (name) {
         name.classList.toggle('lost', st.losing === side);
@@ -302,7 +300,31 @@ APP_JS = """
     if (!victim || (state !== 'in' && state !== 'post')) { return false; }
     var other = victim === 'home' ? 'away' : 'home';
     if (scores[victim] == null || scores[other] == null) { return false; }
-    return Number(scores[victim]) <= Number(scores[other]);
+    var mine = Number(scores[victim]), theirs = Number(scores[other]);
+    if (mine < theirs) { return true; }
+    // Level counts, but every game is level at 0-0 before anyone has done
+    // anything, and lighting up each armed row at kickoff said nothing.
+    return mine === theirs && mine + theirs > 0;
+  }
+
+  // The row carries what would colour it -- "good:home:LD|bad:away:L" -- so
+  // only the result is worked out here. Good beats bad where both apply:
+  // Michigan beating Ohio State is the good one, not the quiet one.
+  function moodFor(row, scores) {
+    var spec = row.dataset.mood;
+    if (!spec) { return ''; }
+    var best = '';
+    spec.split('|').forEach(function (part) {
+      var bits = part.split(':');
+      var side = bits[1], letters = bits[2] || '';
+      var other = side === 'home' ? 'away' : 'home';
+      if (scores[side] == null || scores[other] == null) { return; }
+      var mine = Number(scores[side]), theirs = Number(scores[other]);
+      var result = mine === theirs ? 'D' : (mine > theirs ? 'W' : 'L');
+      if (letters.indexOf(result) < 0) { return; }
+      if (bits[0] === 'good') { best = 'good'; } else if (!best) { best = 'bad'; }
+    });
+    return best;
   }
 
   function paint(row, event) {
@@ -345,7 +367,10 @@ APP_JS = """
         : when.textContent,
       home: scores.home, away: scores.away,
       drawn: drawn, losing: losing,
-      upset: upsetHappening(row, scores, state)
+      // An upset shows while it is happening; the rest are results, so they
+      // wait for the final whistle.
+      mood: upsetHappening(row, scores, state) ? 'good'
+        : (state === 'post' ? moodFor(row, scores) : '')
     };
     applyState(row, st);
     // A game still to start has nothing worth remembering: the build's own

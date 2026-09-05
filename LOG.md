@@ -471,3 +471,29 @@ So no work: the app already shows AP for basketball and switches to the CFP
 list partway through the football season. Note ESPN's public `rankings`
 endpoint never returns the CFP poll at all -- it is core-API only, id 21,
 type `cfp` -- so anyone looking there would wrongly conclude it does not exist.
+
+## 2026-09-05 (later still) — the 0-0 bug, and results that read at a glance
+
+**The upset highlight was firing at kickoff.** Every game is level at 0-0
+before anyone has done anything, and "level" counted, so each armed row went
+orange the moment it kicked off -- which is where the orange on the Ohio
+State, Indiana and Houston rows came from. It was never the build: all three
+were correctly quiet there. A tie now needs somebody to have scored.
+
+**Finished games say how they went.** Orange for a result worth seeing, grey
+-- the same grey as a record -- for one that went the wrong way:
+
+* orange: an upset; Ohio State or Michigan State beaten; Arsenal or Chelsea
+  beaten or held. Cancelled when both sides are on the same list, since one
+  of them losing is not news either way.
+* grey: a loss by Michigan, any Detroit side, the Cavaliers or Cornell;
+  Atlanta United losing or drawing; Tottenham losing, or drawing with anyone
+  outside the top six -- a draw with one of those is a fair result.
+
+Good beats bad where both apply, so **Michigan beating Ohio State reads
+orange** rather than staying quiet.
+
+Who is playing is fixed and only the result is not, so the rules resolve at
+build time onto the row as `data-mood="good:home:L|bad:away:LD"`, leaving the
+live script a comparison of two numbers and keeping one copy of the team
+lists rather than shipping them to the browser. Twenty cases checked.

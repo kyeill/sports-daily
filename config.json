@@ -1170,5 +1170,80 @@
     "never_the_favourite": [
       "Michigan Wolverines"
     ]
+  },
+  "outcome_colours": {
+    "_comment": "How a finished game reads at a glance: orange for a result worth seeing, grey for one that went the wrong way. `on` is any of loss/draw for the named side. skip_when_both drops the rule when both teams are on its own list -- Ohio State against Michigan State, Arsenal against Chelsea -- where one of them losing is not news either way.",
+    "good": [
+      {
+        "teams": [
+          "Ohio State",
+          "Michigan State"
+        ],
+        "on": [
+          "loss"
+        ],
+        "skip_when_both": true
+      },
+      {
+        "teams": [
+          "Arsenal",
+          "Chelsea"
+        ],
+        "on": [
+          "loss",
+          "draw"
+        ],
+        "skip_when_both": true
+      }
+    ],
+    "bad": [
+      {
+        "teams": [
+          "Michigan Wolverines",
+          "Detroit Lions",
+          "Detroit Tigers",
+          "Detroit Pistons",
+          "Detroit Red Wings",
+          "Cleveland Cavaliers",
+          "Cornell Big Red"
+        ],
+        "on": [
+          "loss"
+        ]
+      },
+      {
+        "teams": [
+          "Atlanta United"
+        ],
+        "on": [
+          "loss",
+          "draw"
+        ]
+      },
+      {
+        "teams": [
+          "Tottenham Hotspur"
+        ],
+        "on": [
+          "loss"
+        ]
+      },
+      {
+        "_note": "A draw with a top-six side is a fair result, so only the other draws count.",
+        "teams": [
+          "Tottenham Hotspur"
+        ],
+        "on": [
+          "draw"
+        ],
+        "unless_against": [
+          "Arsenal",
+          "Chelsea",
+          "Liverpool",
+          "Manchester City",
+          "Manchester United"
+        ]
+      }
+    ]
   }
 }

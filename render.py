@@ -108,7 +108,10 @@ h2 {
    team. Set at build time as far as the eligibility goes -- ranks and who is
    playing do not change mid-match -- and toggled by the live script as the
    score does. */
-.s-rec.score.upset { color: var(--accent); }
+.s-rec.score.good { color: var(--accent); }
+/* The same grey the records and table places use, so a result that went the
+   wrong way recedes to the weight of the thing it replaced. */
+.s-rec.score.bad { color: var(--muted); }
 .s-rec.score { color: var(--ink); font-size: 13px;
   font-variant-numeric: tabular-nums; }
 /* The team that lost. Struck through and dimmed -- the line alone is easy to
@@ -237,7 +240,7 @@ def _logo(team, config):
 
 
 def _side_html(team, show_records, config, line="", score=None, lost=False,
-               side="", drew=False, upset=False):
+               side="", drew=False, mood=""):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -268,7 +271,7 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
         '<span class="s-rec%s%s"%s>%s</span>'
     ) % (_logo(team, config), rank, name, spread,
          " score" if score is not None else "",
-         " upset" if (upset and score is not None) else "", at, _esc(detail))
+         (" " + mood) if (mood and score is not None) else "", at, _esc(detail))
 
 
 def _ordinal(number):
@@ -402,6 +405,11 @@ def _game_html(game, show_league, config):
     favourite = filters.upset_side(game, config)
     if favourite:
         attrs += ' data-upset="%s"' % _esc(favourite)
+    # What would colour this row once it finishes, whatever the score does.
+    watch = filters.outcome_watch(game, config)
+    if watch:
+        attrs += ' data-mood="%s"' % _esc(
+            "|".join("%s:%s:%s" % parts for parts in watch))
     attrs += ' data-game="%s" data-path="%s" data-state="%s" data-start="%s"' % (
         _esc(game.get("id") or ""), _esc(league.get("path") or ""),
         _esc(game.get("state") or ""),
@@ -416,7 +424,7 @@ def _game_html(game, show_league, config):
     solo = " solo" if not networks and not tags else ""
 
     scores, loser, drawn = _scores(game)
-    upset = filters.upset_happening(game, favourite)
+    mood = filters.score_highlight(game, config, favourite)
     # A draw is marked on the two team names, not on the word "Final".
     when = _esc(_when(game))
 
@@ -427,9 +435,9 @@ def _game_html(game, show_league, config):
         '</div>'
     ) % (attrs, _esc(game["link"]),
          _side_html(first, show_records, config, lines[order[0]],
-                    scores.get(order[0]), loser == order[0], order[0], drawn, upset),
+                    scores.get(order[0]), loser == order[0], order[0], drawn, mood),
          _side_html(second, show_records, config, lines[order[1]],
-                    scores.get(order[1]), loser == order[1], order[1], drawn, upset),
+                    scores.get(order[1]), loser == order[1], order[1], drawn, mood),
          note, solo, when, nets, tags)
 
 
