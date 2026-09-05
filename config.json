@@ -1156,5 +1156,19 @@
       "Arsenal",
       "Chelsea"
     ]
+  },
+  "upset_watch": {
+    "_comment": "A ranked college side losing to, or level with, one nobody fancied: both scores turn orange. never_the_underdog keeps a rival's upset from being celebrated; never_the_favourite keeps my own team's from being.",
+    "leagues": [
+      "college-football",
+      "mens-college-basketball"
+    ],
+    "never_the_underdog": [
+      "Michigan State",
+      "Ohio State"
+    ],
+    "never_the_favourite": [
+      "Michigan Wolverines"
+    ]
   }
 }

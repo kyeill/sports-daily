@@ -808,6 +808,57 @@ def _spread_points(game):
     return float(match.group(1)) if match else None
 
 
+def upset_side(game, config):
+    """Which side would be the upset victim, or '' when nothing is at stake.
+
+    A ranked college side against one nobody fancied: unranked, or ranked
+    further down. Two exceptions, both his: a rival doing the upsetting is not
+    a result to celebrate, and neither is his own team being on the wrong end
+    of one.
+
+    Only the eligibility is decided here. Whether it is ACTUALLY happening
+    depends on the score, which changes while you watch.
+    """
+    rules = config.get("upset_watch") or {}
+    if not rules or (game.get("_league") or {}).get("key") not in (rules.get("leagues") or []):
+        return ""
+    ranks = {}
+    for side in ("home", "away"):
+        rank = game[side].get("rank")
+        ranks[side] = rank if isinstance(rank, int) and rank > 0 else None
+    if ranks["home"] is None and ranks["away"] is None:
+        return ""
+    # The better rank is the favourite; an unranked side is always the longer
+    # shot, however good it turns out to be.
+    if ranks["home"] is None:
+        favourite = "away"
+    elif ranks["away"] is None:
+        favourite = "home"
+    elif ranks["home"] != ranks["away"]:
+        favourite = "home" if ranks["home"] < ranks["away"] else "away"
+    else:
+        return ""
+    underdog = "away" if favourite == "home" else "home"
+    if any(_matches(game[underdog], n) for n in rules.get("never_the_underdog") or []):
+        return ""
+    if any(_matches(game[favourite], n) for n in rules.get("never_the_favourite") or []):
+        return ""
+    return favourite
+
+
+def upset_happening(game, favourite):
+    """True when the favoured side is behind or level, with a score to show."""
+    if not favourite:
+        return False
+    if (game.get("state") or "") not in ("in", "post") or game.get("called_off"):
+        return False
+    other = "away" if favourite == "home" else "home"
+    try:
+        return int(game[favourite].get("score")) <= int(game[other].get("score"))
+    except (TypeError, ValueError):
+        return False
+
+
 def _final_margin(game):
     """How far apart a finished game ended, or None if it did not finish."""
     if (game.get("state") or "") != "post" or game.get("called_off"):

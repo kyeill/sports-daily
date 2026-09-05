@@ -103,6 +103,12 @@ h2 {
 .s-rec { color: var(--muted); font-size: 12px; text-align: right;
   white-space: nowrap; }
 /* A score, once there is one, is worth more than the record it replaces. */
+/* A ranked side losing to, or level with, one nobody fancied. Both scores
+   carry it, because an upset is a fact about the game rather than about one
+   team. Set at build time as far as the eligibility goes -- ranks and who is
+   playing do not change mid-match -- and toggled by the live script as the
+   score does. */
+.s-rec.score.upset { color: var(--accent); }
 .s-rec.score { color: var(--ink); font-size: 13px;
   font-variant-numeric: tabular-nums; }
 /* The team that lost. Struck through and dimmed -- the line alone is easy to
@@ -155,16 +161,17 @@ h2 {
 /* A game actually on now. Keyed off the row's state rather than a class of
    its own, so the live script bolds and unbolds it just by updating that
    attribute as a game starts and finishes. */
-.row[data-state="in"] .when { font-weight: 600; color: var(--ink); }
+.row[data-state="in"] .when { font-weight: 600; color: var(--rank); }
 /* Same size and face as the time, differing only in colour, so the two read
    as one block rather than as a label and a badge. */
 .nets { font-size: 13px; color: var(--muted); }
 /* The showcase windows a competition names for itself -- FOX's noon kickoff,
    CBS at 3:30, NBC on Saturday night, the Saturday Premier League match --
-   carry the network in the same blue the ranks use, so the week's marquee
-   games are findable without reading every row. Matched on network AND
-   kickoff: the same channels carry ordinary games at other hours. */
-.nets.marquee { color: var(--rank); }
+   carry the network in the accent orange -- the colour the Church tab uses
+   for its own headings -- so the week's marquee games are findable without
+   reading every row. Matched on network AND kickoff: the same channels carry
+   ordinary games at other hours. */
+.nets.marquee { color: var(--accent); }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .chip {
   background: var(--chip); border-radius: 999px; padding: 1px 8px;
@@ -230,7 +237,7 @@ def _logo(team, config):
 
 
 def _side_html(team, show_records, config, line="", score=None, lost=False,
-               side="", drew=False):
+               side="", drew=False, upset=False):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -258,9 +265,10 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
         '<span class="s-name">%s%s</span>'
-        '<span class="s-rec%s"%s>%s</span>'
+        '<span class="s-rec%s%s"%s>%s</span>'
     ) % (_logo(team, config), rank, name, spread,
-         " score" if score is not None else "", at, _esc(detail))
+         " score" if score is not None else "",
+         " upset" if (upset and score is not None) else "", at, _esc(detail))
 
 
 def _ordinal(number):
@@ -391,6 +399,9 @@ def _game_html(game, show_league, config):
     # What the live script needs to refresh this row: which game, which
     # scoreboard to ask, and whether it is worth asking at all.
     league = game.get("_league") or {}
+    favourite = filters.upset_side(game, config)
+    if favourite:
+        attrs += ' data-upset="%s"' % _esc(favourite)
     attrs += ' data-game="%s" data-path="%s" data-state="%s" data-start="%s"' % (
         _esc(game.get("id") or ""), _esc(league.get("path") or ""),
         _esc(game.get("state") or ""),
@@ -405,6 +416,7 @@ def _game_html(game, show_league, config):
     solo = " solo" if not networks and not tags else ""
 
     scores, loser, drawn = _scores(game)
+    upset = filters.upset_happening(game, favourite)
     # A draw is marked on the two team names, not on the word "Final".
     when = _esc(_when(game))
 
@@ -415,9 +427,9 @@ def _game_html(game, show_league, config):
         '</div>'
     ) % (attrs, _esc(game["link"]),
          _side_html(first, show_records, config, lines[order[0]],
-                    scores.get(order[0]), loser == order[0], order[0], drawn),
+                    scores.get(order[0]), loser == order[0], order[0], drawn, upset),
          _side_html(second, show_records, config, lines[order[1]],
-                    scores.get(order[1]), loser == order[1], order[1], drawn),
+                    scores.get(order[1]), loser == order[1], order[1], drawn, upset),
          note, solo, when, nets, tags)
 
 

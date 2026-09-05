@@ -249,6 +249,12 @@ APP_JS = """
         cell.textContent = st[side];
         cell.classList.add('score');
       }
+      if (cell) {
+        // The row says which side would be the upset victim; only whether it
+        // is happening changes while you watch.
+        var victim = row.dataset.upset;
+        cell.classList.toggle('upset', !!victim && st.upset);
+      }
       if (name) {
         name.classList.toggle('lost', st.losing === side);
         // A draw has no loser, so both names lean rather than one striking.
@@ -290,6 +296,15 @@ APP_JS = """
     return '';
   }
 
+  // Behind or level: the favourite is named on the row, the score is not.
+  function upsetHappening(row, scores, state) {
+    var victim = row.dataset.upset;
+    if (!victim || (state !== 'in' && state !== 'post')) { return false; }
+    var other = victim === 'home' ? 'away' : 'home';
+    if (scores[victim] == null || scores[other] == null) { return false; }
+    return Number(scores[victim]) <= Number(scores[other]);
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
@@ -329,7 +344,8 @@ APP_JS = """
         : state === 'in' ? (type.shortDetail || 'live')
         : when.textContent,
       home: scores.home, away: scores.away,
-      drawn: drawn, losing: losing
+      drawn: drawn, losing: losing,
+      upset: upsetHappening(row, scores, state)
     };
     applyState(row, st);
     // A game still to start has nothing worth remembering: the build's own

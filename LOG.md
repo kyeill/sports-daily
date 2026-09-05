@@ -438,3 +438,36 @@ positioned elements on the page, nothing moved.
 Note the DOM cannot see this: `getBoundingClientRect` reports the advance
 width, not the inked extent, so the overflow measures as zero either way. The
 screenshot was the evidence.
+
+## 2026-09-05 (later) — orange for the marquee windows, blue for what is on now
+
+The two colours swapped jobs. The showcase network windows go back to the
+accent orange (#e0834f -- the same colour K Money's Church tab gives its
+headings), and a game actually in progress takes the blue the ranks use, so
+"on now" reads at a glance instead of merely being bold.
+
+**And an upset watch.** When a ranked college side is losing to, or level
+with, one nobody fancied, BOTH scores turn orange -- an upset is a fact about
+the game, not about one team. The underdog is whoever is unranked, or ranked
+further down; two exceptions, both his: Michigan State or Ohio State doing the
+upsetting is not a result to celebrate, and neither is Michigan being on the
+wrong end of one. Michigan doing the upsetting still counts.
+
+Eligibility is settled at build time and written onto the row as
+`data-upset`, because ranks and team names do not change mid-match. Only the
+comparison of the two numbers is left to the live script, which is the only
+part that changes while you watch.
+
+### The rankings were already right
+
+Checked rather than assumed, because the upset rule leans entirely on them.
+`curatedRank` is not one fixed poll: for college basketball it is the AP poll
+(matched 13 of 13 in a January week, against 7 of 13 for the Coaches Poll),
+and for college football it follows the **CFP rankings** as soon as they are
+published (12 of 12 in week 14, where AP managed only 8 -- Texas Tech 5th on
+the committee's list and 7th on AP's, Oregon 6th and 5th).
+
+So no work: the app already shows AP for basketball and switches to the CFP
+list partway through the football season. Note ESPN's public `rankings`
+endpoint never returns the CFP poll at all -- it is core-API only, id 21,
+type `cfp` -- so anyone looking there would wrongly conclude it does not exist.
