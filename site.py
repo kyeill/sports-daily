@@ -333,6 +333,27 @@ APP_JS = """
     return best;
   }
 
+  // A rival level or losing while the game is on, whatever the ranks say.
+  // "side:LD:after_period:after_clock" -- -1 for no clock rule.
+  function rivalInTrouble(row, scores, state, period, clock) {
+    if (state !== 'in') { return false; }
+    var spec = (row.dataset.rival || '').split(':');
+    if (spec.length !== 4) { return false; }
+    var side = spec[0], other = side === 'home' ? 'away' : 'home';
+    if (scores[side] == null || scores[other] == null) { return false; }
+    var after = Number(spec[2]), limit = Number(spec[3]);
+    if (after) {
+      var deep = period > after;
+      if (!deep && limit >= 0 && period === after) {
+        deep = typeof clock === 'number' && clock <= limit;
+      }
+      if (!deep) { return false; }
+    }
+    var mine = Number(scores[side]), theirs = Number(scores[other]);
+    var result = mine === theirs ? 'D' : (mine > theirs ? 'W' : 'L');
+    return spec[1].indexOf(result) >= 0;
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
@@ -375,7 +396,9 @@ APP_JS = """
       drawn: drawn, losing: losing,
       // An upset shows while it is happening; the rest are results, so they
       // wait for the final whistle.
-      mood: upsetHappening(row, scores, state, (comp.status || {}).period) ? 'good'
+      mood: (upsetHappening(row, scores, state, (comp.status || {}).period)
+             || rivalInTrouble(row, scores, state, (comp.status || {}).period,
+                               (comp.status || {}).clock)) ? 'good'
         : (state === 'post' ? moodFor(row, scores) : '')
     };
     applyState(row, st);

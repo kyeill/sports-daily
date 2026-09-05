@@ -1164,8 +1164,9 @@
       "mens-college-basketball"
     ],
     "never_the_underdog": [
+      "Ohio State",
       "Michigan State",
-      "Ohio State"
+      "Notre Dame"
     ],
     "never_the_favourite": [
       "Michigan Wolverines"
@@ -1188,7 +1189,8 @@
       {
         "teams": [
           "Ohio State",
-          "Michigan State"
+          "Michigan State",
+          "Notre Dame"
         ],
         "on": [
           "loss"
@@ -1213,6 +1215,7 @@
         "teams": [
           "Ohio State",
           "Michigan State",
+          "Notre Dame",
           "Arsenal",
           "Chelsea"
         ],
@@ -1267,6 +1270,52 @@
           "Manchester City",
           "Manchester United"
         ]
+      }
+    ]
+  },
+  "rival_live": {
+    "_comment": "While a game is ON, a rival level or losing is worth seeing whatever the ranks say -- these run after the upset rules and reach games those ignore. `after_period` waits for a period to finish; `after_clock` also allows that same period once its clock is down to this many seconds, which is the only way to say 'ten minutes into a half'. Cancelled when two rivals meet.",
+    "rules": [
+      {
+        "teams": [
+          "Arsenal",
+          "Chelsea"
+        ],
+        "on": [
+          "draw",
+          "loss"
+        ]
+      },
+      {
+        "leagues": [
+          "college-football"
+        ],
+        "teams": [
+          "Ohio State",
+          "Michigan State",
+          "Notre Dame"
+        ],
+        "on": [
+          "draw",
+          "loss"
+        ],
+        "after_period": 1
+      },
+      {
+        "leagues": [
+          "mens-college-basketball"
+        ],
+        "teams": [
+          "Ohio State",
+          "Michigan State",
+          "Notre Dame"
+        ],
+        "on": [
+          "draw",
+          "loss"
+        ],
+        "after_period": 1,
+        "after_clock": 600
       }
     ]
   }

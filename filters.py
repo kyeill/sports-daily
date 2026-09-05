@@ -957,9 +957,92 @@ def outcome_watch(game, config):
     return out
 
 
+def _period_reached(game, rule):
+    """Whether the game is far enough in for a rule to speak.
+
+    `after_period` waits for that period to end. `after_clock` also lets the
+    same period count once its clock is down to that many seconds, which is
+    the only way to say "ten minutes into a half" in a sport that has no
+    quarters to count.
+    """
+    wanted = rule.get("after_period")
+    if not wanted:
+        return True
+    period = game.get("period") or 0
+    if period > wanted:
+        return True
+    limit = rule.get("after_clock")
+    if limit is None or period != wanted:
+        return False
+    clock = game.get("clock")
+    return isinstance(clock, (int, float)) and clock <= limit
+
+
+def rival_live_hits(game, config):
+    """A rival level or losing while the game is still on.
+
+    Runs after the upset rules and catches what they cannot: these do not care
+    about rankings, so a rival struggling against nobody in particular still
+    shows. Only while the game is in progress -- the finished ones are already
+    answered by `outcome_colours`.
+    """
+    block = config.get("rival_live") or {}
+    if (game.get("state") or "") != "in" or game.get("called_off"):
+        return ""
+    for rule in block.get("rules") or []:
+        leagues = rule.get("leagues")
+        if leagues and (game.get("_league") or {}).get("key") not in leagues:
+            continue
+        named = [side for side in ("home", "away")
+                 if any(_matches(game[side], n) for n in rule.get("teams") or [])]
+        # Two of them in one game: whatever happens is both at once.
+        if not named or len(named) > 1:
+            continue
+        if not _period_reached(game, rule):
+            continue
+        side = named[0]
+        other = "away" if side == "home" else "home"
+        try:
+            mine, theirs = int(game[side].get("score")), int(game[other].get("score"))
+        except (TypeError, ValueError):
+            continue
+        result = "draw" if mine == theirs else ("win" if mine > theirs else "loss")
+        if result in (rule.get("on") or []):
+            return side
+    return ""
+
+
+def rival_live_watch(game, config):
+    """'side:LD:after_period:after_clock' for the live script, or ''.
+
+    Resolved here for the same reason as the rest: who is playing cannot
+    change, so the browser is left with the score and the clock.
+    """
+    block = config.get("rival_live") or {}
+    for rule in block.get("rules") or []:
+        leagues = rule.get("leagues")
+        if leagues and (game.get("_league") or {}).get("key") not in leagues:
+            continue
+        named = [side for side in ("home", "away")
+                 if any(_matches(game[side], n) for n in rule.get("teams") or [])]
+        if not named or len(named) > 1:
+            continue
+        letters = "".join(o[0].upper() for o in (rule.get("on") or []))
+        if not letters:
+            continue
+        return "%s:%s:%d:%d" % (named[0], letters, rule.get("after_period") or 0,
+                                rule.get("after_clock") if rule.get("after_clock")
+                                is not None else -1)
+    return ""
+
+
 def score_highlight(game, config, favourite):
     """Which colour the two scores take, if any."""
     if upset_happening(game, favourite, config):
+        return "good"
+    # After the rules above, not instead of them: a rival in trouble reaches
+    # games the ranking test ignores entirely.
+    if rival_live_hits(game, config):
         return "good"
     return outcome_colour(game, config)
 

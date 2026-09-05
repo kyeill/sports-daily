@@ -513,3 +513,26 @@ lists rather than shipping them to the browser. Twenty cases checked.
 * At **full time** the test goes back to the strict one: the favoured side
   actually lost. A three-point win stops being orange the moment it is over.
 * Marquee networks are **blue again**.
+
+## 2026-09-05 (last pass) — Notre Dame, and rivals in trouble while it is on
+
+**Notre Dame joins Ohio State and Michigan State everywhere**: never the
+underdog in the upset test, orange when beaten, grey when winning.
+
+**A new live rule, running after the existing ones rather than instead of
+them.** The upset test only speaks about ranked sides; this one does not care
+about rankings at all, so a rival struggling against nobody in particular
+still shows:
+
+* Arsenal or Chelsea level or losing, at any point.
+* Ohio State, Michigan State or Notre Dame level or losing in football, once
+  the first quarter is over.
+* The same three in basketball, once ten minutes of the first half have gone.
+
+That last one needed the **clock**, not just the period: basketball counts
+halves, so "ten minutes in" cannot be said in periods. `after_clock` lets a
+rule accept its own period once the clock is down to that many seconds, and
+`espn.py` now carries `status.clock` for it. Verified at the boundary: 12:00
+left in the half stays quiet, 8:00 left lights up.
+
+Two rivals playing each other cancels the rule, as everywhere else.

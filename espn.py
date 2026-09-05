@@ -627,6 +627,9 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
                               for word in ("POSTPONED", "CANCEL", "SUSPEND")),
             "status_note": status.get("description") or "",
             "period": (comp.get("status") or {}).get("period"),
+            # Seconds left in the period. Basketball counts halves, so "ten
+            # minutes in" is only expressible as a clock, not a period.
+            "clock": (comp.get("status") or {}).get("clock"),
             "home": home,
             "away": away,
             "tv": tv,

@@ -410,6 +410,9 @@ def _game_html(game, show_league, config):
         if close:
             attrs += ' data-close="%d:%d"' % (close.get("within", 0),
                                               close.get("after_period", 0))
+    rival = filters.rival_live_watch(game, config)
+    if rival:
+        attrs += ' data-rival="%s"' % _esc(rival)
     # What would colour this row once it finishes, whatever the score does.
     watch = filters.outcome_watch(game, config)
     if watch:
