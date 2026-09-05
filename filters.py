@@ -846,22 +846,44 @@ def upset_side(game, config):
     return favourite
 
 
-def upset_happening(game, favourite):
-    """True when the favoured side is behind or level, with a score to show."""
+def live_upset_rule(game, config):
+    """{'within': n, 'after_period': n} for a game in progress, or {}."""
+    live = ((config.get("upset_watch") or {}).get("live") or {})
+    return live.get((game.get("_league") or {}).get("key")) or {}
+
+
+def upset_happening(game, favourite, config=None):
+    """Whether the favoured side is in trouble, worth colouring.
+
+    Finished, that means it lost. In progress it means something looser: the
+    game is still close enough for the upset to be live -- a touchdown in
+    football, two possessions in basketball -- because a ranked side three
+    points up in the fourth is the story, not a settled result. Nothing shows
+    in the opening period, where every game is close and none of it means
+    anything yet.
+    """
     if not favourite:
         return False
-    if (game.get("state") or "") not in ("in", "post") or game.get("called_off"):
+    state = game.get("state") or ""
+    if state not in ("in", "post") or game.get("called_off"):
         return False
     other = "away" if favourite == "home" else "home"
     try:
-        mine, theirs = int(game[favourite].get("score")), int(game[other].get("score"))
+        mine = int(game[favourite].get("score"))
+        theirs = int(game[other].get("score"))
     except (TypeError, ValueError):
         return False
-    if mine < theirs:
-        return True
-    # Level counts, but every game is level at 0-0 before anyone has done
-    # anything, and lighting up each armed row at kickoff said nothing at all.
-    return mine == theirs and mine + theirs > 0
+    if state == "post":
+        # Level cannot really happen in these two, but 0-0 must not read as an
+        # upset if a game is somehow filed finished before it began.
+        return mine < theirs or (mine == theirs and mine + theirs > 0)
+    rule = live_upset_rule(game, config or {})
+    if not rule:
+        return False
+    period = game.get("period") or 0
+    if period <= (rule.get("after_period") or 0):
+        return False
+    return (mine - theirs) <= rule.get("within", 0)
 
 
 def _outcome_of(game, side):
@@ -937,7 +959,7 @@ def outcome_watch(game, config):
 
 def score_highlight(game, config, favourite):
     """Which colour the two scores take, if any."""
-    if upset_happening(game, favourite):
+    if upset_happening(game, favourite, config):
         return "good"
     return outcome_colour(game, config)
 

@@ -170,11 +170,10 @@ h2 {
 .nets { font-size: 13px; color: var(--muted); }
 /* The showcase windows a competition names for itself -- FOX's noon kickoff,
    CBS at 3:30, NBC on Saturday night, the Saturday Premier League match --
-   carry the network in the accent orange -- the colour the Church tab uses
-   for its own headings -- so the week's marquee games are findable without
-   reading every row. Matched on network AND kickoff: the same channels carry
-   ordinary games at other hours. */
-.nets.marquee { color: var(--accent); }
+   carry the network in the same blue the ranks use, so the week's marquee
+   games are findable without reading every row. Matched on network AND
+   kickoff: the same channels carry ordinary games at other hours. */
+.nets.marquee { color: var(--rank); }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .chip {
   background: var(--chip); border-radius: 999px; padding: 1px 8px;
@@ -405,6 +404,12 @@ def _game_html(game, show_league, config):
     favourite = filters.upset_side(game, config)
     if favourite:
         attrs += ' data-upset="%s"' % _esc(favourite)
+        # "within:after_period" -- how close still counts, and the period
+        # before which nothing does.
+        close = filters.live_upset_rule(game, config)
+        if close:
+            attrs += ' data-close="%d:%d"' % (close.get("within", 0),
+                                              close.get("after_period", 0))
     # What would colour this row once it finishes, whatever the score does.
     watch = filters.outcome_watch(game, config)
     if watch:

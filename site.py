@@ -295,16 +295,22 @@ APP_JS = """
   }
 
   // Behind or level: the favourite is named on the row, the score is not.
-  function upsetHappening(row, scores, state) {
+  // Finished, an upset means the favoured side lost. In progress it means the
+  // game is still close enough for one -- the row carries how close counts and
+  // which period must be done first, so the sport's own numbers stay in config.
+  function upsetHappening(row, scores, state, period) {
     var victim = row.dataset.upset;
     if (!victim || (state !== 'in' && state !== 'post')) { return false; }
     var other = victim === 'home' ? 'away' : 'home';
     if (scores[victim] == null || scores[other] == null) { return false; }
     var mine = Number(scores[victim]), theirs = Number(scores[other]);
-    if (mine < theirs) { return true; }
-    // Level counts, but every game is level at 0-0 before anyone has done
-    // anything, and lighting up each armed row at kickoff said nothing.
-    return mine === theirs && mine + theirs > 0;
+    if (state === 'post') {
+      return mine < theirs || (mine === theirs && mine + theirs > 0);
+    }
+    var close = (row.dataset.close || '').split(':');
+    if (close.length !== 2) { return false; }
+    if (!period || period <= Number(close[1])) { return false; }
+    return (mine - theirs) <= Number(close[0]);
   }
 
   // The row carries what would colour it -- "good:home:LD|bad:away:L" -- so
@@ -369,7 +375,7 @@ APP_JS = """
       drawn: drawn, losing: losing,
       // An upset shows while it is happening; the rest are results, so they
       // wait for the final whistle.
-      mood: upsetHappening(row, scores, state) ? 'good'
+      mood: upsetHappening(row, scores, state, (comp.status || {}).period) ? 'good'
         : (state === 'post' ? moodFor(row, scores) : '')
     };
     applyState(row, st);

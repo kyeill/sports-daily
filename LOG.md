@@ -497,3 +497,19 @@ Who is playing is fixed and only the result is not, so the rules resolve at
 build time onto the row as `data-mood="good:home:L|bad:away:LD"`, leaving the
 live script a comparison of two numbers and keeping one copy of the team
 lists rather than shipping them to the browser. Twenty cases checked.
+
+## 2026-09-05 (final pass) — rival wins, live closeness, marquee back to blue
+
+* **A rival winning greys the score**, the mirror of one losing turning it
+  orange -- and cancelled when two of them play each other, where the result
+  is both at once and so neither. Finals only, like the rest of that group.
+* **A live college game shows orange while it is still close**, rather than
+  only when the ranked side is behind: within a touchdown in football, two
+  possessions in basketball, and nothing at all until the opening period is
+  over, where every game is close and none of it means anything yet. The
+  numbers live in `upset_watch.live` per league and ride on the row as
+  `data-close="7:1"`, so the sport's own thresholds stay in config rather than
+  in the browser.
+* At **full time** the test goes back to the strict one: the favoured side
+  actually lost. A three-point win stops being orange the moment it is over.
+* Marquee networks are **blue again**.

@@ -1169,7 +1169,18 @@
     ],
     "never_the_favourite": [
       "Michigan Wolverines"
-    ]
+    ],
+    "live": {
+      "_note": "Orange while the favourite's lead is no more than `within` -- behind and level included -- but only once `after_period` is done, since an early lead says nothing yet.",
+      "college-football": {
+        "within": 7,
+        "after_period": 1
+      },
+      "mens-college-basketball": {
+        "within": 6,
+        "after_period": 1
+      }
+    }
   },
   "outcome_colours": {
     "_comment": "How a finished game reads at a glance: orange for a result worth seeing, grey for one that went the wrong way. `on` is any of loss/draw for the named side. skip_when_both drops the rule when both teams are on its own list -- Ohio State against Michigan State, Arsenal against Chelsea -- where one of them losing is not news either way.",
@@ -1197,6 +1208,19 @@
       }
     ],
     "bad": [
+      {
+        "_note": "A rival winning reads the same way as one of mine losing. Cancelled when they play each other, where the result is both at once and neither.",
+        "teams": [
+          "Ohio State",
+          "Michigan State",
+          "Arsenal",
+          "Chelsea"
+        ],
+        "on": [
+          "win"
+        ],
+        "skip_when_both": true
+      },
       {
         "teams": [
           "Michigan Wolverines",
