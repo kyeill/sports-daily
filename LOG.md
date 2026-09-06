@@ -574,3 +574,22 @@ price for a match that is over. The bypass took the safeguard with it.
 
 `soccer_line` now declines a finished or called-off game outright, which is
 also one fewer request per such row.
+
+## 2026-09-06 — the adaptive icon, and what took it away
+
+Adding a tab favicon on 2026-09-05 pointed `<link rel="icon">` at
+`icon-192.png` -- the same file the manifest declares `maskable`. One asset
+was then both the plain favicon and the adaptive app icon, and Android stopped
+applying the mask.
+
+Checked first that nothing else had moved: the manifest has not changed since
+the app was built, and the icon art is safe-zone compliant either way -- the
+ring's outer radius is 0.34 of the square, inside the 0.4 a maskable icon
+allows, on a ground that fills the corners. So the art was never the problem.
+
+Two changes. The favicon gets **its own file** (`favicon-32.png`, 172 bytes),
+so nothing in the HTML names a file the manifest claims. And the manifest now
+declares **`any` and `maskable` as separate entries** rather than one
+`"any maskable"`: a combined purpose leaves the browser to choose, and one of
+the two always ends up wrong. The same file can serve both -- it just has to
+say so twice.

@@ -624,9 +624,11 @@ def build(config, days=8, out=SITE):
         '<meta name="apple-mobile-web-app-capable" content="yes">'
         '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
         '<link rel="apple-touch-icon" href="icon-180.png">'
-        # Without this a desktop browser asks for /favicon.ico, which the site
-        # does not ship, and shows a blank tab icon after the 404.
-        '<link rel="icon" href="icon-192.png">'
+        # Its own file, deliberately not one of the manifest's. Pointing this
+        # at icon-192 meant the same asset was both the tab favicon and the
+        # maskable app icon, and the adaptive icon stopped being applied on
+        # Android. Nothing here should name a file the manifest claims.
+        '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">'
         '<style>%s%s</style></head><body><div class="wrap">'
         '<nav class="days" id="days">%s</nav>%s'
         '<footer>From ESPN. Times in %s.</footer>'
@@ -640,9 +642,14 @@ def build(config, days=8, out=SITE):
         "name": "Sports Daily", "short_name": "Games",
         "start_url": ".", "scope": ".", "display": "standalone",
         "background_color": "#16161a", "theme_color": "#16161a",
+        # Separate entries per purpose rather than "any maskable" on one:
+        # a combined purpose leaves the browser to decide, and at least one of
+        # the two always ends up wrong. The art is safe-zone compliant -- the
+        # ring sits inside the middle 80% -- so one file can serve both, but
+        # it has to SAY so twice.
         "icons": [{"src": "icon-%d.png" % s, "sizes": "%dx%d" % (s, s),
-                   "type": "image/png",
-                   "purpose": "any maskable"} for s in (192, 512)],
+                   "type": "image/png", "purpose": purpose}
+                  for s in (192, 512) for purpose in ("any", "maskable")],
     }
 
     files = {
@@ -651,6 +658,7 @@ def build(config, days=8, out=SITE):
         "sw.js": SW_JS.encode("utf-8"),
         ".nojekyll": b"",           # GitHub Pages must not run Jekyll over this
     }
+    files["favicon-32.png"] = _png(32)
     for size in (180, 192, 512):
         files["icon-%d.png" % size] = _png(size)
 
