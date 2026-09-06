@@ -404,10 +404,12 @@ APP_JS = """
       home: scores.home, away: scores.away,
       drawn: drawn, losing: losing,
       // An upset shows while it is happening; the rest are results, so they
-      // wait for the final whistle.
-      mood: (upsetHappening(row, scores, state, (comp.status || {}).period)
-             || rivalInTrouble(row, scores, state, (comp.status || {}).period,
-                               (comp.status || {}).clock)) ? 'good'
+      // wait for the final whistle. A finished derby comes first: whoever won,
+      // a rival won, so nothing about that score is worth lighting up.
+      mood: (state === 'post' && row.dataset.derby) ? 'bad'
+        : (upsetHappening(row, scores, state, (comp.status || {}).period)
+           || rivalInTrouble(row, scores, state, (comp.status || {}).period,
+                             (comp.status || {}).clock)) ? 'good'
         : (state === 'post' ? moodFor(row, scores) : '')
     };
     applyState(row, st);

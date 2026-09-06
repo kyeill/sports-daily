@@ -413,6 +413,10 @@ def _game_html(game, show_league, config):
     rival = filters.rival_live_watch(game, config)
     if rival:
         attrs += ' data-rival="%s"' % _esc(rival)
+    # Two rivals against each other: grey once it is over, whoever won, so the
+    # live script needs no score comparison -- just the fact of the pairing.
+    if filters.rival_derby(game, config):
+        attrs += ' data-derby="1"'
     # What would colour this row once it finishes, whatever the score does.
     watch = filters.outcome_watch(game, config)
     if watch:

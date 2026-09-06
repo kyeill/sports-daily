@@ -593,3 +593,18 @@ declares **`any` and `maskable` as separate entries** rather than one
 `"any maskable"`: a combined purpose leaves the browser to choose, and one of
 the two always ends up wrong. The same file can serve both -- it just has to
 say so twice.
+
+## 2026-09-06 — Iowa keeps its black
+
+Iowa's ESPN primary is #231f20, a warm near-black. `invisible_colour()` rejects
+it and the alternate stands in, which is why the stripe was gold. Kyle asked
+for the black, knowing it reads darker than the rule normally allows — the
+Chicago White Sox have been #000000 by override since well before this.
+
+An override wins outright in `_colour()`, ahead of both visibility checks, so
+the Sheet row is the whole fix. Written with `set_color.py`, which puts it in
+the shared Colors tab AND config.json.
+
+The key is **"Iowa Hawkeyes"**, not "Iowa". Overrides match by substring
+(`label.lower() in name`), so "Iowa" would also have repainted Iowa State,
+Northern Iowa and Upper Iowa. Checked all four after the write.

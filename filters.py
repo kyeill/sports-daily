@@ -922,6 +922,31 @@ def _outcome_rule_hits(game, rule):
     return side if _outcome_of(game, side) in (rule.get("on") or []) else ""
 
 
+def rival_derby(game, config):
+    """Both sides on one rule's own list -- Ohio State against Michigan State.
+
+    Whoever wins, a rival won, so the finished score stays grey: the result is
+    the good one and the bad one at once, and reading it as either would be a
+    lie. Only rules carrying `skip_when_both` count, which is exactly where
+    those pairings are already named.
+    """
+    rules = config.get("outcome_colours") or {}
+    for key in ("good", "bad"):
+        for rule in rules.get(key) or []:
+            if not rule.get("skip_when_both"):
+                continue
+            named = [s for s in ("home", "away")
+                     if any(_matches(game[s], n) for n in rule.get("teams") or [])]
+            if len(named) > 1:
+                return True
+    return False
+
+
+def _finished(game):
+    """Played to a result -- not merely called off before one."""
+    return (game.get("state") or "") == "post" and not game.get("called_off")
+
+
 def outcome_colour(game, config):
     """'good', 'bad' or '' -- how a finished game reads at a glance.
 
@@ -930,6 +955,8 @@ def outcome_colour(game, config):
     game can be both -- Michigan losing to Ohio State is only ever the bad
     one, but Michigan BEATING them lights up rather than staying quiet.
     """
+    if _finished(game) and rival_derby(game, config):
+        return "bad"
     rules = config.get("outcome_colours") or {}
     for key in ("good", "bad"):
         for rule in rules.get(key) or []:
@@ -946,6 +973,9 @@ def outcome_watch(game, config):
     keeps one copy of the team lists rather than shipping them to the browser.
     """
     out = []
+    if rival_derby(game, config):
+        # Grey at any score, so there is no comparison to hand the browser.
+        return out
     rules = config.get("outcome_colours") or {}
     for key in ("good", "bad"):
         for rule in rules.get(key) or []:
@@ -1049,6 +1079,10 @@ def rival_live_watch(game, config):
 
 def score_highlight(game, config, favourite):
     """Which colour the two scores take, if any."""
+    # Ahead of the orange rules rather than behind them: once two rivals have
+    # finished against each other, no reading of the score is worth having.
+    if _finished(game) and rival_derby(game, config):
+        return "bad"
     if upset_happening(game, favourite, config):
         return "good"
     # After the rules above, not instead of them: a rival in trouble reaches
