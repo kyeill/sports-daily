@@ -1185,7 +1185,7 @@
     }
   },
   "outcome_colours": {
-    "_comment": "How a finished game reads at a glance: orange for a result worth seeing, grey for one that went the wrong way. `on` is any of loss/draw for the named side. skip_when_both drops the rule when both teams are on its own list -- Ohio State against Michigan State, Arsenal against Chelsea -- where one of them losing is not news either way.",
+    "_comment": "How a finished game reads at a glance: orange for a result worth seeing, grey for one that went the wrong way. `on` is any of loss/draw for the named side. skip_when_both marks a pairing off its own list -- Ohio State against Michigan State, Arsenal against Chelsea -- where a rival wins whoever wins: the final scores go grey instead.",
     "good": [
       {
         "teams": [
@@ -1212,7 +1212,7 @@
     ],
     "bad": [
       {
-        "_note": "A rival winning reads the same way as one of mine losing. Cancelled when they play each other, where the result is both at once and neither.",
+        "_note": "A rival winning reads the same way as one of mine losing. Against each other the result is both at once, and the score goes grey on the strength of the pairing alone.",
         "teams": [
           "Ohio State",
           "Michigan State",
