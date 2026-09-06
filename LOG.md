@@ -1,3 +1,28 @@
+## 2026-09-06 (later) — rivals against each other end grey
+
+Two rivals meeting used to cancel the score colouring outright, so the final
+read in the ordinary colour — indistinguishable from a game no rule cared
+about. It now goes **grey**, whoever won: a rival won either way, so the
+result is the good one and the bad one at once and neither reading is honest.
+
+The pairing is taken from the `skip_when_both` rules already in
+`outcome_colours`, so no new team lists: both sides on one rule's own list is
+a derby. `rival_derby()` decides it from who is playing, which means the row
+can simply carry `data-derby="1"` and the live script needs no score
+comparison — it greys at the final whistle and skips the orange rules on the
+way, so a derby that somehow also qualified as an upset still ends grey.
+
+Only finals. A derby in progress stays uncoloured exactly as before, and that
+already held without help: `upset_side()` refuses these games because Ohio
+State, Michigan State and Notre Dame are all on `never_the_underdog`, and
+`rival_live_watch()` refuses any game naming two of its own teams. Verified
+over both lists in each direction, plus the pairings that are *not* derbies —
+Michigan beating Ohio State is still orange, losing to them still grey, and
+Tottenham drawing Arsenal still orange.
+
+Arsenal 2–1 Chelsea was on the board the day this went in, and both scores
+came out grey.
+
 
 ## 2026-08-29 — regional networks, yesterday tab, live-state memory
 
