@@ -652,3 +652,19 @@ the shared Colors tab AND config.json.
 The key is **"Iowa Hawkeyes"**, not "Iowa". Overrides match by substring
 (`label.lower() in name`), so "Iowa" would also have repainted Iowa State,
 Northern Iowa and Upper Iowa. Checked all four after the write.
+
+## 2026-09-07 — Iowa back to gold, in both apps
+
+Yesterday's black `#231f20` measured **1.02 contrast** against the card. It was
+invisible here and on k-money, which is exactly why `invisible_colour()`
+rejected it before the override went in. Kyle asked for it back on ESPN's gold
+`#fcd116` (11.28) once that was pointed out.
+
+Written with `set_color.py`, so the shared Colors tab and `config.json` both
+moved and k-money picks it up on its next build.
+
+Worth remembering how this was framed: the ask was "flip Iowa back to yellow,
+to be consistent with Sports Daily". The two were never inconsistent — the
+black lived in the tab BOTH read, so both showed black. The real fault was
+visibility, not agreement. Check what the pages actually render before
+accepting the reason given for a change.
