@@ -9,10 +9,15 @@ of hex values.
 Black is what four of them actually own, and black does not work here: against
 the row's `#1e1e23` a pure black stripe measures **1.27:1**, which reads as no
 stripe at all rather than as black. Newcastle had been sitting like that all
-along. So the four go to `#5a5a64`, a cool charcoal at 2.44:1 — visible, still
+along. So the four go to `#45454e`, a cool charcoal at 1.75:1 — visible, still
 reading as black, and deliberately kept clear of the `#9a9a95` that already
-means "nothing worth rooting for" (2.41:1 from it, so it cannot be mistaken
+means "nothing worth rooting for" (3.36:1 from it, so it cannot be mistaken
 for the grey either). Newcastle is included, since it had the same problem.
+
+`#5a5a64` (2.44:1) went out first and read as dark grey rather than black. One
+step down the scale is not perceptible — half these shades sit within 1.2:1 of
+their neighbour — so it moved three, to 1.39:1 darker than the first attempt
+while still holding a 38% wider margin over the row than pure black managed.
 
 Brentford takes the gold of the bee on its crest, `#a87b0a` at 4.35:1. A
 brighter gold twins Leeds (`#FFCD00`) or Hull's orange (`#f28800`); this one
