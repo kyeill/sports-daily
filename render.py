@@ -77,15 +77,23 @@ h2 {
 }
 .row:last-child { border-bottom: none; }
 .row.tinted { border-left-color: var(--tint); }
-.teams a {
-  color: inherit; text-decoration: none; display: grid;
+.teams {
+  display: grid;
   grid-template-columns: 24px 20px 1fr auto; align-items: center;
   column-gap: 7px; row-gap: var(--line-gap);
+  /* The grid is this cell itself now, not an anchor sitting inside it, so it
+     stretches to the row's full height -- and its two auto tracks would take
+     that height with it. A row whose right-hand cell is the taller of the two,
+     which any row with chips is, pushed the team names 41px apart instead of
+     3. start, so the pair stays at the top however tall the row gets. */
+  align-content: start;
   /* minmax, not a fixed height: a name that wraps on a phone still needs the
      room. The competition line below takes its own height. */
   grid-template-rows: minmax(var(--line-h), auto) minmax(var(--line-h), auto);
 }
-.teams a:hover .t { text-decoration: underline; }
+/* The link is the right-hand cell now, so the hover mark belongs on the time
+   rather than on the team names. */
+.right:hover .when { text-decoration: underline; }
 .s-logo { display: flex; align-items: center; height: 20px; }
 .s-logo img { width: 20px; height: 20px; object-fit: contain; }
 .s-rank { color: var(--rank); font-weight: 600; font-size: 11.5px;
@@ -140,6 +148,8 @@ h2 {
   border-left: 1px solid var(--line); padding-left: 12px; min-height: 44px;
   display: flex; flex-direction: column; justify-content: flex-start;
   gap: var(--line-gap);
+  /* An anchor, so it has a link colour and an underline to undo. */
+  color: inherit; text-decoration: none;
 }
 /* A time with nothing under it has no second line to pair with, so it centres
    against the pair of team lines instead of sitting on the first. Half of one
@@ -196,7 +206,7 @@ h2 {
      inside the budget by 0.3px and so not worth trusting. */
   .row { grid-template-columns: 1fr 84px; gap: 9px; padding: 9px 11px; }
   .right { padding-left: 9px; }
-  .teams a { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
+  .teams { grid-template-columns: 22px 18px 1fr auto; column-gap: 6px; }
   .s-name { font-size: 14px; }
   /* A long name wraps onto a second line rather than being cut off or
      swapped for an abbreviation. Abbreviating by length was tried and looked
@@ -440,17 +450,21 @@ def _game_html(game, show_league, config):
     # A draw is marked on the two team names, not on the word "Final".
     when = _esc(_when(game))
 
+    # The right-hand column is the link, not the names: it is the whole cell
+    # behind the rule, so the time, the network and the chips all lead to the
+    # gamecast, and the names stay plain text you can read without them looking
+    # tappable.
     return (
         '<div%s>'
-        '<div class="teams"><a href="%s">%s%s%s</a></div>'
-        '<div class="right%s"><div class="when">%s</div>%s%s</div>'
+        '<div class="teams">%s%s%s</div>'
+        '<a class="right%s" href="%s"><div class="when">%s</div>%s%s</a>'
         '</div>'
-    ) % (attrs, _esc(game["link"]),
+    ) % (attrs,
          _side_html(first, show_records, config, lines[order[0]],
                     scores.get(order[0]), loser == order[0], order[0], drawn, mood),
          _side_html(second, show_records, config, lines[order[1]],
                     scores.get(order[1]), loser == order[1], order[1], drawn, mood),
-         note, solo, when, nets, tags)
+         note, solo, _esc(game["link"]), when, nets, tags)
 
 
 def _section(title, games, show_league, config):

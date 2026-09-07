@@ -1,3 +1,30 @@
+## 2026-09-07 (later still) — the link moves to the time and network
+
+Tapping a game used to mean tapping the team names. The link is now the whole
+right-hand cell — time, network and chips, everything behind the rule — and
+the names are plain text again. Hovering underlines the time rather than a
+team name.
+
+`.right` became the anchor itself rather than gaining one inside it, so every
+rule already written for that cell — the flex column, the rule down its left,
+the `solo` centring — keeps working untouched. It only needed `color: inherit`
+and `text-decoration: none` to undo being a link.
+
+One real regression came out of this and was caught before it shipped. The
+four-column team grid used to live on the anchor *inside* `.teams`, which took
+its height from its contents. Moved onto `.teams` itself, it inherited the
+cell's stretch to the row's full height, and its two auto tracks stretched
+with it: on any row whose right-hand cell is the taller of the two — a row
+with chips — the team names sprang **41px apart instead of 3**. `align-content:
+start` pins the pair to the top however tall the row grows. Verified by
+forcing chips onto every row and re-measuring: 4px with them and without.
+
+The delicate part — the time sitting level with the first team's record and
+the network with the second — is unchanged. The same measurement on the live
+page carrying the old markup gives identical figures (-2.38px on a two-line
+row, 10.13px on a `solo` one), so the move cost nothing there. Checked on the
+phone width too: the tap target is 84x47, and the names hold their spacing.
+
 ## 2026-09-07 (later) — the red Premier League stripes
 
 Only Arsenal, Liverpool and Manchester United should carry a red stripe. Five
