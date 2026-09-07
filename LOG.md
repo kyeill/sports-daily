@@ -1,3 +1,32 @@
+## 2026-09-07 (later) — the red Premier League stripes
+
+Only Arsenal, Liverpool and Manchester United should carry a red stripe. Five
+other clubs did: Bournemouth, Brentford, Fulham, Nottingham Forest and
+Sunderland. Nobody else — Palace, Everton, Brighton and Ipswich already had
+blue overrides, and Hull's orange and Leeds' gold merely look close in a list
+of hex values.
+
+Black is what four of them actually own, and black does not work here: against
+the row's `#1e1e23` a pure black stripe measures **1.27:1**, which reads as no
+stripe at all rather than as black. Newcastle had been sitting like that all
+along. So the four go to `#5a5a64`, a cool charcoal at 2.44:1 — visible, still
+reading as black, and deliberately kept clear of the `#9a9a95` that already
+means "nothing worth rooting for" (2.41:1 from it, so it cannot be mistaken
+for the grey either). Newcastle is included, since it had the same problem.
+
+Brentford takes the gold of the bee on its crest, `#a87b0a` at 4.35:1. A
+brighter gold twins Leeds (`#FFCD00`) or Hull's orange (`#f28800`); this one
+keeps 2.54:1 from Leeds and 1.51:1 from Hull, so three warm stripes in one
+league stay tellable apart.
+
+Nottingham Forest stays red. Red shirts, white shorts, no third colour: there
+is nothing to move it to, and white is not available.
+
+Checked every configured competition for a substring collision before writing
+— `Sunderland`, `Fulham`, `Brentford`, `AFC Bournemouth` and `Newcastle
+United` each match one club and nothing else. Written to the shared Colors tab
+as well as config.json.
+
 ## 2026-09-07 — the ESPN links were 404s
 
 Tapping a game opened an ESPN error page. The URL was built from the SPORT
