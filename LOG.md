@@ -1,3 +1,22 @@
+## 2026-09-07 — the ESPN links were 404s
+
+Tapping a game opened an ESPN error page. The URL was built from the SPORT
+rather than the league — `league["path"].split("/")[0]` — so the NFL and
+college football both pointed at `espn.com/football/game/_/gameId/...`, which
+does not exist. Soccer was the only sport that worked, and only by accident:
+its sport and league segments are the same word, and ESPN redirects the
+`/game/` it produced to the `/match/` it wants.
+
+ESPN ships the right URL on the event, under the link whose `rel` includes
+`summary`, so it is taken rather than guessed. The constructed form is kept as
+a fallback for an event carrying no links, now using the league segment and
+saying `/match/` for soccer.
+
+Checked both forms against every competition with a game on the board —
+17 leagues, the winter ones on an in-season date — and all 26 URLs returned
+200, fallbacks included. The trailing team slug ESPN appends
+(`.../401872656/patriots-seahawks`) is decoration: the id alone resolves.
+
 ## 2026-09-06 (later) — rivals against each other end grey
 
 Two rivals meeting used to cancel the score colouring outright, so the final

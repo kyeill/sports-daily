@@ -522,6 +522,30 @@ def _aggregate(comp, home, away):
     return "%s %s" % (scores, leader["abbr"]) if leader else "%s agg" % scores
 
 
+def _game_link(event, league):
+    """The espn.com page for one game.
+
+    ESPN ships the URL on the event, so it is taken rather than guessed: the
+    segment is the LEAGUE, not the sport, and soccer says /match/ where every
+    other sport says /game/. Building it from `league["path"]` produced
+    espn.com/football/... for the NFL and college football alike, which is a
+    404 -- soccer was the only sport that worked, and only because its sport
+    and league segments happen to be the same word.
+
+    The fallback covers an event that ships no links at all, and drops the
+    trailing team slug, which ESPN does not need to resolve the page.
+    """
+    for link in event.get("links") or []:
+        rel = link.get("rel") or []
+        if "summary" in rel and link.get("href"):
+            return link["href"]
+    bits = (league.get("path") or "").split("/")
+    slug = bits[1] if len(bits) > 1 else (bits[0] if bits else "")
+    if bits and bits[0] == "soccer":
+        return "https://www.espn.com/soccer/match/_/gameId/%s" % event.get("id")
+    return "https://www.espn.com/%s/game/_/gameId/%s" % (slug, event.get("id"))
+
+
 def _parse_start(raw):
     for fmt in ("%Y-%m-%dT%H:%MZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ"):
         try:
@@ -649,7 +673,6 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "neutral": bool(comp.get("neutralSite")),
             "venue": (comp.get("venue") or {}).get("fullName") or "",
             "note": notes[0] if notes else "",
-            "link": "https://www.espn.com/%s/game/_/gameId/%s" % (
-                league["path"].split("/")[0], event.get("id")),
+            "link": _game_link(event, league),
         })
     return out
