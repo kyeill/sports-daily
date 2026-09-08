@@ -201,6 +201,7 @@
     "AS Monaco": "Monaco",
     "Athletic Club": "Athletic Bilbao",
     "F.C. København": "Copenhagen",
+    "FC Porto": "Porto",
     "FK Qarabag": "Qarabag",
     "Internazionale": "Inter Milan",
     "Union St.-Gilloise": "Union Saint-Gilloise"
@@ -220,6 +221,7 @@
   "uecl": {
     "BK Häcken": "Hacken",
     "FC Noah": "Noah",
+    "FC Porto": "Porto",
     "NK Celje": "Celje"
   }
 }

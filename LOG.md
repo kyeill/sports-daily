@@ -1,3 +1,18 @@
+## 2026-09-08 — Porto in the other two European tables
+
+`team-names.json` is keyed by competition, and `FC Porto -> Porto` was listed
+only under the Europa League. Added to the Champions and Conference tables so
+the club reads the same wherever it turns up.
+
+Nothing on the page changes today: Porto plays in the Europa League this
+season, where the short name was already being printed. What prompted this was
+a fixture list in the conversation showing ESPN's raw names, not the app's.
+
+Checked the rest of the tables for the same per-competition gap, a month at a
+time because the scoreboard endpoint caps a long range at 100 events — 540
+fixtures over the full European season, 36 clubs in each competition. No other
+club is shortened in one table and left long in another.
+
 ## 2026-09-07 (night) — club membership by id, and Eintracht into National
 
 Two things, both asked for after the last change.
