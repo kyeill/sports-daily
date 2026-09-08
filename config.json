@@ -689,12 +689,6 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "English side"
-          },
-          {
-            "teams": [
-              "Eintracht Frankfurt"
-            ],
-            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -716,6 +710,12 @@
               "soccer/fra.1"
             ],
             "note": "Europe"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ]
       },
@@ -749,12 +749,6 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "Knockout"
-          },
-          {
-            "teams": [
-              "Eintracht Frankfurt"
-            ],
-            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -783,6 +777,12 @@
               "soccer/fra.1"
             ],
             "note": "Europe"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ]
       },
@@ -816,12 +816,6 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "Knockout"
-          },
-          {
-            "teams": [
-              "Eintracht Frankfurt"
-            ],
-            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -850,6 +844,12 @@
               "soccer/fra.1"
             ],
             "note": "Europe"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ]
       },

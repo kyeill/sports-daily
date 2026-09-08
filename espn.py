@@ -163,35 +163,14 @@ def _int(value):
         return None
 
 
-def clubs_in(league_path):
-    """Set of lowercased club names in a competition, cached for a week.
-
-    Used for "is either side English?" and "is either side an MLS club?" --
-    the scoreboard payload does not say what country a club is from, but
-    membership of eng.1 or usa.1 answers it well enough.
-    """
-    url = "%s/%s/teams" % (SITE, league_path)
-    data = _get(url, {"limit": 100},
-                cache_key="clubs-%s" % league_path.replace("/", "-"),
-                max_age_min=60 * 24 * 7)
-    names = set()
-    try:
-        entries = data["sports"][0]["leagues"][0]["teams"]
-    except (KeyError, IndexError, TypeError):
-        return names
-    for entry in entries:
-        team = entry.get("team") or {}
-        for key in ("displayName", "shortDisplayName", "name", "abbreviation"):
-            if team.get(key):
-                names.add(team[key].strip().lower())
-    return names
-
-
 def club_ids_in(league_path):
     """Set of ESPN team ids in a competition, cached for a week.
 
-    The same question `clubs_in` answers, asked in the one way that cannot go
-    wrong. Names collide across countries once abbreviations are in the pool:
+    "Is either side English?", "is this an MLS club?", "are both sides from
+    the big four?" -- asked in the one way that cannot go wrong. The scoreboard
+    payload does not say what country a club is from, but membership of eng.1
+    or usa.1 answers it well enough. Matching those by NAME does not: names
+    collide across countries once abbreviations are in the pool:
     BRE is Brentford and Werder Bremen, BAR is Barcelona and Barnsley, MIL is
     Milan and Millwall. An id is unique across all of ESPN, so a rule that
     unions several countries can rely on it.

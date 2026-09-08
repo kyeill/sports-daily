@@ -1,3 +1,39 @@
+## 2026-09-07 (night) — club membership by id, and Eintracht into National
+
+Two things, both asked for after the last change.
+
+**`clubs_from` matches ids now, like `both_clubs_from`.** It was matching
+names, and the pool includes abbreviations, which collide across countries.
+Measured against the competitions this app carries:
+
+| code | on the continent | in England |
+|------|------------------|------------|
+| BRE  | Brest            | Brentford  |
+| BAR  | Barcelona        | Barnet, Barnsley (FA Cup) |
+| BOL  | Bologna          | Bolton Wanderers (FA Cup) |
+| MIL  | AC Milan         | Millwall (FA Cup) |
+
+So "a tie with an English club in it" would have counted Brest, and the FA Cup
+pool makes it worse. Nothing had gone wrong yet — none of those clubs has been
+in the European draw this season — which is exactly why it was worth fixing
+while it was cheap.
+
+Behaviour is unchanged where it currently matters: 67 European fixtures across
+six matchdays, and names and ids agree on every one of them, both for the
+`clubs_from` rule and for which side `tint_prefer_clubs_from` picks. Bremen was
+checked directly too, and no longer counts as English (it never did — see the
+correction below; the club that would have was Brest).
+
+`clubs_in` is gone, having no callers left. `_club_names` stays for the league
+table, which is keyed by name and has nothing else to match on.
+
+**Eintracht moved from the tier rules to `national_rules`.** It lands in
+National, and a rule that claims the game first still takes it higher, which is
+what National rules do by construction. Checked over all six of its Champions
+League fixtures: five in National, and Liverpool away in Highlights on the
+English-side rule. A knockout tie goes to Highlights too, since the knockout
+rule keeps every Champions League game at that stage.
+
 ## 2026-09-07 (evening) — the big-four ties, and Eintracht
 
 National gains European ties played between Spain, Germany, Italy and France:
@@ -17,10 +53,13 @@ the 11am floor, and a Monday.
 `both_clubs_from` is the new condition — every side from one of the named
 competitions, where `clubs_from` asks only that one side is. **It matches team
 ids, not names.** The union of four countries collides with English clubs on
-abbreviations: BRE is Brentford and Werder Bremen, BAR is Barcelona and
-Barnsley, MIL is Milan and Millwall. Names would have put Brentford ties on
-the National shelf. (`clubs_from` still matches on names and carries that same
-weakness — untouched here, but worth knowing.)
+abbreviations. Names would have put Brentford ties on the National shelf.
+(`clubs_from` still matches on names and carries that same weakness —
+untouched here, but worth knowing.)
+
+*Correction, made the same evening:* this entry and its commit message named
+Werder Bremen as the club sharing BRE with Brentford. Bremen is SVW. The clash
+is **Brest**, and the full list is in the entry above.
 
 Eintracht Frankfurt is kept in all three competitions whatever the round, and
 takes its own red through a new `tint_backup_teams`: a club whose colour wins

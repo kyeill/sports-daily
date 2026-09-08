@@ -244,6 +244,13 @@ def postseason_reasons(game, rules):
 
 
 def _club_names(team):
+    """Every name ESPN might call this club, lowercased.
+
+    Only the league table needs this now -- `soccer_table` is keyed by name,
+    so there is nothing else to match on. Club membership is asked by id
+    instead: these names include abbreviations, and those collide across
+    countries (BRE is Brentford and Werder Bremen).
+    """
     return {(team.get(k) or "").strip().lower() for k in ("name", "short", "abbr") if team.get(k)}
 
 
@@ -276,8 +283,8 @@ def rule_matches(game, rule):
 
     pool_path = rule.get("clubs_from")
     if pool_path:
-        pool = espn.clubs_in(pool_path)
-        if not pool or not any(_club_names(t) & pool for t in sides):
+        pool = espn.club_ids_in(pool_path)
+        if not pool or not any(str(t.get("id") or "") in pool for t in sides):
             return False
 
     # Both sides from the same short list of countries, which is how a tie
@@ -653,9 +660,9 @@ def _preferred_sides(game, sides, league):
         found.extend(t for t in sides if _matches(t, name) and t not in found)
     pool_path = league.get("tint_prefer_clubs_from")
     if pool_path:
-        pool = espn.clubs_in(pool_path)
+        pool = espn.club_ids_in(pool_path)
         found.extend(t for t in sides
-                     if _club_names(t) & pool and t not in found)
+                     if str(t.get("id") or "") in pool and t not in found)
     return found
 
 
