@@ -1,3 +1,36 @@
+## 2026-09-07 (evening) — the big-four ties, and Eintracht
+
+National gains European ties played between Spain, Germany, Italy and France:
+the Champions League at any stage, the Europa and Conference Leagues once the
+knockouts start. In the 2026 league phase that is Juventus–Monaco,
+Villarreal–Leverkusen, Inter–Dortmund and Inter–Atlético — matches that were
+being dropped outright, since the league-phase rule only kept ties with an
+English club in them.
+
+`national_rules` now runs through `rule_matches` rather than testing the day
+by itself, so a National rule can say "knockouts only" in the same words the
+tier rules already use. `standalone` and `from_hour` stay its own, ahead of
+that call. The Premier League's two rules are unaffected: verified across
+standalone and non-standalone kickoffs on Saturday, Sunday before and after
+the 11am floor, and a Monday.
+
+`both_clubs_from` is the new condition — every side from one of the named
+competitions, where `clubs_from` asks only that one side is. **It matches team
+ids, not names.** The union of four countries collides with English clubs on
+abbreviations: BRE is Brentford and Werder Bremen, BAR is Barcelona and
+Barnsley, MIL is Milan and Millwall. Names would have put Brentford ties on
+the National shelf. (`clubs_from` still matches on names and carries that same
+weakness — untouched here, but worth knowing.)
+
+Eintracht Frankfurt is kept in all three competitions whatever the round, and
+takes its own red through a new `tint_backup_teams`: a club whose colour wins
+only when none of the league's preferred clubs is in the game. So it is red
+against Bayern or Madrid, while a non-rival English opponent still takes the
+stripe — and against Arsenal or Chelsea the rival rule has already handed the
+colour back to Eintracht, which is the wanted answer by a different route.
+Seven pairings checked, including Tottenham (Kyle's own club wins) and a tie
+with neither Eintracht nor an English side (still grey).
+
 ## 2026-09-07 (later still) — the link moves to the time and network
 
 Tapping a game used to mean tapping the team names. The link is now the whole

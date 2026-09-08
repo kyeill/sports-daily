@@ -689,6 +689,12 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "English side"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -700,13 +706,27 @@
             "note": "Rival",
             "rival": true
           }
+        ],
+        "national_rules": [
+          {
+            "both_clubs_from": [
+              "soccer/esp.1",
+              "soccer/ger.1",
+              "soccer/ita.1",
+              "soccer/fra.1"
+            ],
+            "note": "Europe"
+          }
         ]
       },
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "tint_backup_teams": [
+        "Eintracht Frankfurt"
+      ]
     },
     {
       "key": "uel",
@@ -729,6 +749,12 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "Knockout"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -740,13 +766,34 @@
             "note": "Rival",
             "rival": true
           }
+        ],
+        "national_rules": [
+          {
+            "round": [
+              "knockout-round-playoffs",
+              "round-of-16",
+              "quarterfinals",
+              "semifinals",
+              "final"
+            ],
+            "both_clubs_from": [
+              "soccer/esp.1",
+              "soccer/ger.1",
+              "soccer/ita.1",
+              "soccer/fra.1"
+            ],
+            "note": "Europe"
+          }
         ]
       },
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "tint_backup_teams": [
+        "Eintracht Frankfurt"
+      ]
     },
     {
       "key": "uecl",
@@ -769,6 +816,12 @@
             ],
             "clubs_from": "soccer/eng.1",
             "note": "Knockout"
+          },
+          {
+            "teams": [
+              "Eintracht Frankfurt"
+            ],
+            "note": "Eintracht"
           }
         ],
         "tier3_rules": [
@@ -780,13 +833,34 @@
             "note": "Rival",
             "rival": true
           }
+        ],
+        "national_rules": [
+          {
+            "round": [
+              "knockout-round-playoffs",
+              "round-of-16",
+              "quarterfinals",
+              "semifinals",
+              "final"
+            ],
+            "both_clubs_from": [
+              "soccer/esp.1",
+              "soccer/ger.1",
+              "soccer/ita.1",
+              "soccer/fra.1"
+            ],
+            "note": "Europe"
+          }
         ]
       },
       "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "tint_backup_teams": [
+        "Eintracht Frankfurt"
+      ]
     },
     {
       "key": "wcq",

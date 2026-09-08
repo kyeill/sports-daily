@@ -280,6 +280,20 @@ def rule_matches(game, rule):
         if not pool or not any(_club_names(t) & pool for t in sides):
             return False
 
+    # Both sides from the same short list of countries, which is how a tie
+    # earns National on the strength of the matchup alone -- Real Madrid
+    # against Bayern, Inter against Marseille. Matched on team ids, never
+    # names: the union of four countries collides with English clubs on
+    # abbreviations (BRE is Brentford and Werder Bremen), and one bad match
+    # here would put an ordinary tie on the National shelf.
+    pools = rule.get("both_clubs_from")
+    if pools:
+        ids = set()
+        for path in pools:
+            ids |= espn.club_ids_in(path)
+        if not ids or not all(str(t.get("id") or "") in ids for t in sides):
+            return False
+
     top = rule.get("table_top")
     if top:
         table = espn.soccer_table(top.get("path"))
@@ -725,6 +739,15 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
         return _colour(notable[0], config, league)
     if notable:
         return _colour(game["home"], config, league)
+    # A club worth its own colour, but not ahead of the ones the league
+    # prefers. Eintracht in Europe: its red against Bayern or Madrid, while an
+    # English opponent still takes the stripe -- unless that opponent is a
+    # rival, which the branch above has already answered by handing the colour
+    # back to Eintracht.
+    backup = [t for t in sides
+              if any(_matches(t, n) for n in league.get("tint_backup_teams") or [])]
+    if len(backup) == 1:
+        return _colour(backup[0], config, league)
     if not _worth_colouring(game, sides, mine, notable, rivals, preferred,
                             league, config):
         return RIVAL_GREY
@@ -1159,10 +1182,14 @@ def national_rules_hit(rules, game):
     for rule in rules.get("national_rules") or []:
         if rule.get("standalone") and not game.get("standalone"):
             continue
-        if not _on_day(game, rule.get("days")):
-            continue
         floor = rule.get("from_hour")
         if floor is not None and game["start_local"].hour < floor:
+            continue
+        # `standalone` and `from_hour` are this function's own; everything
+        # else -- days, round, both_clubs_from -- is the ordinary rule
+        # vocabulary, so a National rule can say "knockouts only" in exactly
+        # the words the tier rules already use.
+        if not rule_matches(game, rule):
             continue
         return rule.get("note") or "standalone"
     return ""

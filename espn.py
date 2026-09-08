@@ -187,6 +187,31 @@ def clubs_in(league_path):
     return names
 
 
+def club_ids_in(league_path):
+    """Set of ESPN team ids in a competition, cached for a week.
+
+    The same question `clubs_in` answers, asked in the one way that cannot go
+    wrong. Names collide across countries once abbreviations are in the pool:
+    BRE is Brentford and Werder Bremen, BAR is Barcelona and Barnsley, MIL is
+    Milan and Millwall. An id is unique across all of ESPN, so a rule that
+    unions several countries can rely on it.
+    """
+    url = "%s/%s/teams" % (SITE, league_path)
+    data = _get(url, {"limit": 100},
+                cache_key="clubs-%s" % league_path.replace("/", "-"),
+                max_age_min=60 * 24 * 7)
+    ids = set()
+    try:
+        entries = data["sports"][0]["leagues"][0]["teams"]
+    except (KeyError, IndexError, TypeError):
+        return ids
+    for entry in entries:
+        team = entry.get("team") or {}
+        if team.get("id"):
+            ids.add(str(team["id"]))
+    return ids
+
+
 def soccer_table(league_path):
     """{lowercased club name: rank} for a league table, or {}."""
     url = "https://site.api.espn.com/apis/v2/sports/%s/standings" % league_path
