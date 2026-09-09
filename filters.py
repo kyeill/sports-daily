@@ -1592,27 +1592,45 @@ def _best_rank(game):
 def _highlight_rank(game, config):
     """Where a Highlights game sits against another starting the same minute.
 
-    The first rule whose league or sport fits decides, and a game it does not
-    name sits behind the ones it does -- "Arsenal, then Chelsea, then any other
-    soccer". Nothing is said about how the sports compare with each other, so
-    two rules can return the same number and the sort is left stable, which
-    holds the order the leagues were read in.
+    `highlight_order` is one list read top to bottom, and the first rule the
+    game answers to decides: his own teams, in the order he ranks them, then
+    the rivals by sport. The answer is a pair -- which rule, then where inside
+    it -- so "College Football before College Basketball" and "Ohio State
+    before Michigan State" are the same mechanism at two depths.
+
+    A rule naming only teams needs one of them in the game. A rule naming a
+    league, a sport, or the postseason holds any game that fits, and one it
+    does not name by team sits behind the ones it does: that is what makes
+    "Arsenal, then Chelsea, then any other soccer" work.
     """
     league = game.get("_league") or {}
     label = game.get("league_label") or ""
     sport = league.get("sport") or ""
     sides = (game["home"], game["away"])
-    for rule in config.get("highlight_order") or []:
-        if rule.get("league") and rule["league"] != label:
-            continue
-        if rule.get("sport") and rule["sport"] != sport:
-            continue
+    for i, rule in enumerate(config.get("highlight_order") or []):
+        # Not `postseason` alone: soccer carries no such flag, and a
+        # competition names its own knockouts instead.
+        wide = False
+        if rule.get("postseason"):
+            if not is_event_round(game, league):
+                continue
+            wide = True
+        if rule.get("league"):
+            if rule["league"] != label:
+                continue
+            wide = True
+        if rule.get("sport"):
+            if rule["sport"] != sport:
+                continue
+            wide = True
         teams = rule.get("teams") or []
-        for i, name in enumerate(teams):
-            if any(_matches(t, name) for t in sides):
-                return i
-        return len(teams)
-    return 99
+        hit = next((j for j, name in enumerate(teams)
+                    if any(_matches(t, name) for t in sides)), None)
+        if hit is not None:
+            return (i, hit)
+        if wide:
+            return (i, len(teams))
+    return (99, 0)
 
 
 def sort_key_for(section, config):

@@ -1409,11 +1409,37 @@
   },
   "highlight_order": [
     {
-      "_comment": "Two Highlights games kicking off the same minute: the first list that fits the game decides, and a game it does not name sits behind the ones it does.",
-      "sport": "Soccer",
+      "_comment": "Two Highlights games kicking off the same minute. Read top to bottom: his own teams in his own order, then the rivals by sport. A rule naming only teams needs one of them; a rule naming a league, a sport or the postseason takes any game that fits, behind the teams it does name.",
+      "postseason": true
+    },
+    {
       "teams": [
-        "Arsenal",
-        "Chelsea"
+        "United States"
+      ]
+    },
+    {
+      "teams": [
+        "Detroit Tigers"
+      ]
+    },
+    {
+      "teams": [
+        "Detroit Pistons"
+      ]
+    },
+    {
+      "teams": [
+        "Detroit Red Wings"
+      ]
+    },
+    {
+      "teams": [
+        "Atlanta United"
+      ]
+    },
+    {
+      "teams": [
+        "Cleveland Cavaliers"
       ]
     },
     {
@@ -1430,6 +1456,13 @@
         "Michigan State",
         "Ohio State",
         "Notre Dame"
+      ]
+    },
+    {
+      "sport": "Soccer",
+      "teams": [
+        "Arsenal",
+        "Chelsea"
       ]
     }
   ]

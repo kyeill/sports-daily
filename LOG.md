@@ -1,3 +1,34 @@
+## 2026-09-09 (last) — Highlights gets a cross-sport order
+
+The tiebreakers added earlier ordered Highlights only within a sport, so an
+Arsenal match and an Ohio State game kicking off together tied. `highlight_order`
+is now one list read top to bottom, his own teams first and the rivals after:
+
+    Playoffs > USMNT > Tigers > Pistons > Red Wings > Atlanta > Cavs
+             > College Football > College Basketball > soccer
+
+The rank is a pair — which rule, then where inside it — so "College Football
+before College Basketball" and "Ohio State before Michigan State" are one
+mechanism at two depths, and the sport orders written earlier are unchanged
+underneath.
+
+A rule naming only teams needs one of them present. A rule naming a league, a
+sport or the postseason takes any game that fits, behind whichever teams it
+also names: that is what keeps "Arsenal, then Chelsea, then any other soccer"
+working now that soccer sits at the foot of a longer list.
+
+"Playoffs" is `is_event_round`, not the `postseason` flag — soccer does not
+carry one, and a competition names its own knockouts instead. Same test
+National already uses for its leading card.
+
+Verified with fourteen games forced to the same minute: they came out in
+exactly that order. Start time still decides everything before the tie, and
+finished games still sink; both re-checked.
+
+**Not in the list, so last against a same-minute game:** Cornell, Michigan, the
+Lions and Tottenham — they were not named, and all four do reach Highlights
+sometimes, Cornell most often. College Hockey has no group of its own either.
+
 ## 2026-09-09 (later still) — tiebreakers for games starting together
 
 Every section sorted on start time alone, so two games kicking off the same
