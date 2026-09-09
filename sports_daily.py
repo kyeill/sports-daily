@@ -266,24 +266,16 @@ def as_text(day, games, config, notes=None):
             suffix = "%s  (%s)" % (suffix, detail)
         return "  %-9s %s %s %s%s" % (when, side(first), joiner, side(second), suffix)
 
-    by_time = sorted(games, key=lambda g: g["start_local"])
-    pinned = [g for g in by_time if g.get("tier") == "favorite"]
-    if pinned:
-        lines.append("MAIN SLATE")
-        lines += [line(g) for g in pinned]
-        lines.append("")
-
-    rivals = [g for g in by_time if g.get("tier") != "favorite" and g.get("highlight")]
-    if rivals:
-        lines.append("HIGHLIGHTS")
-        lines += [line(g) for g in rivals]
-        lines.append("")
-
-    rest = [g for g in by_time
-            if g.get("tier") != "favorite" and not g.get("highlight")]
-    for label, block in render.sections_for(rest, config):
+    # Every section through the shared splitter, including the first two.
+    # Building those here by hand was the drift this was meant to prevent:
+    # they came out in plain start-time order, so the tiebreakers the page
+    # applies -- Arsenal before Chelsea at the same kickoff -- were missing,
+    # and a finished game did not sink to the foot of its section either.
+    # Only the top two name the competition; the rest are already by sport.
+    for label, block in render.sections_for(games, config):
         lines.append(label.upper())
-        lines += [line(g, with_league=False) for g in block]
+        named = label in ("Main Slate", "Highlights")
+        lines += [line(g, with_league=named) for g in block]
         lines.append("")
 
     if not games:

@@ -513,9 +513,9 @@ def sections_for(games, config):
         if not block:
             continue
         # Finished games sink to the bottom of their section, in the order
-        # they started. Everything still to come keeps its place.
-        key = filters.national_order if name == "National"             else (lambda g: (filters.finished(g), g["start_local"]))
-        out.append((name, sorted(block, key=key)))
+        # they started. Everything still to come keeps its place, and each
+        # section says for itself how to separate two games starting together.
+        out.append((name, sorted(block, key=filters.sort_key_for(name, config))))
     return out
 
 

@@ -1508,11 +1508,18 @@ def bowl_in_football(game, league):
 
 # National mixes every sport, so it runs in two halves: the things that are
 # an event in themselves, then the ordinary nightly slate. Each half is in
-# start-time order; these lists only break a tie between two games starting
-# the same minute.
-NATIONAL_LEAD = ("College Football", "College Basketball", "College Hockey",
-                 "NFL", "MLB", "NBA", "NHL", "MLS")
-NATIONAL_REST = ("MLB", "NBA", "NHL", "MLS", "Leagues Cup")
+# start-time order; this list only breaks a tie between two games starting the
+# same minute, and applies to both halves.
+#
+# "Soccer" stands for every competition of that sport EXCEPT MLS, which is
+# named here in a place of its own. Anything unlisted -- College Hockey -- goes
+# last, and only ever against a game starting the same minute.
+NATIONAL_SPORT_ORDER = ("Soccer", "College Football", "College Basketball",
+                        "NFL", "MLB", "MLS", "NBA", "NHL")
+
+# Labels that sort as themselves rather than as their sport.
+NATIONAL_OWN_SLOT = ("MLS", "NFL", "MLB", "NBA", "NHL",
+                     "College Football", "College Basketball")
 
 
 def is_event_round(game, league):
@@ -1550,6 +1557,16 @@ def finished(game):
     return (game.get("state") or "") == "post"
 
 
+def _national_sport(game):
+    """The name a game sorts under in National."""
+    label = game.get("league_label") or ""
+    if label in NATIONAL_OWN_SLOT:
+        return label
+    if ((game.get("_league") or {}).get("sport") or "") == "Soccer":
+        return "Soccer"
+    return label
+
+
 def national_order(game):
     """(bucket, done, start, tiebreak) -- the sort key for National.
 
@@ -1557,11 +1574,61 @@ def national_order(game):
     separate cards, so a finished game sinks within its own card rather than
     past the gap into the other one.
     """
-    bucket = national_bucket(game)
-    order = NATIONAL_LEAD if bucket == 1 else NATIONAL_REST
+    name = _national_sport(game)
+    rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
+            else len(NATIONAL_SPORT_ORDER))
+    return (national_bucket(game), finished(game), game["start_local"], rank,
+            game.get("league_label") or "")
+
+
+def _best_rank(game):
+    """The best rank in a game -- the lowest number -- or 999 if neither side
+    is ranked. ESPN writes 99 for unranked, which is not a rank."""
+    ranks = [t.get("rank") for t in (game["home"], game["away"])]
+    ranks = [r for r in ranks if isinstance(r, int) and 0 < r < 99]
+    return min(ranks) if ranks else 999
+
+
+def _highlight_rank(game, config):
+    """Where a Highlights game sits against another starting the same minute.
+
+    The first rule whose league or sport fits decides, and a game it does not
+    name sits behind the ones it does -- "Arsenal, then Chelsea, then any other
+    soccer". Nothing is said about how the sports compare with each other, so
+    two rules can return the same number and the sort is left stable, which
+    holds the order the leagues were read in.
+    """
+    league = game.get("_league") or {}
     label = game.get("league_label") or ""
-    rank = order.index(label) if label in order else len(order)
-    return (bucket, finished(game), game["start_local"], rank, label)
+    sport = league.get("sport") or ""
+    sides = (game["home"], game["away"])
+    for rule in config.get("highlight_order") or []:
+        if rule.get("league") and rule["league"] != label:
+            continue
+        if rule.get("sport") and rule["sport"] != sport:
+            continue
+        teams = rule.get("teams") or []
+        for i, name in enumerate(teams):
+            if any(_matches(t, name) for t in sides):
+                return i
+        return len(teams)
+    return 99
+
+
+def sort_key_for(section, config):
+    """How one section orders its games.
+
+    Finished games sink to the bottom of every section, in the order they
+    started; the rest is the section's own business. The third element only
+    ever separates two games kicking off the same minute.
+    """
+    if section == "National":
+        return national_order
+    if section == "Highlights":
+        return lambda g: (finished(g), g["start_local"], _highlight_rank(g, config))
+    if section in ("Football", "Basketball"):
+        return lambda g: (finished(g), g["start_local"], _best_rank(g))
+    return lambda g: (finished(g), g["start_local"])
 
 
 def section_of(game, config):

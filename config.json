@@ -1406,5 +1406,31 @@
         "after_clock": 600
       }
     ]
-  }
+  },
+  "highlight_order": [
+    {
+      "_comment": "Two Highlights games kicking off the same minute: the first list that fits the game decides, and a game it does not name sits behind the ones it does.",
+      "sport": "Soccer",
+      "teams": [
+        "Arsenal",
+        "Chelsea"
+      ]
+    },
+    {
+      "league": "College Football",
+      "teams": [
+        "Ohio State",
+        "Michigan State",
+        "Notre Dame"
+      ]
+    },
+    {
+      "league": "College Basketball",
+      "teams": [
+        "Michigan State",
+        "Ohio State",
+        "Notre Dame"
+      ]
+    }
+  ]
 }

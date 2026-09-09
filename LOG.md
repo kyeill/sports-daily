@@ -1,3 +1,38 @@
+## 2026-09-09 (later still) — tiebreakers for games starting together
+
+Every section sorted on start time alone, so two games kicking off the same
+minute fell in whatever order the leagues happened to be read. Each section now
+says how to separate them, through `sort_key_for`:
+
+- **Highlights** — Arsenal, then Chelsea, then any other soccer; College
+  Football Ohio State, Michigan State, Notre Dame; College Basketball Michigan
+  State, Ohio State, Notre Dame. Config, in `highlight_order`.
+- **Football and Basketball** — the best rank in the game, lowest number first;
+  a game with neither side ranked goes last.
+- **National** — Soccer, College Football, College Basketball, NFL, MLB, MLS,
+  NBA, NHL. MLS is named in its own slot rather than counting as soccer.
+
+Only the tie is affected: the start time still decides everything before it,
+and finished games still sink to the foot of their section. Both checked.
+National's two cards still come first of all, which is not a tiebreak but the
+card split itself.
+
+**The console had drifted from the page.** `sections_for` exists so the two
+cannot, and its docstring says as much — but `sports_daily.py` was building
+Main Slate and Highlights by hand from a plain start-time sort and handing only
+the remaining three sections over. So the page ordered Highlights correctly
+while the console showed Chelsea last of five 10:00 kickoffs, which is how this
+was noticed at all. It now passes every game through the splitter.
+
+Unlisted competitions sort last against a game starting the same minute:
+College Hockey in National, and anything in Highlights that is neither soccer
+nor college football or basketball. Nothing was said about how the sports
+compare inside Highlights, so those ranks can tie and the sort is left stable.
+
+Still true in the console only: National's two cards print as one flat list, so
+a leading-card game can appear above an earlier-starting ordinary one. The page
+draws them as two cards with a gap. Pre-existing, untouched.
+
 ## 2026-09-09 (later) — a neutral stripe for all-Big Ten games
 
 Two unranked Big Ten sides had nothing to separate them, and the stripe fell
