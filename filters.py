@@ -1608,6 +1608,13 @@ def _highlight_rank(game, config):
     sport = league.get("sport") or ""
     sides = (game["home"], game["away"])
     for i, rule in enumerate(config.get("highlight_order") or []):
+        # A team the rule steps aside for, so a later one can have it: the
+        # college football group would otherwise swallow every Cornell game
+        # on its way past, and Cornell football is meant to sit at the foot of
+        # the list rather than among the rivals.
+        skip = rule.get("except_teams") or []
+        if skip and any(_matches(t, n) for t in sides for n in skip):
+            continue
         # Not `postseason` alone: soccer carries no such flag, and a
         # competition names its own knockouts instead.
         wide = False
@@ -1628,7 +1635,11 @@ def _highlight_rank(game, config):
                     if any(_matches(t, name) for t in sides)), None)
         if hit is not None:
             return (i, hit)
-        if wide:
+        # `named_only` turns the league or sport into a filter rather than a
+        # net: "Cornell, and only in basketball". Without it that rule caught
+        # every college basketball game on its way past and stranded the
+        # rivals' own group further down the list.
+        if wide and not rule.get("named_only"):
             return (i, len(teams))
     return (99, 0)
 

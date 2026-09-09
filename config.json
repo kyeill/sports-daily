@@ -1409,11 +1409,18 @@
   },
   "highlight_order": [
     {
-      "_comment": "Two Highlights games kicking off the same minute. Read top to bottom: his own teams in his own order, then the rivals by sport. A rule naming only teams needs one of them; a rule naming a league, a sport or the postseason takes any game that fits, behind the teams it does name.",
+      "_comment": "Two Highlights games kicking off the same minute. Read top to bottom: the first rule the game answers to decides. A rule naming only teams needs one of them; a rule naming a league, a sport or the postseason takes any game that fits, behind the teams it does name. except_teams makes a rule stand aside so a later one can have the game.",
       "league": "College Hockey"
     },
     {
       "postseason": true
+    },
+    {
+      "league": "College Basketball",
+      "teams": [
+        "Cornell Big Red"
+      ],
+      "named_only": true
     },
     {
       "_note": "The USMNT never reaches Highlights -- its competitions carry no highlight_teams, so a pinned United States game stays on the Main Slate. Kept because he asked for it, and it would start working the day that changes.",
@@ -1447,13 +1454,10 @@
       ]
     },
     {
-      "_note": "Cornell is always in Highlights, never the Main Slate, and it is his -- so it goes with his teams rather than behind the rivals in the college groups below.",
-      "teams": [
-        "Cornell Big Red"
-      ]
-    },
-    {
       "league": "College Football",
+      "except_teams": [
+        "Cornell Big Red"
+      ],
       "teams": [
         "Ohio State",
         "Michigan State",
@@ -1474,6 +1478,14 @@
         "Arsenal",
         "Chelsea"
       ]
+    },
+    {
+      "_note": "Last of all, by his own ranking.",
+      "league": "College Football",
+      "teams": [
+        "Cornell Big Red"
+      ],
+      "named_only": true
     }
   ]
 }

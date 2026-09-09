@@ -1,3 +1,26 @@
+## 2026-09-09 (Highlights, final) — Cornell split by sport
+
+Cornell no longer sits in one place. Hockey leads the list, basketball follows
+the playoffs, and football goes last of all — behind even the soccer group.
+
+Two keys were needed, and the second only after the first went wrong:
+
+- **`except_teams`** — a rule stands aside so a later one can have the game.
+  Without it the college football group, which takes any football game, caught
+  Cornell on the way past and the rule at the foot of the list was unreachable.
+- **`named_only`** — the league or sport becomes a filter rather than a net.
+  Written without it, "Cornell, in basketball" behaved as "any college
+  basketball game", so every one of them ranked third and the rivals' own
+  basketball group never fired at all. Caught in testing: Notre Dame–Duke and
+  Michigan State–Purdue both came back ranked `(2, 1)`, which is Cornell's slot.
+
+Final order, verified with sixteen games on one minute:
+
+    College Hockey > Playoffs > Cornell basketball > USMNT > Tigers > Pistons
+      > Red Wings > Atlanta > Cavs > College Football (OSU > MSU > ND)
+      > College Basketball (MSU > OSU > ND) > soccer (Arsenal > Chelsea > rest)
+      > Cornell football
+
 ## 2026-09-09 (later, Highlights again) — hockey to the front, Cornell with his teams
 
 College Hockey now leads `highlight_order`, ahead of the playoffs.
