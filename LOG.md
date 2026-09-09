@@ -1,3 +1,28 @@
+## 2026-09-09 (later, Highlights again) — hockey to the front, Cornell with his teams
+
+College Hockey now leads `highlight_order`, ahead of the playoffs.
+
+Two things came out of checking which of his teams actually reach Highlights,
+over nine dates spanning the year:
+
+- **The Lions, Tottenham and Michigan never do** — 2, 5 and 6 games in the
+  sample, all Main Slate. Only the leagues carrying a `highlight_teams` entry
+  demote a pinned team, and none of those three is on one.
+- **The USMNT never does either.** Its four competitions carry no
+  `highlight_teams`, so a pinned United States game stays on the Main Slate.
+  Its rule is kept, since it was asked for and would start working the day that
+  changes, but it cannot fire today. (Worth knowing for the next probe: without
+  the Sheet, those competitions have no favourites at all — `team_group` is
+  what lends them the USMNT, and it is applied when the Sheet is read. A local
+  run makes those games look dropped when the cloud build pins them.)
+- **Cornell always does** — 8 of 8. It sits with his own teams rather than
+  behind the rivals in the college groups, which is what "my teams first, then
+  rivals" means; without that a Cornell football game ranked behind Ohio State.
+
+Verified with fourteen games on one minute: hockey, playoff game, Tigers,
+Pistons, Red Wings, Atlanta, Cavs, Cornell football, Ohio State football, then
+the basketball and soccer groups in their own orders.
+
 ## 2026-09-09 (last) — Highlights gets a cross-sport order
 
 The tiebreakers added earlier ordered Highlights only within a sport, so an

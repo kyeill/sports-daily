@@ -1410,9 +1410,13 @@
   "highlight_order": [
     {
       "_comment": "Two Highlights games kicking off the same minute. Read top to bottom: his own teams in his own order, then the rivals by sport. A rule naming only teams needs one of them; a rule naming a league, a sport or the postseason takes any game that fits, behind the teams it does name.",
+      "league": "College Hockey"
+    },
+    {
       "postseason": true
     },
     {
+      "_note": "The USMNT never reaches Highlights -- its competitions carry no highlight_teams, so a pinned United States game stays on the Main Slate. Kept because he asked for it, and it would start working the day that changes.",
       "teams": [
         "United States"
       ]
@@ -1440,6 +1444,12 @@
     {
       "teams": [
         "Cleveland Cavaliers"
+      ]
+    },
+    {
+      "_note": "Cornell is always in Highlights, never the Main Slate, and it is his -- so it goes with his teams rather than behind the rivals in the college groups below.",
+      "teams": [
+        "Cornell Big Red"
       ]
     },
     {
