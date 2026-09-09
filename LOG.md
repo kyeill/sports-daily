@@ -1,3 +1,31 @@
+## 2026-09-09 (later) — a neutral stripe for all-Big Ten games
+
+Two unranked Big Ten sides had nothing to separate them, and the stripe fell
+through to the home team's colour — which says nothing about a game whose
+interest is the conference rather than either side. They now take **`#0085ca`**,
+the Big Ten's own blue.
+
+The colour is sampled, not guessed: the conference logo
+(`ncaa_conf/500/5.png`, id 5) is exactly two colours, `#0085ca` over 59% of the
+opaque pixels and the wordmark over the rest. It reads well as a stripe at
+4.12:1 against the row, and its hue keeps it clear of the `#9a9a95` that means
+"nothing worth rooting for".
+
+`_conference_neutral` sits on the fallback path, which is the whole reason
+"not Main Slate or Highlights" needed no section test: a game claimed by one of
+your teams or by a rival has already taken its colour and never reaches it.
+Confirmed on real fixtures — Michigan v Rutgers and Michigan State v Michigan,
+both all-unranked-Big Ten, stay in Main Slate in Michigan's yellow, and
+Michigan State v UCLA stays in Highlights with UCLA's blue, because the rival
+rule hands the stripe to the opponent.
+
+Checked over three football Saturdays and three basketball dates: every
+all-Big Ten game with two unranked sides turned blue, every game with a ranked
+side kept the colour it had, and the controls — a Mountain West side against
+UCLA, Cornell against Princeton — were untouched. Basketball needed no work of
+its own; the rule keys on the conference, so leagues without one answer "" and
+fall through.
+
 ## 2026-09-09 — Telemundo pushed Peacock off the derby
 
 Manchester United v City on the 14th showed **Tele** rather than Peacock. ESPN

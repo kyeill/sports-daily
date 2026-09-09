@@ -1107,7 +1107,10 @@
     "conference_exclude": [
       "Ohio State",
       "Michigan State"
-    ]
+    ],
+    "conference_colors": {
+      "Big Ten": "0085ca"
+    }
   },
   "team_names": {
     "Ajax": "Ajax"

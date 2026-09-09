@@ -703,6 +703,29 @@ def _worth_colouring(game, sides, mine, notable, rivals, preferred, league, conf
     return False
 
 
+def _conference_neutral(sides, league, config):
+    """The conference's own colour, when neither side is the one to back.
+
+    Two unranked Big Ten teams have nothing to separate them: the conference
+    rule in `_tint_fallback` only picks a side when exactly one of them is in
+    it, and the underdog rule needs a rank to work with. What was left was the
+    home side's colour, which says nothing about a game whose interest is the
+    conference rather than either team.
+
+    Reached only from the fallback path, so a game that belongs to you or to a
+    rival -- Main Slate and Highlights -- has already taken its colour and
+    never arrives here. Leagues without conferences answer "" and fall
+    through, so no sport needs naming.
+    """
+    palette = (config.get("tint_rules") or {}).get("conference_colors") or {}
+    if not palette or any(t.get("rank") for t in sides):
+        return ""
+    for name, colour in palette.items():
+        if all(name.lower() in _conference_of(league, t).lower() for t in sides):
+            return (colour or "").lstrip("#")
+    return ""
+
+
 def _tint(game, sides, pinned, notable, rivals, config, league):
     """The colour stripe.
 
@@ -758,6 +781,9 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     if not _worth_colouring(game, sides, mine, notable, rivals, preferred,
                             league, config):
         return RIVAL_GREY
+    neutral = _conference_neutral(sides, league, config)
+    if neutral:
+        return neutral
     return _colour(_tint_fallback(game, sides, league, config), config, league)
 
 
