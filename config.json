@@ -960,7 +960,10 @@
     "Universo",
     "Telemundo Deportes",
     "TUDN",
-    "TUDN USA"
+    "TUDN USA",
+    "Tele",
+    "Telemundo",
+    "Univision"
   ],
   "cache_minutes": 30,
   "exclude_exhibitions": true,

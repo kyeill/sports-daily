@@ -1,3 +1,26 @@
+## 2026-09-09 — Telemundo pushed Peacock off the derby
+
+Manchester United v City on the 14th showed **Tele** rather than Peacock. ESPN
+sends `["Peacock", "Tele"]`, and `Tele` is how it abbreviates Telemundo. The
+streaming rule then did the rest: Peacock is on `streaming_networks`, which
+exists so a game on NBC does not also say Peacock, so the moment any
+non-streaming name is present it wins — and `Tele` counted as one.
+
+`hide_networks` already carried Universo, Telemundo Deportes, TUDN and ESPN
+Deportes. It never carried the bare `Tele`, which is the only spelling ESPN
+actually sends.
+
+Surveyed every national network name across all 21 competitions and seven
+months first, rather than patching the one fixture. `Tele` appears 24 times and
+`Univision` once; `Telemundo Deportes`, `TUDN` and `TUDN USA` never appear at
+all. All three of `Tele`, `Telemundo` and `Univision` are now hidden.
+
+Checked that hiding them can never blank a row: of the games carrying a
+Spanish-language feed, **none** has it as the only national entry — 61 carry an
+English one alongside. Re-run over the season, the 46 affected games now print
+USA Network (26), Peacock (9), NBC (4), ESPN+ (3), NBCSN (2), Apple TV and
+ESPN2. None is left without a network.
+
 ## 2026-09-08 — Porto in the other two European tables
 
 `team-names.json` is keyed by competition, and `FC Porto -> Porto` was listed
