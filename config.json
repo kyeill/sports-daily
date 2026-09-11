@@ -1487,5 +1487,16 @@
       ],
       "named_only": true
     }
+  ],
+  "tint_pairs": [
+    {
+      "_comment": "Two of these clubs meeting takes this stripe, in any competition.",
+      "teams": [
+        "Liverpool",
+        "Manchester City",
+        "Manchester United"
+      ],
+      "color": "38b2ff"
+    }
   ]
 }

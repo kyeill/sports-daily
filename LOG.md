@@ -1,3 +1,17 @@
+## 2026-09-11 — a stripe of its own for Liverpool and the Manchester pair
+
+Two of Liverpool, Manchester City and Manchester United meeting now takes
+`#38b2ff`, in every competition. Before, the domestic competitions greyed the
+game as a standoff, and Europe — which names none of them in
+`tint_prefer_teams` — fell through to the home side's colour.
+
+A top-level `tint_pairs` list, checked in `_tint` straight after your own team
+and the rival rule, so it cannot be reached by a game involving Tottenham,
+Arsenal or Chelsea. Verified: City–United and Liverpool–City in the league,
+United–Liverpool in the FA Cup and Liverpool–City in the Champions League all
+take the new colour; Liverpool–Everton still backs Everton, Arsenal–City still
+gives City the stripe, Tottenham–Liverpool stays Tottenham's.
+
 ## 2026-09-09 (Highlights, final) — Cornell split by sport
 
 Cornell no longer sits in one place. Hockey leads the list, basketball follows

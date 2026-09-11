@@ -743,6 +743,15 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
         other = [t for t in sides if t is not rivals[0]]
         if other:
             return _colour(other[0], config, league)
+    # A pairing with a colour of its own: two of Liverpool and the Manchester
+    # pair meeting. Checked in every competition rather than through a
+    # league's `tint_prefer_teams`, because Europe names them no other way --
+    # an all-English tie there would otherwise fall through to the home side.
+    for pair in config.get("tint_pairs") or []:
+        named_here = [t for t in sides
+                      if any(_matches(t, n) for n in pair.get("teams") or [])]
+        if len(named_here) > 1 and pair.get("color"):
+            return pair["color"].lstrip("#")
     preferred = _preferred_sides(game, sides, league)
     named = [t for t in sides
              if any(_matches(t, n) for n in league.get("tint_prefer_teams") or [])]
