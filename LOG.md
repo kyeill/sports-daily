@@ -1,3 +1,26 @@
+## 2026-09-13 (later) — the Rooting sheet is live
+
+Pointed at his new sheet, tab `Teams` (not `Rooting` -- the tab name is config,
+so it matches what he actually built). First read needed link-sharing turned
+on: `?usp=sharing` opens for a signed-in owner, but the gviz endpoint has no
+credentials and got a 401 on the whole document until General access became
+"Anyone with the link".
+
+Two rows in it, and they behave: Western Michigan as Against hands the stripe
+to Rice, Buffalo and Toledo in turn; Oklahoma as For takes crimson.
+
+**`Oklahoma` is ambiguous and it shows.** `_matches` is substring, so it also
+catches Oklahoma State -- and because a watchlist hit is reason enough to keep
+a game, three Oklahoma State games that were being dropped are now on the page
+marked "Rooting For", in Oklahoma State's orange. Measured with the list on and
+off, side by side. `sports_daily.py --check` already names the problem
+("matches 7 teams"), and it runs after the rooting rows are merged, so the tool
+for this existed; the fix is one cell -- `Oklahoma Sooners`.
+
+Worth noting for the next list he writes: a rooting row does not merely colour
+a game that was already showing, it pulls the game in. That is the same power
+a watchlist entry has always had, but it is more surprising here.
+
 ## 2026-09-13 — a Rooting tab he can edit himself
 
 A second Google Sheet, read like the Colors one: **Team | Side | Sport |
