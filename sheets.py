@@ -253,6 +253,88 @@ def parse_teams(text, warn=True):
     return result
 
 
+ROOTING_FOR = "Rooting For"
+ROOTING_AGAINST = "Rooting Against"
+AGAINST_WORDS = {"against", "anti", "versus", "vs", "a", "no", "opposed"}
+FOR_WORDS = {"for", "with", "f", "yes", "pro", "rooting for"}
+
+
+def parse_rooting(text, warn=True):
+    """-> [{"team", "side", "sport", "expires"}] from the Rooting tab.
+
+    Team | Side | Sport | Expires. Side is For or Against; Sport may be blank,
+    which means every competition -- "Michigan" is three different teams, and
+    most of the time all three are meant. Expires is what makes a list that
+    changes by season safe to write down.
+    """
+    out = []
+    for row in _rows(text):
+        team = (row.get("team") or "").strip()
+        if not team:
+            continue
+        if expired(row.get("expires")):
+            continue
+        raw = (row.get("side") or row.get("rooting") or "").strip().lower()
+        if raw in AGAINST_WORDS or raw.startswith("against"):
+            side = "against"
+        elif raw in FOR_WORDS or raw.startswith("for"):
+            side = "for"
+        else:
+            # Never guessed: a blank or a typo here would silently root for a
+            # team you meant to root against, which is the one mistake this
+            # tab must not make.
+            if warn:
+                print("  ! %r in the Rooting tab: Side must be For or Against, "
+                      "got %r; row skipped" % (team, row.get("side", "")))
+            continue
+        sport_raw = (row.get("sport") or "").strip().lower()
+        sport = SPORT_ALIASES.get(sport_raw) if sport_raw else None
+        if sport_raw and not sport:
+            if warn:
+                print("  ! unknown sport %r in the Rooting tab; row skipped"
+                      % row.get("sport"))
+            continue
+        out.append({"team": team, "side": side, "sport": sport,
+                    "expires": row.get("expires", "")})
+    return out
+
+
+def load_rooting(config, use_sheet=True):
+    """Fold the Rooting tab into the watchlist. Returns a one-line note.
+
+    Added to the watchlist rather than replacing it, and a team already named
+    there is left alone: the rooting list is the weakest claim on a game, so
+    anything that already had an opinion about a team keeps it.
+
+    Runs after `load`, which is what builds the watchlist in the first place.
+    """
+    block = config.get("rooting_sheet") or {}
+    sheet_id = sheet_id_from(block.get("sheet_id"))
+    if not use_sheet or not sheet_id:
+        return "no rooting sheet set up"
+    text, source = fetch_tab(sheet_id, block.get("tab", "Rooting"),
+                             block.get("cache_minutes", 120))
+    rows = parse_rooting(text)
+    if not rows:
+        return "rooting sheet empty or unreadable (%s)" % source
+    keys = [lg["key"] for lg in config.get("leagues") or []]
+    watchlist = config.setdefault("watchlist", {})
+    kept = 0
+    for row in rows:
+        note = ROOTING_AGAINST if row["side"] == "against" else ROOTING_FOR
+        for key in ([row["sport"]] if row["sport"] else keys):
+            entries = watchlist.setdefault(key, [])
+            if any((e.get("team") or "").strip().lower() == row["team"].lower()
+                   for e in entries):
+                continue
+            entries.append({"team": row["team"], "note": note,
+                            "expires": row.get("expires", "")})
+            kept += 1
+    against = sum(1 for r in rows if r["side"] == "against")
+    return "rooting list: %d for, %d against (%s)" % (
+        len(rows) - against, against, source)
+
+
 def parse_options(text, warn=True):
     """-> {"all": {...}, league_key: {...}} with typed values."""
     result = {"all": {}}

@@ -14,6 +14,12 @@
     "options_tab": "Options",
     "cache_minutes": 120
   },
+  "rooting_sheet": {
+    "_comment": "Optional second sheet: Team | Side | Sport | Expires, where Side is For or Against and a blank Sport means every competition. Added to the watchlist, never replacing it, and a team already named elsewhere keeps whatever it had. Changes only the stripe.",
+    "sheet_id": "",
+    "tab": "Rooting",
+    "cache_minutes": 120
+  },
   "leagues": [
     {
       "key": "nfl",

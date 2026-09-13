@@ -1,3 +1,32 @@
+## 2026-09-13 — a Rooting tab he can edit himself
+
+A second Google Sheet, read like the Colors one: **Team | Side | Sport |
+Expires**, where Side is For or Against, a blank Sport means every competition,
+and Expires is what lets a list that changes by season retire itself.
+
+Built to sit where the playoff-race teams sit rather than where the rivals do.
+Rooting against deliberately does NOT reuse the `rival` note: that note promotes
+a game into Highlights, and these are meant to stay in the bottom section and
+change nothing but the stripe. So there are two new notes of their own, and
+`_tint` reads them behind every other category — rooting for takes its own
+colour, rooting against hands the stripe to whoever might beat them.
+
+Superseded by anything closer to home, which is the point: the loader skips a
+team the watchlist already names, and `_tint` reaches the rooting block only
+after your own teams, the rivals, the Liverpool/Manchester pairing and the
+leagues' preferred clubs have all passed. Verified: the Chiefs against Buffalo
+gives Buffalo the stripe, the Chiefs against the Lions gives it to the Lions.
+
+Only the stripe. The orange and grey final-score rules name their teams
+directly in `outcome_colours` and are untouched, which is what he asked for.
+
+A missing or unreadable Side is skipped with a warning rather than defaulting
+to For: rooting for a team you meant to root against is the one mistake this
+tab must not make quietly.
+
+Dormant until `rooting_sheet.sheet_id` is filled in; with it blank the build
+says so and changes nothing.
+
 ## 2026-09-11 — a stripe of its own for Liverpool and the Manchester pair
 
 Two of Liverpool, Manchester City and Manchester United meeting now takes

@@ -488,6 +488,11 @@ def stamp_details(game, league, config):
 
 
 RIVAL_NOTE = "rival"
+# The sheet's rooting lists. Deliberately NOT the rival note: a rival is
+# promoted into Highlights, and these are meant to stay in the bottom
+# section, changing nothing but the stripe.
+ROOTING_FOR_NOTE = "rooting for"
+ROOTING_AGAINST_NOTE = "rooting against"
 
 
 def _rgb(value):
@@ -726,7 +731,8 @@ def _conference_neutral(sides, league, config):
     return ""
 
 
-def _tint(game, sides, pinned, notable, rivals, config, league):
+def _tint(game, sides, pinned, notable, rivals, config, league,
+          rooting_for=(), rooting_against=()):
     """The colour stripe.
 
     Your team wins outright. Against a rival the stripe takes the OTHER team's
@@ -774,6 +780,16 @@ def _tint(game, sides, pinned, notable, rivals, config, league):
     if preferred:
         return _colour(game["home"], config, league)
 
+    # The sheet's rooting lists, behind every category above: a team named
+    # there is only reached once nothing closer to home has claimed the
+    # stripe. Rooting against works the way a rival does -- the colour goes to
+    # whoever might beat them -- but without the promotion into Highlights.
+    if len(rooting_for) == 1:
+        return _colour(rooting_for[0], config, league)
+    if len(rooting_against) == 1 and not rooting_for:
+        other = [t for t in sides if t is not rooting_against[0]]
+        if other:
+            return _colour(other[0], config, league)
     if len(notable) == 1:
         return _colour(notable[0], config, league)
     if notable:
@@ -1249,12 +1265,18 @@ def evaluate(game, league, config):
     # Both sides can be on the watchlist -- a game between the division leader
     # and the wild card holder is doubly interesting, and says so.
     notable, rivals = [], []
+    rooting_for, rooting_against = [], []
     watch_notes, watch_context = [], []
     for entry in watchlist_for(config, league["key"]):
         hits = [t for t in sides if _matches(t, entry.get("team"))]
         notable.extend(t for t in hits if t not in notable)
-        if (entry.get("note") or "").strip().lower() == RIVAL_NOTE:
+        note_key = (entry.get("note") or "").strip().lower()
+        if note_key == RIVAL_NOTE:
             rivals.extend(t for t in hits if t not in rivals)
+        elif note_key == ROOTING_FOR_NOTE:
+            rooting_for.extend(t for t in hits if t not in rooting_for)
+        elif note_key == ROOTING_AGAINST_NOTE:
+            rooting_against.extend(t for t in hits if t not in rooting_against)
         if hits:
             note = entry.get("note") or "watchlist"
             if note not in watch_notes:
@@ -1410,7 +1432,8 @@ def evaluate(game, league, config):
             break
     game["my_side"] = mine_side
     stamp_details(game, league, config)
-    game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league)
+    game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league,
+                         rooting_for, rooting_against)
     # Both a rival and a demoted favourite live in the Highlights block.
     game["highlight"] = bool(rivals) or demoted or in_highlight_league
     game["_league"] = league

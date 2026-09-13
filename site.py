@@ -686,6 +686,7 @@ def main(argv=None):
 
     config = sports_daily.load_config()
     sheets.load(config)
+    print("  " + sheets.load_rooting(config))
     # The shared colour list. THIS is the build the workflow runs -- putting it
     # only in sports_daily.main() left it in a path that never executes.
     print("  " + sheets.load_colors(config))
