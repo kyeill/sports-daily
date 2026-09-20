@@ -1295,6 +1295,11 @@
           20,
           25
         ]
+      },
+      {
+        "_comment": "One place apart is no upset anywhere in the poll -- except at the very top, where #1 against #2 still is.",
+        "within": 1,
+        "unless_both_top": 5
       }
     ]
   },

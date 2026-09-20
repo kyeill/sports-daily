@@ -1,3 +1,23 @@
+## 2026-09-20 (later) — one place apart is no upset, except at the top
+
+A fourth rule in `upset_watch.too_close`: a gap of one anywhere in the poll is
+not an upset, unless both sides are top five. #1 against #2 still is; #5
+against #6 is not, since #6 is outside the five.
+
+This needed the rule shape widened. `between` and `within` are both optional
+now -- a rule may set either or both -- and `unless_both_top` lets a rule stand
+down at the sharp end of the poll. A rule setting neither `between` nor
+`within` would swallow the whole poll, so it is ignored rather than trusted.
+
+It also settles the straddle cases left open by the bands: #10 against #11 and
+#19 against #20 fall inside no single band, but they are one place apart, so
+they are out now too.
+
+Sixteen cases by hand, including every top-five pairing one place apart and
+the first pair outside it. On real fixtures one more game joins the three from
+earlier: #24 Oklahoma against #20 Missouri, which is the 20-25 band rather than
+this rule.
+
 ## 2026-09-20 — two ranked sides can be too close to be an upset
 
 When BOTH teams are ranked, a result near enough to the form book no longer

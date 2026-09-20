@@ -899,21 +899,35 @@ def _spread_points(game):
 def _too_close_to_be_an_upset(rules, first, second):
     """Two ranked sides near enough that one beating the other is no upset.
 
-    Only ever asked when BOTH are ranked. A band gives the range both ranks
-    must fall inside; `within` is the largest gap that still counts as close,
-    and a band without one is close at any gap -- #20 beating #25 is not a
-    story whatever the spread of the two numbers.
+    Only ever asked when BOTH are ranked. Each rule may set any of three
+    things, and every one it sets must hold:
+
+      between           the range both ranks must fall inside; absent means
+                        anywhere in the poll
+      within            the largest gap that still counts as close; absent
+                        means any gap, so #20 against #25 is close on the
+                        strength of the band alone
+      unless_both_top   the rule stands down when both sides are this high --
+                        one place apart is nothing at #14 and #15, and
+                        everything at #1 and #2
+
+    A rule setting neither `between` nor `within` would swallow the whole
+    poll, so it is ignored rather than trusted.
     """
     low, high = min(first, second), max(first, second)
     for band in rules.get("too_close") or []:
         edges = band.get("between") or []
-        if len(edges) != 2:
-            continue
-        if not (edges[0] <= low and high <= edges[1]):
-            continue
         limit = band.get("within")
-        if limit is None or (high - low) <= limit:
-            return True
+        if len(edges) != 2 and limit is None:
+            continue
+        if len(edges) == 2 and not (edges[0] <= low and high <= edges[1]):
+            continue
+        if limit is not None and (high - low) > limit:
+            continue
+        top = band.get("unless_both_top")
+        if top is not None and high <= top:
+            continue
+        return True
     return False
 
 
