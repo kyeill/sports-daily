@@ -1744,6 +1744,52 @@ def sort_key_for(section, config):
     return lambda g: (finished(g), undated(g), g["start_local"])
 
 
+def split_football(block, config):
+    """[(heading, games)] -- the football section, by kickoff window.
+
+    One entry unless `football_windows` says otherwise, so a month outside the
+    season, or a config without the block, behaves exactly as before. The
+    games and their order are untouched: this only decides where the headings
+    fall.
+
+    A kickoff ESPN has not set yet belongs in no window and says so, rather
+    than being filed under a time nobody chose. On a Saturday still a fortnight
+    out that can be the whole card.
+    """
+    rules = config.get("football_windows") or {}
+    groups = rules.get("groups") or []
+    if not block or not groups:
+        return [("Football", block)]
+    months = rules.get("months") or []
+    if months and block[0]["start_local"].month not in months:
+        return [("Football", block)]
+
+    buckets = [[] for _ in groups]
+    undecided = []
+    for game in block:
+        if undated(game):
+            undecided.append(game)
+            continue
+        minutes = game["start_local"].hour * 60 + game["start_local"].minute
+        for slot, group in zip(buckets, groups):
+            start = group.get("from")
+            end = group.get("before")
+            if start is not None and minutes < _clock_minutes(start):
+                continue
+            if end is not None and minutes >= _clock_minutes(end):
+                continue
+            slot.append(game)
+            break
+        else:
+            undecided.append(game)
+
+    out = [(group.get("title") or "Football", games)
+           for group, games in zip(groups, buckets) if games]
+    if undecided:
+        out.append((rules.get("tbd_title") or "Football - Time TBD", undecided))
+    return out or [("Football", block)]
+
+
 def section_of(game, config):
     """Which of the five a game belongs to.
 

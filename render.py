@@ -517,7 +517,13 @@ def sections_for(games, config):
         # Finished games sink to the bottom of their section, in the order
         # they started. Everything still to come keeps its place, and each
         # section says for itself how to separate two games starting together.
-        out.append((name, sorted(block, key=filters.sort_key_for(name, config))))
+        ordered = sorted(block, key=filters.sort_key_for(name, config))
+        # The football section can carry its own headings -- one per kickoff
+        # window -- without changing which games are in it or their order.
+        if name == "Football":
+            out.extend(filters.split_football(ordered, config))
+        else:
+            out.append((name, ordered))
     return out
 
 

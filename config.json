@@ -1524,5 +1524,30 @@
       ],
       "color": "38b2ff"
     }
-  ]
+  ],
+  "football_windows": {
+    "_comment": "Headings inside the Football section, by kickoff, during these months only. Which games are in the section, and their order, are decided elsewhere and unchanged. `from` is inclusive, `before` exclusive, both local 24h.",
+    "months": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "groups": [
+      {
+        "title": "Football - Early Window",
+        "before": "15:00"
+      },
+      {
+        "title": "Football - Afternoon",
+        "from": "15:00",
+        "before": "19:00"
+      },
+      {
+        "title": "Football - Primetime",
+        "from": "19:00"
+      }
+    ],
+    "tbd_title": "Football - Time TBD"
+  }
 }

@@ -1,3 +1,24 @@
+## 2026-09-20 (last) — the football section splits by kickoff window
+
+August to November, the Football section carries three headings instead of one:
+Early Window before 3pm, Afternoon from 3pm to 7pm, Primetime from 7pm. Which
+games are in the section, and the order they sit in, are decided elsewhere and
+untouched -- this only says where the headings fall.
+
+`day_body` already renders whatever headings `sections_for` emits, and the
+console reads the same function, so neither needed changing. Outside those
+months, and with the config block absent, it is one "Football" exactly as
+before.
+
+A kickoff ESPN has not set belongs in no window, so it gets a fourth heading of
+its own rather than being filed under a time nobody chose. On a Saturday a week
+out that is most of the card: 26 September splits 2/5/4 across the three
+windows, while 3 October has two primetime games and twelve under TBD. The TBD
+group shrinks as the week closes in.
+
+Boundaries checked at the minute: 14:59 is Early, 15:00 Afternoon, 18:59
+Afternoon, 19:00 Primetime. December falls back to a single heading.
+
 ## 2026-09-20 (later still) — Cornell football, playoff captions, TBD kickoffs
 
 Three unrelated things.
