@@ -896,6 +896,27 @@ def _spread_points(game):
     return float(match.group(1)) if match else None
 
 
+def _too_close_to_be_an_upset(rules, first, second):
+    """Two ranked sides near enough that one beating the other is no upset.
+
+    Only ever asked when BOTH are ranked. A band gives the range both ranks
+    must fall inside; `within` is the largest gap that still counts as close,
+    and a band without one is close at any gap -- #20 beating #25 is not a
+    story whatever the spread of the two numbers.
+    """
+    low, high = min(first, second), max(first, second)
+    for band in rules.get("too_close") or []:
+        edges = band.get("between") or []
+        if len(edges) != 2:
+            continue
+        if not (edges[0] <= low and high <= edges[1]):
+            continue
+        limit = band.get("within")
+        if limit is None or (high - low) <= limit:
+            return True
+    return False
+
+
 def upset_side(game, config):
     """Which side would be the upset victim, or '' when nothing is at stake.
 
@@ -927,6 +948,10 @@ def upset_side(game, config):
     else:
         return ""
     underdog = "away" if favourite == "home" else "home"
+    # Both ranked and close enough together that the result is unremarkable.
+    if (ranks["home"] is not None and ranks["away"] is not None
+            and _too_close_to_be_an_upset(rules, ranks["home"], ranks["away"])):
+        return ""
     if any(_matches(game[underdog], n) for n in rules.get("never_the_underdog") or []):
         return ""
     if any(_matches(game[favourite], n) for n in rules.get("never_the_favourite") or []):

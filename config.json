@@ -1273,7 +1273,30 @@
         "within": 6,
         "after_period": 1
       }
-    }
+    },
+    "too_close": [
+      {
+        "_comment": "Both sides ranked inside one of these bands, and no further apart than `within`, is not an upset either way. A band with no `within` is close at any gap.",
+        "between": [
+          6,
+          10
+        ],
+        "within": 2
+      },
+      {
+        "between": [
+          11,
+          19
+        ],
+        "within": 4
+      },
+      {
+        "between": [
+          20,
+          25
+        ]
+      }
+    ]
   },
   "outcome_colours": {
     "_comment": "How a finished game reads at a glance: orange for a result worth seeing, grey for one that went the wrong way. `on` is any of loss/draw for the named side. skip_when_both marks a pairing off its own list -- Ohio State against Michigan State, Arsenal against Chelsea -- where a rival wins whoever wins: the final scores go grey instead.",

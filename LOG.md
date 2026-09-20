@@ -1,3 +1,27 @@
+## 2026-09-20 — two ranked sides can be too close to be an upset
+
+When BOTH teams are ranked, a result near enough to the form book no longer
+turns the score orange. Three bands, in `upset_watch.too_close`:
+
+| both ranked | gap that still counts as close |
+|-------------|-------------------------------|
+| 6-10        | 2 or fewer |
+| 11-19       | 4 or fewer |
+| 20-25       | any gap |
+
+A band needs BOTH ranks inside it, so a pair straddling two bands -- #19
+against #20, #10 against #11 -- is still an upset. That is the literal reading
+of the rule and worth knowing, since those pairs look close to the eye.
+
+Applied in `upset_side`, which is where eligibility is decided, so it removes
+the orange from the live game and the final alike. Nothing else changes: a
+game with an unranked side is untouched, and #1 against #5 still counts.
+
+Fifteen boundary cases checked by hand -- each band's edges, each band's gap
+limit one either side, and both straddles. Then against real fixtures: exactly
+three games change, #12 USC v #13 Penn State, #9 Texas A&M v #10 Alabama, and
+#11 BYU v #15 Texas Tech in the basketball.
+
 ## 2026-09-13 (later) — the Rooting sheet is live
 
 Pointed at his new sheet, tab `Teams` (not `Rooting` -- the tab name is config,
