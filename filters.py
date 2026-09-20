@@ -1405,10 +1405,17 @@ def evaluate(game, league, config):
     promoted = is_event_round(game, league)
 
     demoted = False
+    to_national = False
     if fav_hit and not promoted:
         for name in league.get("highlight_teams") or []:
             if any(_matches(t, name) for t in sides):
                 demoted = True
+                break
+        # A step further than `highlight_teams`: still yours, still kept, but
+        # it belongs with the ordinary sections rather than up in Highlights.
+        for name in league.get("national_teams") or []:
+            if any(_matches(t, name) for t in sides):
+                demoted, to_national = True, True
                 break
 
     # A whole competition can live in Highlights -- every European club
@@ -1474,7 +1481,7 @@ def evaluate(game, league, config):
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league,
                          rooting_for, rooting_against)
     # Both a rival and a demoted favourite live in the Highlights block.
-    game["highlight"] = bool(rivals) or demoted or in_highlight_league
+    game["highlight"] = bool(rivals) or (demoted and not to_national)         or in_highlight_league
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
@@ -1648,8 +1655,8 @@ def national_order(game):
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
             else len(NATIONAL_SPORT_ORDER))
-    return (national_bucket(game), finished(game), game["start_local"], rank,
-            game.get("league_label") or "")
+    return (national_bucket(game), finished(game), undated(game),
+            game["start_local"], rank, game.get("league_label") or "")
 
 
 def _best_rank(game):
@@ -1715,6 +1722,11 @@ def _highlight_rank(game, config):
     return (99, 0)
 
 
+def undated(game):
+    """A kickoff ESPN has not been told yet. Sorts below every real time."""
+    return bool(game.get("time_tbd"))
+
+
 def sort_key_for(section, config):
     """How one section orders its games.
 
@@ -1725,10 +1737,11 @@ def sort_key_for(section, config):
     if section == "National":
         return national_order
     if section == "Highlights":
-        return lambda g: (finished(g), g["start_local"], _highlight_rank(g, config))
+        return lambda g: (finished(g), undated(g), g["start_local"],
+                          _highlight_rank(g, config))
     if section in ("Football", "Basketball"):
-        return lambda g: (finished(g), g["start_local"], _best_rank(g))
-    return lambda g: (finished(g), g["start_local"])
+        return lambda g: (finished(g), undated(g), g["start_local"], _best_rank(g))
+    return lambda g: (finished(g), undated(g), g["start_local"])
 
 
 def section_of(game, config):
@@ -1900,7 +1913,10 @@ def label_for(game, section):
         return ""
     if not (section == "National" or label == "College Hockey"):
         return ""
-    if label in REASON_LEAGUES:
+    # A playoff game says what it is -- "Conference Finals Gm 3 (BOS 2-1)" --
+    # and that answers "why is this here?" far better than the reason it was
+    # picked up by. Only the ordinary nights need one.
+    if label in REASON_LEAGUES and not is_event_round(game, game.get("_league")):
         reasons = game.get("reasons") or []
         chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
         if "national tv" in reasons:

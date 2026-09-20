@@ -221,7 +221,8 @@ def as_text(day, games, config, notes=None):
         lines.append("")
 
     def line(game, with_league=True):
-        when = game["start_local"].strftime("%I:%M %p").lstrip("0")
+        when = ("TBD" if game.get("time_tbd")
+                else game["start_local"].strftime("%I:%M %p").lstrip("0"))
         if game["state"] == "in":
             when = game.get("status_detail") or "live"
         elif game["state"] == "post":

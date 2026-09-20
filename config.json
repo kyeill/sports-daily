@@ -183,9 +183,6 @@
       "sort_rank": 1,
       "split_ranked": true,
       "team_detail": "record",
-      "highlight_teams": [
-        "Cornell Big Red"
-      ],
       "max_spread": 30,
       "spread_exempt_teams": [
         "Syracuse Orange"
@@ -262,6 +259,9 @@
       "tint_grey_unless": [
         "ranked",
         "conference"
+      ],
+      "national_teams": [
+        "Cornell Big Red"
       ]
     },
     {
@@ -1512,14 +1512,6 @@
         "Arsenal",
         "Chelsea"
       ]
-    },
-    {
-      "_note": "Last of all, by his own ranking.",
-      "league": "College Football",
-      "teams": [
-        "Cornell Big Red"
-      ],
-      "named_only": true
     }
   ],
   "tint_pairs": [

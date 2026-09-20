@@ -1,3 +1,30 @@
+## 2026-09-20 (later still) — Cornell football, playoff captions, TBD kickoffs
+
+Three unrelated things.
+
+**Cornell football moved to National.** `highlight_teams` demotes a pinned team
+as far as Highlights and no further, so a new `national_teams` goes one step
+on: still yours, still kept, but filed with the ordinary sections. Only the
+football: Cornell basketball and hockey stay in Highlights, which is what the
+per-sport lists now say. Its Highlights tiebreak rule went with it — Cornell
+football can no longer land there, so the rule could never fire again.
+
+**A playoff game no longer says "National TV".** It says what it is instead —
+`NBA · East Semifinals Gm 4 (NY 4-0)`. The round, game number and series score
+were already being built by `detail_of`; the reason suffix was simply crowding
+them out. Suppressed on an event round only, so an ordinary Tuesday on TNT
+still explains itself.
+
+**A kickoff ESPN has not been told yet says TBD.** It files one as 05:00Z with
+`timeValid` false, which renders as a real midnight — 37 of 51 college football
+games on one November Saturday. The flag is the only way to tell that apart
+from a genuine midnight start, so it is carried through as `time_tbd`.
+
+Those games also sink within their section, below every game with a real time,
+which needed the flag adding to all four sort keys. The console had its own
+time formatter and kept printing 12:00 AM after the page was fixed — the same
+split that hid the Highlights ordering a fortnight ago.
+
 ## 2026-09-20 (later) — one place apart is no upset, except at the top
 
 A fourth rule in `upset_watch.too_close`: a gap of one anywhere in the poll is

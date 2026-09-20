@@ -334,6 +334,8 @@ def _when(game):
     if game["state"] == "post":
         # The score sits beside each team now, so this only names the state.
         return "Final"
+    if game.get("time_tbd"):
+        return "TBD"
     # %-I is not portable on Windows; strip the leading zero by hand.
     return game["start_local"].strftime("%I:%M %p").lstrip("0")
 

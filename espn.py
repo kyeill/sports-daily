@@ -675,6 +675,10 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "over_under": over_under,
             "conference": conference,
             "neutral": bool(comp.get("neutralSite")),
+            # ESPN files a kickoff it has not been told yet as 05:00Z with
+            # timeValid false, which renders as midnight local -- a real time,
+            # and the wrong one. The flag is the only way to tell them apart.
+            "time_tbd": comp.get("timeValid") is False,
             "venue": (comp.get("venue") or {}).get("fullName") or "",
             "note": notes[0] if notes else "",
             "link": _game_link(event, league),
