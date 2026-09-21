@@ -1763,6 +1763,11 @@ def split_football(block, config):
     months = rules.get("months") or []
     if months and block[0]["start_local"].month not in months:
         return [("Football", block)]
+    # Saturday is the only day with enough football to be worth sorting into
+    # windows; a Thursday night game under a "Primetime" heading of its own
+    # says less than one plain heading does.
+    if rules.get("days") and not _on_day(block[0], rules["days"]):
+        return [("Football", block)]
 
     buckets = [[] for _ in groups]
     undecided = []

@@ -1,14 +1,16 @@
 ## 2026-09-20 (last) — the football section splits by kickoff window
 
-August to November, the Football section carries three headings instead of one:
+On Saturdays from August to November, the Football section carries three
+headings instead of one:
 Early Window before 3pm, Afternoon from 3pm to 7pm, Primetime from 7pm. Which
 games are in the section, and the order they sit in, are decided elsewhere and
 untouched -- this only says where the headings fall.
 
 `day_body` already renders whatever headings `sections_for` emits, and the
 console reads the same function, so neither needed changing. Outside those
-months, and with the config block absent, it is one "Football" exactly as
-before.
+months, on any other day, and with the config block absent, it is one
+"Football" exactly as before -- a lone Thursday night game under a "Primetime"
+heading of its own says less than a plain one does.
 
 A kickoff ESPN has not set belongs in no window, so it gets a fourth heading of
 its own rather than being filed under a time nobody chose. On a Saturday a week
