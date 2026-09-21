@@ -1,3 +1,32 @@
+## 2026-09-21 — the one name that cannot fit beside a spread
+
+"Washington Commanders (-1.5)" wrapped to two lines on a phone. Measured: the
+name cell is 145px, the name alone is 151px, and with the line it needs 177px.
+
+It really is the only one. Every display name in the four American leagues,
+measured in the page's own font: Washington Commanders 151px, then Minnesota
+Timberwolves 146, Oklahoma City Thunder 139, Columbus Blue Jackets 136. Only
+the first cannot fit with a spread beside it.
+
+**There is no room on the right to take.** That column is 84px, a 74px budget
+after the rule and the padding, and the widest thing in it across 131 rows is
+"ESPN Unlmtd" at 70px with "USA Network" just behind at 68.5 — 4px of slack,
+and both are names he asked to spell out. The rank column is the real spare
+space, 18px plus a 6px gap reserved on every row including the NFL and NHL
+games that never have a rank, but even reclaiming it leaves 169px against the
+177 this row needs.
+
+So: the name, and only when that side carries the line —
+`short_name_with_spread`, an exact-match table of one. Without a spread the
+full name still shows, which is most weeks: two of the five Commanders
+fixtures checked had no line posted, and in a third Seattle was favoured, so
+all three kept "Washington Commanders".
+
+**"Wash. Commanders" was asked for and does not fit** — tested in the real row
+rather than estimated, and the full stop is worth about 2px more than there is.
+"Wash Commanders" fits on one line, as do "WSH Commanders" and "Washington".
+Went with the closest one that works.
+
 ## 2026-09-20 (last) — the football section splits by kickoff window
 
 On Saturdays from August to November, the Football section carries three

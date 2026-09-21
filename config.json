@@ -1552,5 +1552,9 @@
       }
     ],
     "tbd_title": "Football | Time TBD"
+  },
+  "short_name_with_spread": {
+    "_comment": "Only used when this side is the favourite and carries the line. Washington Commanders is the widest name in the four American leagues: 151px against a 145px cell on a phone, 177px with the spread. Nothing else in those leagues overflows with a line beside it -- Minnesota Timberwolves is next at 146px and fits.",
+    "Washington Commanders": "Wash Commanders"
   }
 }

@@ -256,11 +256,18 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
     that is what makes the names start at the same place whether or not a team
     is ranked, and the records finish at the same place whatever the names do.
 
-    Names are never shortened. Deciding that at build time meant guessing the
-    reader's screen -- the budget was worked out for a 375px phone, so on any
-    wider one it condensed names that had room to spare. A name that genuinely
-    cannot fit wraps instead, which costs a line only where it is really
-    needed and never has to guess.
+    Names are not shortened to fit. Deciding that at build time meant guessing
+    the reader's screen -- the budget was worked out for a 375px phone, so on
+    any wider one it condensed names that had room to spare. A name that
+    genuinely cannot fit wraps instead, which costs a line only where it is
+    really needed and never has to guess.
+
+    The one exception is named outright in `short_name_with_spread`, and only
+    when this side is carrying the line. "Washington Commanders" is the widest
+    name in the four American leagues at 151px against a 145px cell, and the
+    spread pushes it to 177px -- the only one that cannot fit with a line
+    beside it. It is a named team, not a length rule, so nothing else is
+    silently abbreviated.
     """
     rank = ('%d' % team["rank"]) if team.get("rank") else ""
     # Once a game starts the score takes the record's place: that is where a
@@ -268,6 +275,8 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
     detail = score if score is not None else (team.get("detail") if show_records else "")
     spread = ('<span class="s-spread">(%s)</span>' % _esc(line)) if line else ""
     label = team.get("label") or team.get("short") or team.get("name") or ""
+    if line:
+        label = (config.get("short_name_with_spread") or {}).get(label, label)
     # data-side lets the live script find the two halves of a row without
     # depending on their order in the grid.
     at = ' data-side="%s"' % side if side else ""
