@@ -2,7 +2,8 @@
 
 On Saturdays from August to November, the Football section carries three
 headings instead of one:
-Early Window before 3pm, Afternoon from 3pm to 7pm, Primetime from 7pm. Which
+Early Window before 3pm, Afternoon from 3pm to 7pm, Primetime from 7pm,
+written "Football | Early Window" and so on. Which
 games are in the section, and the order they sit in, are decided elsewhere and
 untouched -- this only says where the headings fall.
 

@@ -1538,19 +1538,19 @@
     ],
     "groups": [
       {
-        "title": "Football - Early Window",
+        "title": "Football | Early Window",
         "before": "15:00"
       },
       {
-        "title": "Football - Afternoon",
+        "title": "Football | Afternoon",
         "from": "15:00",
         "before": "19:00"
       },
       {
-        "title": "Football - Primetime",
+        "title": "Football | Primetime",
         "from": "19:00"
       }
     ],
-    "tbd_title": "Football - Time TBD"
+    "tbd_title": "Football | Time TBD"
   }
 }
