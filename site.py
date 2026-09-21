@@ -633,10 +633,8 @@ def build(config, days=8, out=SITE):
         '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">'
         '<style>%s%s</style></head><body><div class="wrap">'
         '<nav class="days" id="days">%s</nav>%s'
-        '<footer>From ESPN. Times in %s.</footer>'
         '</div><script>%s</script></body></html>'
     ) % (render.CSS, APP_CSS, "".join(tabs), "".join(panels),
-         config.get("timezone", "local"),
          APP_JS.replace("%%BUILT%%", today.isoformat())
                 .replace("%%TZ%%", config.get("timezone", "America/New_York")))
 

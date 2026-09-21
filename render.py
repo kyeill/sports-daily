@@ -222,7 +222,6 @@ h2 {
   .s-rec { font-size: 11.5px; }
   .when, .nets { font-size: 12.5px; }
 }
-footer { color: var(--muted); font-size: 12px; margin-top: 36px; }
 """
 
 
@@ -588,18 +587,14 @@ def render(day, games, config, generated=None, notes=None, info=None):
     pinned = [g for g in games if g.get("tier") == "favorite"]
     watching = [g for g in games if g.get("tier") == "watch"]
 
-    generated = generated or datetime.now()
     counts = summary(games)
 
     return (
         '<title>Games &middot; %s</title>' + FONT_LINK + '\n<style>%s</style>\n'
-        '<div class="wrap"><h1>%s</h1>%s'
-        '<footer>Generated %s from ESPN. Times shown in %s.</footer></div>'
+        '<div class="wrap"><h1>%s</h1>%s</div>'
     ) % (
         _esc(day.strftime("%b %d").replace(" 0", " ")),
         CSS,
         _esc(day.strftime("%A, %B %d").replace(" 0", " ")),
         body,
-        _esc(generated.strftime("%b %d, %I:%M %p").replace(" 0", " ")),
-        _esc(config.get("timezone", "local")),
     )
