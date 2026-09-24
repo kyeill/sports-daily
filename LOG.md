@@ -1,3 +1,28 @@
+## 2026-09-24 — division rivals hand the stripe to their opponent
+
+`tint_backs_opponent`: one of these playing anyone not on the same list gives
+the stripe to the other side.
+
+- The rest of the Lions' division: Packers, Vikings, Bears
+- The rest of the Tigers' division: White Sox, Guardians, Royals, Twins
+- Beaten by anyone: Avalanche, Blackhawks
+
+Only when ONE of them is playing. Two meeting is a division game with nothing
+to choose between them, so it falls through to the ordinary rules and ends up
+grey. His own teams are deliberately not on the lists: `mine` answers first, so
+a Lions or Tigers game never reaches this and would be coloured wrongly if it
+did — checked both ways round.
+
+Colour only. These are not watchlist entries and pull nothing onto the page,
+unlike the Rooting tab, because the ask was about the bar rather than about
+which games show.
+
+Placed after your own teams, the rival rule and the Liverpool/Manchester
+pairing, and before the leagues' preferred clubs. Twelve pairings by hand, all
+nine names resolved against ESPN, then real fixtures: Avalanche v Dallas moves
+from grey to Dallas green, while Vikings v Lions and Bears v Lions keep the
+Lions' blue.
+
 ## 2026-09-21 — the one name that cannot fit beside a spread
 
 "Washington Commanders (-1.5)" wrapped to two lines on a phone. Measured: the

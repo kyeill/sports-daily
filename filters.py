@@ -758,6 +758,20 @@ def _tint(game, sides, pinned, notable, rivals, config, league,
                       if any(_matches(t, n) for n in pair.get("teams") or [])]
         if len(named_here) > 1 and pair.get("color"):
             return pair["color"].lstrip("#")
+    # Teams whose opponent gets the stripe, whoever that opponent is: the rest
+    # of the Lions' and Tigers' divisions, and the two clubs he wants beaten
+    # every night. Only when ONE of them is playing -- two of them meeting is a
+    # division game with nothing to choose between the sides, so it falls
+    # through to the ordinary rules. His own teams are never on these lists and
+    # would not reach here anyway, `mine` having answered first.
+    for rule in config.get("tint_backs_opponent") or []:
+        here = [t for t in sides
+                if any(_matches(t, n) for n in rule.get("teams") or [])]
+        if len(here) == 1:
+            other = [t for t in sides if t is not here[0]]
+            if other:
+                return _colour(other[0], config, league)
+
     preferred = _preferred_sides(game, sides, league)
     named = [t for t in sides
              if any(_matches(t, n) for n in league.get("tint_prefer_teams") or [])]

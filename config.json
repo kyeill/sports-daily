@@ -1556,5 +1556,32 @@
   "short_name_with_spread": {
     "_comment": "Only used when this side is the favourite and carries the line. Washington Commanders is the widest name in the four American leagues: 151px against a 145px cell on a phone, 177px with the spread. Nothing else in those leagues overflows with a line beside it -- Minnesota Timberwolves is next at 146px and fits.",
     "Washington Commanders": "Wash Commanders"
-  }
+  },
+  "tint_backs_opponent": [
+    {
+      "_comment": "One of these playing anyone NOT on the same list hands the stripe to the opponent. Two of them meeting is a division game and falls through. His own teams are deliberately absent -- they are answered before this.",
+      "_note": "NFC North, the rest of the Lions' division",
+      "teams": [
+        "Green Bay Packers",
+        "Minnesota Vikings",
+        "Chicago Bears"
+      ]
+    },
+    {
+      "_note": "AL Central, the rest of the Tigers' division",
+      "teams": [
+        "Chicago White Sox",
+        "Cleveland Guardians",
+        "Kansas City Royals",
+        "Minnesota Twins"
+      ]
+    },
+    {
+      "_note": "Beaten by anyone, please",
+      "teams": [
+        "Colorado Avalanche",
+        "Chicago Blackhawks"
+      ]
+    }
+  ]
 }
