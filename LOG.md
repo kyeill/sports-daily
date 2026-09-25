@@ -1,3 +1,27 @@
+## 2026-09-25 — the morning build did not run, and Iowa had gone gold again
+
+Kyle noticed the app was a day behind. It was: the page said 24 September at
+half past seven on the 25th. **Neither morning cron fired** -- not late, not
+gated, simply absent, the last scheduled run being the previous morning.
+GitHub drops scheduled runs under load rather than only delaying them, which
+the existing catch-up slots were built for; they just were not late enough.
+
+Two more crons, 14:00 and 16:00 UTC, and the gate now takes any Eastern hour
+from 7 to noon as a catch-up rather than only 7 and 8. That covers the rest of
+the morning in both seasons -- 14:00 UTC is 10am Eastern in summer, 9am in
+winter; 16:00 is noon and 11am. A catch-up still builds only when the day has
+not been built, so the day-per-build rule is unchanged.
+
+The hour test is `10#$hour`, forcing base ten: 08 and 09 are not valid octal
+and would abort the arithmetic. Checked across hours 05 to 23.
+
+Separately, **the Iowa override had reverted to the gold alternate in BOTH
+config.json and the shared Colors sheet**, which is why it was yellow again --
+the sheet is merged over config at build time, so fixing one alone would not
+have held. Now `#45454e` in both, the visible black chosen for the Premier
+League clubs rather than the near-black `#231f20` it carried before, which
+measures 1.27:1 against the row and reads as no stripe at all.
+
 ## 2026-09-24 — division rivals hand the stripe to their opponent
 
 `tint_backs_opponent`: one of these playing anyone not on the same list gives
