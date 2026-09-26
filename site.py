@@ -77,8 +77,24 @@ APP_JS = """
   // Deliberately not restoring the stored day: opening the app should always
   // land on today, which is the whole point of it. Today is no longer the
   // first panel -- yesterday sits ahead of it -- so it is asked for by name.
-  var start_id = 'd' + BUILT;
-  var opening = document.getElementById(start_id) || document.querySelector('.day');
+  // The real day first, the build's day second: a page built yesterday still
+  // has today in it, and opening on the stale day is what "it is not synced"
+  // looks like from the sofa.
+  var start_id = 'd' + localDay();
+  var opening = document.getElementById(start_id)
+      || document.getElementById('d' + BUILT)
+      || document.querySelector('.day');
+  if (localDay() !== BUILT) {
+    // The build wrote "Today" onto its own tab. Move the word to the tab that
+    // is actually today, and give the build's day its weekday back.
+    var mine = bar.querySelector('button[data-day="d' + localDay() + '"] b');
+    var theirs = bar.querySelector('button[data-day="d' + BUILT + '"] b');
+    if (mine && theirs) {
+      theirs.textContent = new Date(BUILT + 'T12:00:00')
+        .toLocaleDateString(undefined, { weekday: 'short' });
+      mine.textContent = 'Today';
+    }
+  }
   if (opening) {
     show(opening.id);
     var here = bar.querySelector('button[data-day="' + opening.id + '"]');
@@ -155,9 +171,15 @@ APP_JS = """
   var live = null;
 
   function todayPanel() {
-    // The panel for the day this page was built for; nothing else can be
-    // live. Not panels[0] any more -- that one is yesterday.
-    return document.getElementById('d' + BUILT);
+    // The day that can be live is the real one, not the day the page was
+    // built for. They are the same on any normal morning -- but when a build
+    // runs late or not at all, the page still carries a panel for the real
+    // date, and watching the build's day instead left the poller asking ESPN
+    // about today while holding yesterday's rows: no id ever matched, so
+    // nothing updated at all. That is how a missed build took the live scores
+    // down with it.
+    return document.getElementById('d' + localDay())
+        || document.getElementById('d' + BUILT);
   }
 
   function rowsToWatch() {

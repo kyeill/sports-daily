@@ -1,3 +1,32 @@
+## 2026-09-26 — a missed build was taking the live scores down with it
+
+Two complaints, one cause. `todayPanel()` returned the panel for **BUILT**, the
+day the page was built for, while `refresh()` asked ESPN about the **real**
+date. On any normal morning those agree. When a build runs late or not at all
+they do not, and the poller then held yesterday's rows while reading today's
+scoreboard: no id ever matched, so nothing updated -- and it kept polling every
+minute to achieve it. A stale page was not merely stale, it was dead.
+
+It now prefers the panel for the real day and falls back to the build's. The
+page carries a fortnight of days, so the real one is almost always in there.
+The app opens on it too, and moves the word "Today" onto that tab, giving the
+build's own day its weekday back -- opening on the stale day is what "it is not
+synced" looks like from the sofa.
+
+Verified both ways: a page doctored to claim it was built yesterday now opens
+on the real day, labels the tabs "Fri / Today", and watches 23 rows where it
+watched none; an ordinary current build is unchanged.
+
+**Why the builds are missing.** Every cron sat exactly on the hour, which is
+the most contended minute on Actions and the first to be dropped. On the 25th
+neither morning slot fired at all; on the 26th nothing had fired by 9am
+Eastern, and the previous day's runs had landed at 15:07, 15:40 and 16:22 UTC
+-- three hours late. All five are now at odd minutes. The gate is untouched, so
+this is only about when GitHub is asked.
+
+ESPN was ruled out first, from the page's own origin: the app's exact request
+returns 200 with 65 events, so the API and CORS are fine.
+
 ## 2026-09-25 — the morning build did not run, and Iowa had gone gold again
 
 Kyle noticed the app was a day behind. It was: the page said 24 September at

@@ -5,16 +5,19 @@ on:
     # GitHub cron is UTC only, so 6am Eastern is 10:00 UTC in summer and 11:00
     # in winter. Both fire; the gate below lets exactly one of them through,
     # so this really is once a day at 6am Eastern all year.
-    - cron: "0 10 * * *"
-    - cron: "0 11 * * *"
-    - cron: "0 12 * * *"
+    - cron: "17 10 * * *"
+    - cron: "23 11 * * *"
+    - cron: "19 12 * * *"
+    # Minutes are deliberately not :00, which is the most contended slot on
+    # Actions and the one most often dropped. On 25 and 26 September every
+    # on-the-hour slot was skipped or ran three hours late.
     # Later catch-ups. On 25 September NEITHER morning slot fired at all --
     # GitHub drops scheduled runs under load rather than merely delaying them --
     # and the app sat a day stale until it was built by hand. These cover the
     # rest of the morning in both seasons: 14:00 UTC is 10am Eastern in summer
     # and 9am in winter, 16:00 is noon and 11am.
-    - cron: "0 14 * * *"
-    - cron: "0 16 * * *"
+    - cron: "37 14 * * *"
+    - cron: "29 16 * * *"
   push:
     branches: [main]
   workflow_dispatch:
