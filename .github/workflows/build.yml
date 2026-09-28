@@ -5,6 +5,16 @@ on:
     # GitHub cron is UTC only, so 6am Eastern is 10:00 UTC in summer and 11:00
     # in winter. Both fire; the gate below lets exactly one of them through,
     # so this really is once a day at 6am Eastern all year.
+    # Asked for hours EARLY on purpose. GitHub has been delivering this
+    # account's scheduled runs four to five hours late, in both repos, for a
+    # week -- so a slot asked for at 06:11 UTC lands around 6am Eastern, which
+    # is when the build is wanted. If GitHub ever runs them on time these fire
+    # at 1, 2 and 3am Eastern, and the gate below throws them out for being
+    # the wrong hour, so being wrong about the delay costs nothing.
+    - cron: "13 5 * * *"
+    - cron: "11 6 * * *"
+    - cron: "7 7 * * *"
+    # The honest slots: 6am Eastern in summer and winter, then catch-ups.
     - cron: "17 10 * * *"
     - cron: "23 11 * * *"
     - cron: "19 12 * * *"

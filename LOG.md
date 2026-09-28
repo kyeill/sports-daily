@@ -1,3 +1,29 @@
+## 2026-09-28 — asking hours early, because GitHub answers hours late
+
+The morning build has been missing or very late all week, and it is not ESPN
+and not git. A push or a manual run publishes in about a minute, every time.
+Scheduled runs are the only thing failing, and they fail in **both** repos:
+
+| repo | asked (UTC) | actually ran, 27 Sept (UTC) |
+|------|-------------|------------------------------|
+| sports-daily  | 10:00, 11:00, 12:00, 14:00 | 15:10, 15:40, 16:57, 18:37 |
+| games-history | 10:00, 11:00, 13:00        | 14:53, 15:32, 22:52 |
+
+Four to five hours late, consistently, and on the 28th neither had fired at
+all by 7:41am Eastern. Moving the minutes off :00 the night before changed
+nothing.
+
+So the slots are now asked for early: **05:13, 06:11 and 07:07 UTC**, on top of
+the honest ones. Delayed four or five hours, at least one of those lands in
+the 6am Eastern slot or an early catch-up, in either season. Run **on time**
+they arrive at 1, 2 and 3am Eastern, and the gate throws them out for being
+the wrong hour -- so if the delay ever disappears this costs nothing and the
+honest 10:17/11:23 slots take over again. Every combination was worked through
+before committing.
+
+This is gaming an undocumented delay and it deserves watching. The robust fix
+is a trigger from outside GitHub, which is still on the table.
+
 ## 2026-09-28 (later) — no windows until the kickoffs are actually known
 
 College football kickoffs are set about two Mondays out, so the times only
