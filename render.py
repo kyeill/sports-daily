@@ -566,11 +566,20 @@ def _body(games, config, notes=None, info=None):
     # Main Slate and Highlights keep their tinted cards; the three sport
     # sections are plain.
     wrapper = {"Main Slate": "pinned", "Highlights": "watching"}
+    # The football windows are wrapped and numbered so the live script can move
+    # a finished one below the rest without having to pair each heading with
+    # its own card by hand.
+    windows = filters.football_window_titles(config)
+    seen = 0
     for name, block in sections_for(games, config):
         if name == "National":
             parts.append(_national(block, config))
             continue
         html = _section(name, block, True, config)
+        if name in windows:
+            parts.append('<div class="fwin" data-window="%d">%s</div>' % (seen, html))
+            seen += 1
+            continue
         cls = wrapper.get(name)
         parts.append('<div class="%s">%s</div>' % (cls, html) if cls else html)
 

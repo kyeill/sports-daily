@@ -1837,6 +1837,15 @@ def split_football(block, config):
     return out or [("Football", block)]
 
 
+def football_window_titles(config):
+    """Every heading `split_football` can produce, for the renderer to spot."""
+    rules = config.get("football_windows") or {}
+    titles = {g.get("title") for g in (rules.get("groups") or []) if g.get("title")}
+    if rules.get("tbd_title"):
+        titles.add(rules["tbd_title"])
+    return titles
+
+
 def section_of(game, config):
     """Which of the five a game belongs to.
 

@@ -1,3 +1,36 @@
+## 2026-09-28 — NFL/NHL Network spelled out, windows that sink, and the clipped day tab
+
+**"NFL Net" and "NHL Net" read in full.** Measured first, because the right-hand
+column is tight: NFL Network is 67px and NHL Network 69px against a 74px
+budget, the same as USA Network which has always fitted. MLB Net and NBA TV
+were left alone -- he named these two.
+
+**A finished football window sinks.** On a Saturday, once every game in Early
+Window is over it drops below the windows still to come, and the afternoon
+follows it down, so what is left to watch stays at the top. Finished windows
+keep their own order among themselves.
+
+This had to be live, not build-time: the page is built once at 6am, when
+nothing has finished. Each window is wrapped as `.fwin` with its position in
+`data-window`, and `resortWindows` re-orders them after every poll and on
+load. Tested by pulling the shipped function out of the built page and running
+it over five states: nothing finished leaves the order alone, Early finished
+gives Afternoon > Primetime > Early, Early and Afternoon give Primetime >
+Early > Afternoon, all finished leaves it alone again, and the section after
+the block stays put in every case.
+
+**The last day tab was cut off on desktop.** Sixteen tabs come to 908px against
+the 860px column, so the bar scrolled -- fine on a phone, where a swipe is the
+obvious move, but on a desktop it just looks broken. Above 769px the tabs are
+a little tighter and may wrap, which fits all sixteen on one row with nothing
+clipped; below that it is the same scroller as before. Checked at 1280px and
+at 375px.
+
+A `sports-daily` entry was added to the shared `.claude/launch.json`: the
+preview pane turns a local file into a data: URL and had been serving a stale
+snapshot, which cost an hour of chasing a bug that was not there. Serving
+`output/site` over HTTP makes what is on screen match what is on disk.
+
 ## 2026-09-27 — an asterisk, four abbreviations, and the 4:05 leak he spotted
 
 **"If Necessary" is an asterisk.** ESPN writes "Game 7 If Necessary"; the page

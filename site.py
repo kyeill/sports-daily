@@ -51,6 +51,15 @@ APP_CSS = """
   background: var(--accent); border-color: var(--accent); color: #fff;
 }
 .days button[aria-current="true"] small { color: rgba(255,255,255,.85); }
+/* On a phone the bar is a scroller and the last tab is reached by swiping.
+   On a desktop there is no swipe to suggest, so a tab half off the edge just
+   looks broken -- 16 days come to 908px against the 860px column. Tighter
+   tabs fit them all on one row, and wrapping catches it anyway if the day
+   count ever grows. */
+@media (min-width: 769px) {
+  .days { flex-wrap: wrap; overflow-x: visible; }
+  .days button { padding: 7px 8px; }
+}
 .day { display: none; }
 .day.on { display: block; }
 .day > h1 { font-size: 22px; margin: 0 0 2px; }
@@ -440,6 +449,32 @@ APP_JS = """
     if (state !== 'pre') { remember(row.dataset.game, st); }
   }
 
+  // A Saturday's football windows sink as they finish: once every game in
+  // "Early Window" is over it drops below the windows still to come, and the
+  // afternoon follows it down, so what is left to watch stays at the top.
+  // Finished windows keep their own order among themselves.
+  function resortWindows(panel) {
+    var wins = Array.prototype.slice.call(panel.querySelectorAll('.fwin'));
+    if (wins.length < 2) { return; }
+    var parent = wins[0].parentNode;
+    var after = wins[wins.length - 1].nextSibling;
+    function over(win) {
+      var rows = win.querySelectorAll('.row[data-state]');
+      if (!rows.length) { return false; }
+      return Array.prototype.every.call(rows, function (r) {
+        return r.dataset.state === 'post';
+      });
+    }
+    var order = wins.slice().sort(function (a, b) {
+      var x = over(a) ? 1 : 0, y = over(b) ? 1 : 0;
+      if (x !== y) { return x - y; }
+      return Number(a.dataset.window) - Number(b.dataset.window);
+    });
+    var same = order.every(function (w, i) { return w === wins[i]; });
+    if (same) { return; }
+    order.forEach(function (w) { parent.insertBefore(w, after); });
+  }
+
   function primeFromMemory() {
     try {
       var was = Number(localStorage.getItem(STAMPED) || 0);
@@ -480,6 +515,8 @@ APP_JS = """
             if (ev) { paint(row, ev); }
           });
           setStamp(Date.now(), true);
+          var panel = todayPanel();
+          if (panel) { resortWindows(panel); }
         })
         // Silence is the right failure: the page keeps the build's numbers,
         // which is exactly what it showed before any of this existed.
@@ -529,6 +566,7 @@ APP_JS = """
     else if (live) { clearInterval(live); live = null; }
   });
   primeFromMemory();
+  (function () { var p = todayPanel(); if (p) { resortWindows(p); } })();
   start();
 })();
 """
