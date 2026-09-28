@@ -31,7 +31,18 @@
         "favorites": true,
         "standalone_only": true,
         "include_postseason": true,
-        "all": false
+        "all": false,
+        "standalone_windows": {
+          "_comment": "A Sunday game is only standalone inside these windows. Being alone in a kickoff minute is not enough on a Sunday: the 1:00, 4:05 and 4:25 slates are regional, and a week where just one game sits at 4:05 was pulling it in. Days not listed here are unrestricted, so Thursday, Saturday, Monday and Thanksgiving are untouched.",
+          "Sun": [
+            {
+              "before": "13:00"
+            },
+            {
+              "from": "20:00"
+            }
+          ]
+        }
       },
       "playoff_spots": 7,
       "playoff_race": true,
@@ -1131,11 +1142,7 @@
     "Elite 8": "Elite Eight",
     "Final 4": "Final Four",
     "ALWC": "AL Wild Card",
-    "NLWC": "NL Wild Card",
-    "ALDS": "AL Division Series",
-    "NLDS": "NL Division Series",
-    "ALCS": "AL Championship Series",
-    "NLCS": "NL Championship Series"
+    "NLWC": "NL Wild Card"
   },
   "logo_overrides": {
     "Atlanta Falcons": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png",

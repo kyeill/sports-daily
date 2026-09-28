@@ -254,6 +254,33 @@ def _club_names(team):
     return {(team.get(k) or "").strip().lower() for k in ("name", "short", "abbr") if team.get(k)}
 
 
+def _standalone_window_ok(game, rules):
+    """Whether being alone in a kickoff minute counts on this day.
+
+    It does on most days -- that is how Thursday, Saturday, Monday and
+    Thanksgiving night are found, with no network list to maintain. It does
+    not on an NFL Sunday: the 1:00, 4:05 and 4:25 slates are regional, and a
+    week where a single game happens to sit alone at 4:05 was pulling it in as
+    though it were Sunday night. Twelve did that over one season.
+
+    A day the config does not name is unrestricted, so this changes nothing
+    anywhere it is not asked for.
+    """
+    for day, slots in (rules.get("standalone_windows") or {}).items():
+        if day.startswith("_") or not _on_day(game, [day]):
+            continue
+        minutes = game["start_local"].hour * 60 + game["start_local"].minute
+        for slot in slots:
+            start, end = slot.get("from"), slot.get("before")
+            if start is not None and minutes < _clock_minutes(start):
+                continue
+            if end is not None and minutes >= _clock_minutes(end):
+                continue
+            return True
+        return False
+    return True
+
+
 def rule_matches(game, rule):
     """One composite rule. Every condition present must hold (AND).
 
@@ -1359,7 +1386,8 @@ def evaluate(game, league, config):
 
     if rules.get("all") and not tournament:
         reasons.append("slate")
-    if not tournament and rules.get("standalone_only") and game.get("standalone"):
+    if (not tournament and rules.get("standalone_only") and game.get("standalone")
+            and _standalone_window_ok(game, rules)):
         reasons.append("standalone")
     if not tournament and rules.get("include_postseason") and game.get("postseason"):
         reasons.append("postseason")
@@ -2000,7 +2028,14 @@ def detail_of(game, config=None, league=None):
     headline = game.get("note") or ""
     lead = round_label(game, config, league)
     if " - Game " in headline:
-        lead = ("%s Gm %s" % (lead, headline.split(" - Game ", 1)[1].strip())).strip()
+        # ESPN spells out "Game 7 If Necessary". The words cost more width
+        # than they carry -- an asterisk says the same thing, and on a phone
+        # the round already fills the line.
+        tail = headline.split(" - Game ", 1)[1].strip()
+        maybe = re.sub(r"\s*if\s+necessary\s*$", "", tail, flags=re.I)
+        if maybe != tail:
+            tail = maybe + "*"
+        lead = ("%s Gm %s" % (lead, tail)).strip()
     # ESPN also files a regular-season head-to-head under `series`, which read
     # as "(CLE 4-3)" on an ordinary November game -- indistinguishable from a
     # playoff series.

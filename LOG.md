@@ -1,3 +1,28 @@
+## 2026-09-27 — an asterisk, four abbreviations, and the 4:05 leak he spotted
+
+**"If Necessary" is an asterisk.** ESPN writes "Game 7 If Necessary"; the page
+now says `ALCS Gm 7*`. The words cost more width than they carry, and on a
+phone the round already fills the line.
+
+**ALDS, NLDS, ALCS and NLCS keep their abbreviations.** They were being spelled
+out by `round_spellings`, which is where that expansion lived. The Wild Card
+and the World Series still read in full, which is how he wrote the example.
+
+**He was right about the 4:05 games.** `mark_standalone` marks any game that is
+the only one in its kickoff minute -- which is how Thursday, Saturday, Monday
+and Thanksgiving night are found with no network list to maintain. On a Sunday
+it is wrong: the 1:00, 4:05 and 4:25 slates are regional, and a week where a
+single game happens to sit alone at 4:05 was pulling it in as though it were
+Sunday night. Measured over the season: **twelve** such games, ten at 4:05 and
+two at 4:25.
+
+`standalone_windows` now names the hours that count on a named day -- Sunday
+before 1pm or from 8pm, which keeps the London morning games and Sunday night
+and drops the rest. A day the config does not name is unrestricted, so nothing
+else moved: re-scanned, no Sunday afternoon game survives, and Thanksgiving's
+1:00 and 4:30, the Christmas games and the December Saturdays are all still
+there.
+
 ## 2026-09-26 — a missed build was taking the live scores down with it
 
 Two complaints, one cause. `todayPanel()` returned the panel for **BUILT**, the
