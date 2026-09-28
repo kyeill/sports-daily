@@ -9,6 +9,7 @@ widening the config can only add games. A game shows up once, in its highest
 bucket.
 """
 
+import datetime
 import fnmatch
 import re
 import unicodedata
@@ -1805,6 +1806,18 @@ def split_football(block, config):
     months = rules.get("months") or []
     if months and block[0]["start_local"].month not in months:
         return [("Football", block)]
+    # College football kickoffs are set about two Mondays out, so the times
+    # only reach ESPN around twelve days before. Splitting a day further off
+    # than that sorts a card that is almost entirely TBD into windows nobody
+    # has chosen yet, which says less than one heading does. Inside the window
+    # it splits; outside it, the ordinary sort still puts the known times
+    # first and the TBDs behind them.
+    ahead = rules.get("split_within_days")
+    if ahead is not None:
+        when = block[0]["start_local"]
+        today = datetime.datetime.now(when.tzinfo).date()
+        if (when.date() - today).days > ahead:
+            return [("Football", block)]
     # Saturday is the only day with enough football to be worth sorting into
     # windows; a Thursday night game under a "Primetime" heading of its own
     # says less than one plain heading does.

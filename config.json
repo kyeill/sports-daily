@@ -1535,7 +1535,7 @@
     }
   ],
   "football_windows": {
-    "_comment": "Headings inside the Football section, by kickoff, on these days and in these months only. Which games are in the section, and their order, are decided elsewhere and unchanged. `from` is inclusive, `before` exclusive, both local 24h.",
+    "_comment": "Headings inside the Football section, by kickoff, on these days and in these months -- and only once the day is within split_within_days, since college kickoffs are not set until about twelve days out and a card of TBDs splits into nothing. `from` is inclusive, `before` exclusive, both local 24h.",
     "months": [
       8,
       9,
@@ -1545,6 +1545,7 @@
     "days": [
       "Sat"
     ],
+    "split_within_days": 12,
     "groups": [
       {
         "title": "Football | Early Window",

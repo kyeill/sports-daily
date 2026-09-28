@@ -1,3 +1,21 @@
+## 2026-09-28 (later) — no windows until the kickoffs are actually known
+
+College football kickoffs are set about two Mondays out, so the times only
+reach ESPN around twelve days before. Sorting a day further off than that into
+Early, Afternoon and Primetime splits a card that is almost entirely TBD
+across windows nobody has chosen yet -- three headings, and everything under
+the fourth.
+
+`split_within_days: 12`. Beyond it, one "Football" heading; the ordinary sort
+already puts the known times first and the TBDs behind them, so nothing else
+was needed.
+
+Boundary checked to the day, with every weekday temporarily allowed so only
+the count was under test: 11 and 12 days out split, 13 and beyond do not. On
+the real build, 3 October at six days out carries the three windows and has no
+TBDs at all, while 10 October at thirteen shows one heading with 3:30 and
+10:30 at the top and every TBD below them.
+
 ## 2026-09-28 — NFL/NHL Network spelled out, windows that sink, and the clipped day tab
 
 **"NFL Net" and "NHL Net" read in full.** Measured first, because the right-hand
