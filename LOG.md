@@ -1,3 +1,15 @@
+## 2026-09-28 (later) — the split threshold was a day early
+
+`split_within_days` was 12 and should be 11. The kickoffs are settled two
+Mondays before a Saturday and reach ESPN the Tuesday after -- and that Tuesday
+is **eleven** days before the game, not twelve. At twelve the card is still
+sitting on the Monday with nothing announced, which is exactly what he saw:
+10 October showing Afternoon, Primetime and Time TBD on the Monday twelve days
+out.
+
+Now one "Football" heading today, splitting tomorrow morning. Boundary
+re-checked: 11 days out splits, 12 does not.
+
 ## 2026-09-28 — asking hours early, because GitHub answers hours late
 
 The morning build has been missing or very late all week, and it is not ESPN
