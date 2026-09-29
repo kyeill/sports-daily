@@ -1,3 +1,18 @@
+## 2026-09-29 (later) — the four leagues stop naming themselves
+
+"MLB · NL Wild Card Game 1" is now "NL Wild Card Game 1", and an ordinary
+national-TV night in the NFL, NBA, NHL or MLB carries no caption at all. He
+knows which sport he is looking at; in the playoffs the round already says
+what the game is, and on a Tuesday there was nothing to add.
+
+What survives is the chase -- "Playoff Race" -- without the league in front of
+it, because that one says why the game matters rather than restating the
+badge.
+
+MLS is deliberately left naming itself: it shares the section with the rest of
+the soccer, where the competition is the thing worth knowing. College Football
+and College Hockey are untouched for the same reason. Checked across all six.
+
 ## 2026-09-29 — prices for baseball and hockey, and two words
 
 **MLB and NHL show the moneyline, not the handicap.** The run line and the

@@ -1589,6 +1589,12 @@ SECTIONS = ("Main Slate", "Highlights", "Football", "Basketball", "National")
 # about why the game is there.
 REASON_LEAGUES = ("NFL", "MLB", "NBA", "NHL", "MLS")
 
+# The four he recognises on sight. Their name earns nothing on the detail
+# line: in the playoffs the round already says what the game is, and on an
+# ordinary national-TV night there is nothing to add, so the line goes away
+# entirely rather than printing the league back at him.
+QUIET_LEAGUES = ("NFL", "MLB", "NBA", "NHL")
+
 # Truly national: watchable without a local package. ESPN's own `national`
 # flag cannot be used -- it marks every NHL game (ESPN+ carries all
 # out-of-market) and MLB.TV likewise.
@@ -2028,13 +2034,15 @@ def label_for(game, section):
         return ""
     if not (section == "National" or label == "College Hockey"):
         return ""
-    # A playoff game says what it is -- "Conference Finals Gm 3 (BOS 2-1)" --
-    # and that answers "why is this here?" far better than the reason it was
-    # picked up by. Only the ordinary nights need one.
+    if label in QUIET_LEAGUES:
+        # A playoff game already names its round, and a national-TV night has
+        # nothing to say beyond the two teams. What survives is the chase,
+        # which says why the game matters -- without the league in front of it.
+        chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
+        return "Playoff Race" if chase else ""
+    # MLS still names itself: it shares the section with the rest of the
+    # soccer, where the competition is the thing worth knowing.
     if label in REASON_LEAGUES and not is_event_round(game, game.get("_league")):
-        # "National TV" was the reason it was picked up, not anything about
-        # the game -- and in a section where every row is on national TV it
-        # said the same thing on all of them.
         chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
         if chase:
             return "%s - Playoff Race" % label
