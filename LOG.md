@@ -1,3 +1,23 @@
+## 2026-09-29 — prices for baseball and hockey, and two words
+
+**MLB and NHL show the moneyline, not the handicap.** The run line and the
+puck line are -1.5 on nearly every game, so they said almost nothing. No extra
+request was needed: both sports already carry the price in the odds `details`
+("ATL -205", "WSH -170") alongside that -1.5, and the parser that reads it for
+soccer now serves them too, behind an `odds_moneyline` flag on the two
+leagues. Football and basketball are untouched and still show spreads.
+
+Checked that nothing else leaned on the old value: `_spread_points` reads the
+raw `details` string, which has not changed, and the blowout rule only applies
+where `max_spread` is set, which is the college leagues alone.
+
+**"National TV" is gone from the caption.** It named the reason a game was
+picked up rather than anything about the game, and in a section where every
+row is on national TV it said the same thing on all of them. The playoff-race
+note stays.
+
+**"Gm" is now "Game"** -- `ALCS Game 5*`.
+
 ## 2026-09-28 (later) — the split threshold was a day early
 
 `split_within_days` was 12 and should be 11. The kickoffs are settled two

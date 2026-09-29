@@ -2032,10 +2032,10 @@ def label_for(game, section):
     # and that answers "why is this here?" far better than the reason it was
     # picked up by. Only the ordinary nights need one.
     if label in REASON_LEAGUES and not is_event_round(game, game.get("_league")):
-        reasons = game.get("reasons") or []
+        # "National TV" was the reason it was picked up, not anything about
+        # the game -- and in a section where every row is on national TV it
+        # said the same thing on all of them.
         chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
-        if "national tv" in reasons:
-            return "%s - National TV" % label
         if chase:
             return "%s - Playoff Race" % label
     return label
@@ -2057,7 +2057,7 @@ def detail_of(game, config=None, league=None):
         maybe = re.sub(r"\s*if\s+necessary\s*$", "", tail, flags=re.I)
         if maybe != tail:
             tail = maybe + "*"
-        lead = ("%s Gm %s" % (lead, tail)).strip()
+        lead = ("%s Game %s" % (lead, tail)).strip()
     # ESPN also files a regular-season head-to-head under `series`, which read
     # as "(CLE 4-3)" on an ordinary November game -- indistinguishable from a
     # playoff series.

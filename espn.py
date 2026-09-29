@@ -335,7 +335,32 @@ def _broadcasts(comp):
     return names, national_names, national, by_market
 
 
-def _odds(comp):
+def _moneyline_from_details(comp, details):
+    """-> (side, label) from a provider's own wording, or ('', '').
+
+    `details` holds either a moneyline ("ATL -205") or a handicap ("TOT -0.5"),
+    with the team named by ESPN's own abbreviation, which matches the
+    competitors exactly. Only the moneylines are taken: 100 or more in
+    magnitude, where a handicap is always less.
+    """
+    match = re.match(r"^(.+?)\s+([+-]\d+(?:\.\d+)?)$", details or "")
+    if not match:
+        return "", ""
+    token, value = match.group(1).strip(), float(match.group(2))
+    if abs(value) < 100:
+        return "", ""
+    for competitor in comp.get("competitors") or []:
+        if ((competitor.get("team") or {}).get("abbreviation") or "") == token:
+            # To the nearest five, as every other price here is. Books quote
+            # moneylines in fives anyway, so this almost never moves a number
+            # -- it stops the odd one that is not from looking like a
+            # different kind of figure.
+            return (competitor.get("homeAway") or "",
+                    "%+d ML" % (int(round(value / 5.0)) * 5))
+    return "", ""
+
+
+def _odds(comp, prefer_moneyline=False):
     """-> (details, over_under, favourite_side, label).
 
     `details` is the provider's own wording ("IU -40.5") and stays the source
@@ -362,6 +387,14 @@ def _odds(comp):
     over_under = first.get("overUnder")
     over_under = "O/U %s" % over_under if over_under is not None else ""
 
+    # Baseball and hockey are priced as a moneyline by anyone who follows
+    # them: the run line and the puck line are -1.5 on nearly every game, so
+    # they say almost nothing. Both sports carry the moneyline in `details`
+    # alongside that handicap, so no extra request is needed.
+    side, label = _moneyline_from_details(comp, details)
+    if prefer_moneyline and side:
+        return details, over_under, side, label
+
     for name in ("home", "away"):
         if (first.get("%sTeamOdds" % name) or {}).get("favorite"):
             points = first.get("spread")
@@ -372,22 +405,8 @@ def _odds(comp):
                 return details, over_under, name, "-%.1f" % abs(points)
             break
 
-    match = re.match(r"^(.+?)\s+([+-]\d+(?:\.\d+)?)$", details)
-    if match:
-        token, value = match.group(1).strip(), float(match.group(2))
-        # Only moneylines, which are 100 or more in magnitude. The rest are
-        # Asian handicaps -- half-goal lines in a sport that scores in ones,
-        # which read as nonsense next to a point spread.
-        if abs(value) >= 100:
-            for competitor in comp.get("competitors") or []:
-                if ((competitor.get("team") or {}).get("abbreviation") or "") == token:
-                    # To the nearest five, as every other price here is. Books
-                    # quote moneylines in fives anyway, so this almost never
-                    # moves a number -- it stops the odd one that is not from
-                    # looking like a different kind of figure.
-                    return (details, over_under, competitor.get("homeAway") or "",
-                            "%+d ML" % (int(round(value / 5.0)) * 5))
-
+    if side:
+        return details, over_under, side, label
     return details, over_under, "", ""
 
 
@@ -616,7 +635,8 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             conference = " / ".join(sorted(found - {""}))
 
         tv, tv_national, national, tv_market = _broadcasts(comp)
-        spread, over_under, spread_side, spread_label = _odds(comp)
+        spread, over_under, spread_side, spread_label = _odds(
+            comp, prefer_moneyline=bool(league.get("odds_moneyline")))
         status = (comp.get("status") or {}).get("type") or {}
         # Soccer fixtures are sometimes priced only as a handicap here, which
         # says nothing a reader wants. The full market is one request away.
