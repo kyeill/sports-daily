@@ -1992,16 +1992,20 @@ def leg_of(game):
 
 
 def _series_short(summary):
-    """'LAD lead series 2-1' -> 'LAD 2-1'; 'Series tied 1-1' -> 'Tied 1-1'."""
+    """'LAD lead series 2-1' -> '2-1 LAD'; 'Series tied 1-1' -> '1-1 Tied'.
+
+    Score first: it is the thing being read, and it lines up down a card of
+    playoff games where a three-letter code and a four-letter one do not.
+    """
     if not summary:
         return ""
     score = re.search(r"(\d+)-(\d+)", summary)
     if not score:
         return ""
     if "tied" in summary.lower():
-        return "Tied %s" % score.group(0)
+        return "%s Tied" % score.group(0)
     who = re.match(r"^([A-Z][A-Za-z]{1,4})\b", summary.strip())
-    return "%s %s" % (who.group(1), score.group(0)) if who else score.group(0)
+    return "%s %s" % (score.group(0), who.group(1)) if who else score.group(0)
 
 
 HOCKEY_REGIONS = ("Worcester", "Sioux Falls", "Allentown", "Fort Wayne",

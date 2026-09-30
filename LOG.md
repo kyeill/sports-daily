@@ -1,3 +1,13 @@
+## 2026-09-30 — the series score comes first
+
+`(ATL 1-0)` is now `(1-0 ATL)`, and `(Tied 2-2)` is `(2-2 Tied)`. The score is
+the thing being read, and it lines up down a card of playoff games where a
+three-letter code and a four-letter one do not.
+
+Checked against real series summaries in three sports -- ESPN writes "ATL
+leads series 1-0", "CHW lead series 1-0" and "Series tied 1-1", and all three
+wordings come out right.
+
 ## 2026-09-29 (later) — the four leagues stop naming themselves
 
 "MLB · NL Wild Card Game 1" is now "NL Wild Card Game 1", and an ordinary
