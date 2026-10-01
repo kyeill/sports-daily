@@ -1,3 +1,27 @@
+## 2026-10-01 — the series score follows the final whistle
+
+A playoff caption used to carry the series as it stood at 6am. It now updates
+when the game ends, and **no arithmetic was needed**: ESPN moves its own
+summary the moment the result is in. Measured over the wild card round --
+after the second games the summaries read "Series tied 1-1", "CHW win series
+2-0", "NYY win series 2-0".
+
+The series sits in a slot of its own, `<span class="series">`, which the live
+poll rewrites. The slot is emitted **empty** for a postseason game whose series
+has not started, because ESPN says "Series starts 10/3" there -- no score, so
+nothing to print, and without an empty slot a Game 1 could never gain
+"(1-0 ATL)" without a reload.
+
+`seriesShort` in the browser mirrors `_series_short` on the server. Checked by
+pulling the shipped function out of the built page and running every wording
+ESPN actually produced -- "ATL leads", "CHW lead", "SD wins", "Series tied",
+"Series starts 10/3", empty and null -- all eleven agree with the Python.
+
+**A trap worth remembering:** `APP_JS` is a plain Python string, so a `` in a
+regex inside it becomes a backspace character, not a word boundary. It was
+written into the page invisibly and silently broke the match. The lookahead
+`(?![A-Za-z])` says the same thing with nothing for Python to eat.
+
 ## 2026-09-30 — the series score comes first
 
 `(ATL 1-0)` is now `(1-0 ATL)`, and `(Tied 2-2)` is `(2-2 Tied)`. The score is

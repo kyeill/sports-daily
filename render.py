@@ -405,7 +405,20 @@ def _game_html(game, show_league, config):
     # speaks up when nothing else would.
     if game.get("neutral") and not detail:
         detail = "Neutral site"
-    note = ('<span class="s-note">%s</span>' % _esc(detail)) if detail else ""
+    # The series sits in a slot of its own so the live script can rewrite it
+    # when a playoff game ends -- ESPN updates its own summary the moment the
+    # result is in, so no arithmetic is needed. The slot is emitted empty for
+    # a series that has not started, which is how Game 1 gains "(1-0 ATL)"
+    # without a reload.
+    series = filters.series_text(game)
+    body = detail
+    if series and (" " + series) in body:
+        body = body.replace(" " + series, "", 1)
+    if detail and game.get("postseason"):
+        note = ('<span class="s-note">%s<span class="series">%s</span></span>'
+                % (_esc(body), _esc(" " + series) if series else ""))
+    else:
+        note = ('<span class="s-note">%s</span>' % _esc(detail)) if detail else ""
 
     shown = filters.display_networks(game, config)
     networks = "/".join(shown)

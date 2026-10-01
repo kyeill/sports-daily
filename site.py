@@ -394,11 +394,32 @@ APP_JS = """
     return spec[1].indexOf(result) >= 0;
   }
 
+  // "ATL leads series 1-0" -> "1-0 ATL"; "Series tied 1-1" -> "1-1 Tied".
+  // The same shapes filters._series_short handles, in the same order: score
+  // first. "Series starts 10/3" carries no score and yields nothing.
+  function seriesShort(summary) {
+    if (!summary) { return ''; }
+    var score = summary.match(/(\d+)-(\d+)/);
+    if (!score) { return ''; }
+    if (/tied/i.test(summary)) { return score[0] + ' Tied'; }
+    // (?![A-Za-z]) rather than a word boundary: this file is a Python
+    // string, and a backslash-b in it is a backspace, not a regex.
+    var who = summary.trim().match(/^([A-Z][A-Za-z]{1,4})(?![A-Za-z])/);
+    return who ? score[0] + ' ' + who[1] : score[0];
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
     var type = ((comp.status || {}).type) || {};
     var state = type.state || '';
+    // ESPN moves the series on the moment a playoff game is final, so the
+    // caption can follow without waiting for tomorrow's build.
+    var slot = row.querySelector('.series');
+    if (slot) {
+      var short = seriesShort(((comp.series || {}).summary) || '');
+      if (short) { slot.textContent = ' (' + short + ')'; }
+    }
     var when = row.querySelector('.when');
     if (!when) { return; }
     var scores = {};

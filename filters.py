@@ -2053,6 +2053,19 @@ def label_for(game, section):
     return label
 
 
+def series_text(game):
+    """'(1-0 ATL)' for a postseason game, or '' when there is no score yet.
+
+    Before a series starts ESPN says "Series starts 10/3", which carries no
+    score and so yields nothing -- the row still gets an empty slot to fill,
+    because the summary gains a score the moment the first game ends.
+    """
+    if not game.get("postseason"):
+        return ""
+    short = _series_short(game.get("series"))
+    return "(%s)" % short if short else ""
+
+
 def detail_of(game, config=None, league=None):
     """The single line under a matchup.
 
