@@ -129,7 +129,13 @@
         "Detroit Red Wings"
       ],
       "tint_grey_unless": [],
-      "odds_moneyline": true
+      "odds_moneyline": true,
+      "hide_networks_unless": {
+        "_comment": "ESPN+ carries every out-of-market game, so naming it says nothing -- unless the game is exclusive to the streaming side, which Disney+ beside it marks.",
+        "ESPN+": [
+          "Disney+"
+        ]
+      }
     },
     {
       "key": "college-football",

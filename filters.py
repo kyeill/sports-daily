@@ -100,6 +100,21 @@ def display_networks(game, config, limit=1):
     # national channel is mislabelled, so nothing worth printing is lost.
     pool = game.get("tv_national")
     names = [n for n in (pool or []) if _flat(n) not in hidden]
+    # A feed that carries nearly everything says nothing. ESPN+ has every
+    # out-of-market NHL game -- 132 of 169 in a month, where the ones actually
+    # worth knowing about are on NHL Network, ESPN or TNT. It earns its place
+    # only when the game is exclusive to the streaming side, which Disney+
+    # alongside it marks. Keyed per league, since ESPN+ means something quite
+    # different on a college Saturday.
+    conditional = (game.get("_league") or {}).get("hide_networks_unless") or {}
+    if conditional:
+        present = {_flat(n) for n in names}
+        for name, unless in conditional.items():
+            if name.startswith("_"):
+                continue
+            if _flat(name) in present and not any(
+                    _flat(u) in present for u in (unless or [])):
+                names = [n for n in names if _flat(n) != _flat(name)]
     # Streaming only earns a mention when it is the only way to watch: if a
     # game is on NBC there is no point also saying Peacock.
     streaming = {_flat(n) for n in (config.get("streaming_networks") or [])}

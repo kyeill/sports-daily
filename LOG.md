@@ -1,3 +1,20 @@
+## 2026-10-02 — ESPN+ stops speaking for every NHL game
+
+ESPN+ carries every out-of-market game, so printing it said nothing: across a
+month of fixtures it was the only national feed on **132 of 169** games, while
+the ones actually worth knowing about were on NHL Network, ESPN or TNT.
+
+It is dropped for the NHL unless **Disney+** sits beside it, which is how the
+streaming exclusives are marked -- 9 games in that month, all carrying
+`Disney+ / ESPN+ / Hulu`, and those now read "Disney+".
+
+A new per-league `hide_networks_unless`, because ESPN+ means something quite
+different elsewhere: on a college Saturday it is the only way to watch, and 52
+college football games and 9 college hockey games still name it. Checked both.
+
+The 132 now show no network at all, which is the honest answer -- there is no
+channel to tell him about.
+
 ## 2026-10-01 — the series score follows the final whistle
 
 A playoff caption used to carry the series as it stood at 6am. It now updates
