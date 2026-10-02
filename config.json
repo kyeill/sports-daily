@@ -135,7 +135,11 @@
         "ESPN+": [
           "Disney+"
         ]
-      }
+      },
+      "hide_networks": [
+        "Disney+",
+        "Hulu"
+      ]
     },
     {
       "key": "college-football",

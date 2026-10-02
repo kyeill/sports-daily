@@ -98,17 +98,24 @@ def display_networks(game, config, limit=1):
     # unless it happens to be the one you get, so the regional entries are never
     # considered -- ESPN labels the market on every broadcast, and no genuinely
     # national channel is mislabelled, so nothing worth printing is lost.
-    pool = game.get("tv_national")
-    names = [n for n in (pool or []) if _flat(n) not in hidden]
+    pool = game.get("tv_national") or []
+    league = game.get("_league") or {}
+    # A league may bury a name of its own: the NHL's exclusives come listed as
+    # Disney+ and Hulu beside ESPN+, and ESPN+ is the one he reaches for.
+    hidden |= {_flat(n) for n in (league.get("hide_networks") or [])}
+    names = [n for n in pool if _flat(n) not in hidden]
     # A feed that carries nearly everything says nothing. ESPN+ has every
     # out-of-market NHL game -- 132 of 169 in a month, where the ones actually
     # worth knowing about are on NHL Network, ESPN or TNT. It earns its place
     # only when the game is exclusive to the streaming side, which Disney+
     # alongside it marks. Keyed per league, since ESPN+ means something quite
     # different on a college Saturday.
-    conditional = (game.get("_league") or {}).get("hide_networks_unless") or {}
+    conditional = league.get("hide_networks_unless") or {}
     if conditional:
-        present = {_flat(n) for n in names}
+        # Judged on what ESPN reported, not on what survived the hiding above:
+        # Disney+ is the mark of an exclusive even though it is not the name
+        # printed for one.
+        present = {_flat(n) for n in pool}
         for name, unless in conditional.items():
             if name.startswith("_"):
                 continue

@@ -6,7 +6,11 @@ the ones actually worth knowing about were on NHL Network, ESPN or TNT.
 
 It is dropped for the NHL unless **Disney+** sits beside it, which is how the
 streaming exclusives are marked -- 9 games in that month, all carrying
-`Disney+ / ESPN+ / Hulu`, and those now read "Disney+".
+`Disney+ / ESPN+ / Hulu`, and those read **"ESPN+"**: Disney+ is how the
+exclusive is recognised, not what he would open. Disney+ and Hulu are hidden
+for the league through a `hide_networks` of its own, and the test is made
+against what ESPN reported rather than what survived that hiding -- otherwise
+burying Disney+ would take ESPN+ down with it.
 
 A new per-league `hide_networks_unless`, because ESPN+ means something quite
 different elsewhere: on a college Saturday it is the only way to watch, and 52
