@@ -781,6 +781,30 @@ def _conference_neutral(sides, league, config):
     return ""
 
 
+def _network_tint(game, league):
+    """The broadcaster's colour, for a game with nobody to root for.
+
+    The prime-time windows are worth watching whoever is playing, and grey
+    said nothing about which of them a row belonged to. Keyed on who is
+    carrying the game rather than on the day, because the colour IS the
+    network: Prime's blue on Thursday, NBC's black on Sunday night, ESPN's
+    red on Monday, and Amazon's Black Friday afternoon reads as a Prime game
+    the same way.
+
+    The regular season only. A playoff round is split across five networks,
+    so colouring one by its broadcaster would say the games differ when the
+    only thing separating them is which channel drew which.
+    """
+    palette = league.get("network_tints") or {}
+    if not palette or game.get("postseason"):
+        return ""
+    for name in game.get("tv_national") or []:
+        colour = palette.get(name)
+        if colour:
+            return colour.lstrip("#")
+    return ""
+
+
 def _tint(game, sides, pinned, notable, rivals, config, league,
           rooting_for=(), rooting_against=()):
     """The colour stripe.
@@ -869,7 +893,7 @@ def _tint(game, sides, pinned, notable, rivals, config, league,
         return _colour(backup[0], config, league)
     if not _worth_colouring(game, sides, mine, notable, rivals, preferred,
                             league, config):
-        return RIVAL_GREY
+        return _network_tint(game, league) or RIVAL_GREY
     neutral = _conference_neutral(sides, league, config)
     if neutral:
         return neutral

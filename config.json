@@ -51,7 +51,14 @@
       "race_min_odds": 20,
       "sort_rank": 6,
       "team_detail": "conference_place",
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "network_tints": {
+        "_comment": "A prime-time game with nobody to root for was grey, which said nothing about which night it was. These paint the stripe with the broadcaster instead: Prime for Thursday (and the Black Friday game), NBC's black for Sunday night, ESPN's red for Monday. Matched on the network rather than the day, and skipped in the postseason, where a round is spread across five channels.",
+        "Prime Video": "00a8e1",
+        "NBC": "45454e",
+        "ESPN": "d4232c",
+        "ABC": "d4232c"
+      }
     },
     {
       "key": "nba",
