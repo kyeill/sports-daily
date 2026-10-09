@@ -328,8 +328,16 @@ def rule_matches(game, rule):
             return False
 
     teams = rule.get("teams")
-    if teams and not any(_matches(t, name) for t in sides for name in teams):
-        return False
+    if teams:
+        named = [t for t in sides if any(_matches(t, name) for name in teams)]
+        if not named:
+            return False
+        # Two of them meeting is one rival beating another: the good result
+        # and the bad one at once, and nothing to tune in for. The same
+        # standoff `skip_when_both` already names among the outcome colours,
+        # said here in the same word.
+        if rule.get("skip_when_both") and len(named) > 1:
+            return False
 
     pool_path = rule.get("clubs_from")
     if pool_path:
@@ -1540,8 +1548,10 @@ def evaluate(game, league, config):
     # College hockey is Michigan and Cornell, and the NCAA tournament. Its
     # conference tournaments are filed as regular season by ESPN -- no round,
     # no headline -- so they cannot be told apart and are treated as such.
+    # A National rule is the one way past this: the league says who else it
+    # wants on the bottom shelf, and saying so is the whole point of the rule.
     if rules.get("only_my_teams_outside_postseason") and not game.get("postseason"):
-        if not (fav_hit or watch_note):
+        if not (fav_hit or watch_note or national_only):
             keep = False
 
     # The FCS bracket rides in on the blanket postseason rule; it is not wanted.

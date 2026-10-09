@@ -399,7 +399,19 @@
           "final",
           "championship"
         ],
-        "only_my_teams_outside_postseason": true
+        "only_my_teams_outside_postseason": true,
+        "national_rules": [
+          {
+            "_comment": "The rivals, on the bottom shelf rather than up in Highlights: worth knowing they lost, not worth clearing an evening for. Two of them meeting is skipped -- a rival wins either way, so there is nothing to root for.",
+            "teams": [
+              "Michigan State Spartans",
+              "Ohio State Buckeyes",
+              "Notre Dame Fighting Irish"
+            ],
+            "skip_when_both": true,
+            "note": "rival"
+          }
+        ]
       },
       "sort_rank": 3,
       "team_detail": "record",
