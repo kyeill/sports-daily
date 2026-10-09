@@ -767,7 +767,19 @@
               "soccer/ita.1",
               "soccer/fra.1"
             ],
-            "note": "Europe"
+            "note": "Europe",
+            "second_card_unless": [
+              "Barcelona",
+              "Real Madrid",
+              "Atlético Madrid",
+              "Bayern Munich",
+              "Borussia Dortmund",
+              "Juventus",
+              "AC Milan",
+              "Internazionale",
+              "Paris Saint-Germain"
+            ],
+            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
           },
           {
             "teams": [
@@ -834,7 +846,19 @@
               "soccer/ita.1",
               "soccer/fra.1"
             ],
-            "note": "Europe"
+            "note": "Europe",
+            "second_card_unless": [
+              "Barcelona",
+              "Real Madrid",
+              "Atlético Madrid",
+              "Bayern Munich",
+              "Borussia Dortmund",
+              "Juventus",
+              "AC Milan",
+              "Internazionale",
+              "Paris Saint-Germain"
+            ],
+            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
           },
           {
             "teams": [
@@ -901,7 +925,19 @@
               "soccer/ita.1",
               "soccer/fra.1"
             ],
-            "note": "Europe"
+            "note": "Europe",
+            "second_card_unless": [
+              "Barcelona",
+              "Real Madrid",
+              "Atlético Madrid",
+              "Bayern Munich",
+              "Borussia Dortmund",
+              "Juventus",
+              "AC Milan",
+              "Internazionale",
+              "Paris Saint-Germain"
+            ],
+            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
           },
           {
             "teams": [
