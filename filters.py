@@ -1742,7 +1742,11 @@ def national_bucket(game):
     # named rounds, but he wants the whole competition in the second half.
     if label == "Leagues Cup":
         return 2
-    if label in ("MLB", "NBA", "NHL", "MLS"):
+    # College hockey here is the three rivals and nothing else -- his own two
+    # teams are answered higher up the page -- so a Friday night in Potsdam
+    # is the same kind of row as a Tuesday on TNT. The tournament still leads:
+    # that is an event, and the test below says so.
+    if label in ("MLB", "NBA", "NHL", "MLS", "College Hockey"):
         return 1 if is_event_round(game, game.get("_league")) else 2
     return 1
 
