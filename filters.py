@@ -659,6 +659,10 @@ def _colour(team, config, league=None):
     if borrowed:
         candidates.extend(borrowed)
     candidates = [c.lstrip("#") for c in candidates if c]
+    # ESPN answers "NULL" for a school it holds no colours for -- the small
+    # hockey programmes, mostly -- and that is not a colour. Only real hex
+    # survives, so the caller sees an honest nothing and can fall back.
+    candidates = [c for c in candidates if re.fullmatch(r"[0-9a-fA-F]{6}", c)]
 
     # White is a last resort, not a preference: a white stripe says nothing
     # about who is playing, and a page of them says less. Silver counts as
@@ -846,7 +850,13 @@ def _tint(game, sides, pinned, notable, rivals, config, league,
     # division game with nothing to choose between the sides, so it falls
     # through to the ordinary rules. His own teams are never on these lists and
     # would not reach here anyway, `mine` having answered first.
-    for rule in config.get("tint_backs_opponent") or []:
+    # A league can add its own: the college rivals are watchlisted in football
+    # and basketball, which colours them there, but in hockey they are only
+    # National rows and would otherwise go grey. Naming them on the league
+    # rather than globally keeps the sports they are already handled in
+    # untouched.
+    for rule in ((config.get("tint_backs_opponent") or [])
+                 + (league.get("tint_backs_opponent") or [])):
         here = [t for t in sides
                 if any(_matches(t, n) for n in rule.get("teams") or [])]
         if len(here) == 1:
@@ -1577,8 +1587,10 @@ def evaluate(game, league, config):
             break
     game["my_side"] = mine_side
     stamp_details(game, league, config)
+    # Grey is the floor: backing the opponent is no use when ESPN has no
+    # colour for them, and a row with no stripe at all reads as a bug.
     game["tint"] = _tint(game, sides, pinned, notable, rivals, config, league,
-                         rooting_for, rooting_against)
+                         rooting_for, rooting_against) or RIVAL_GREY
     # Both a rival and a demoted favourite live in the Highlights block.
     game["highlight"] = bool(rivals) or (demoted and not to_national)         or in_highlight_league
     game["_league"] = league

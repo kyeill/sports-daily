@@ -419,7 +419,17 @@
         "Cornell Big Red"
       ],
       "colour_from": "mens-college-basketball",
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "tint_backs_opponent": [
+        {
+          "_note": "The same three, coloured the way a rival is: the stripe goes to whoever might beat them. Football and basketball reach this through the watchlist, which hockey has no entry in -- it would promote them into Highlights, and they belong in National.",
+          "teams": [
+            "Michigan State Spartans",
+            "Ohio State Buckeyes",
+            "Notre Dame Fighting Irish"
+          ]
+        }
+      ]
     },
     {
       "key": "mls",
