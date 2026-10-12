@@ -131,8 +131,11 @@ def display_networks(game, config, limit=1):
     names.sort(key=lambda n: 0 if _flat(n) in wanted else 1)
     # ESPN returns "SECN+" on some games and "SEC Network+" on others. The
     # short forms are the ones that fit the phone's column.
-    renames = config.get("network_names") or {}
-    return [renames.get(n, n) for n in names[:limit]]
+    # Matched without case: ESPN carries "FOX" on one game and "Fox" on the
+    # next, in the same league on the same afternoon, and the column should
+    # not read as two different channels.
+    renames = {_flat(k): v for k, v in (config.get("network_names") or {}).items()}
+    return [renames.get(_flat(n), n) for n in names[:limit]]
 
 
 def _clock_minutes(text):
