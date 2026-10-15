@@ -492,21 +492,21 @@ def double_chance(team_price, draw_price):
     return (team_price * draw_price) / (team_price + draw_price)
 
 
-def event_moneyline(league, event_id, competition_id):
-    """-> (side, label) for a fixture the scoreboard priced only as a handicap.
+def event_favourite(league, event_id, competition_id):
+    """-> (side, decimal price) for the shorter-priced side, or ('', None).
 
     The scoreboard carries one provider and sometimes only its handicap, which
     is no use here. The core API returns every provider and the full three-way
-    market, so a moneyline can usually still be found. Only asked for when the
-    scoreboard gave nothing -- twice in a fifteen-day window -- so the extra
-    request is rare enough not to matter.
+    market, so a price can usually still be found -- including for a match
+    already played, which is what lets a judgement made on the odds survive
+    the final whistle.
 
     A provider is only trusted when it prices BOTH sides: given one price
     alone there is no way to tell a favourite from an underdog.
     """
     path = league.get("path") or ""
     if "/" not in path:
-        return "", ""
+        return "", None
     sport, code = path.split("/", 1)
     data = _get("%s/%s/leagues/%s/events/%s/competitions/%s/odds"
                 % (CORE, sport, code, event_id, competition_id),
@@ -520,8 +520,20 @@ def event_moneyline(league, event_id, competition_id):
                 prices[side] = price
         if len(prices) == 2:
             side = min(prices, key=prices.get)
-            return side, "%s ML" % _american(prices[side], 5)
-    return "", ""
+            return side, prices[side]
+    return "", None
+
+
+def event_moneyline(league, event_id, competition_id):
+    """-> (side, label) for a fixture the scoreboard priced only as a handicap.
+
+    Only asked for when the scoreboard gave nothing -- twice in a fifteen-day
+    window -- so the extra request is rare enough not to matter.
+    """
+    side, price = event_favourite(league, event_id, competition_id)
+    if not side:
+        return "", ""
+    return side, "%s ML" % _american(price, 5)
 
 
 def _aggregate(comp, home, away):

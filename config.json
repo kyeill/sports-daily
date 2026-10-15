@@ -640,7 +640,11 @@
         }
       ],
       "tint_grey_unless": [],
-      "tint_named_backs_opponent": true
+      "tint_named_backs_opponent": true,
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "facup",
@@ -679,7 +683,11 @@
         "Manchester City",
         "Manchester United"
       ],
-      "tint_named_backs_opponent": true
+      "tint_named_backs_opponent": true,
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "eflcup",
@@ -718,7 +726,11 @@
         "Manchester City",
         "Manchester United"
       ],
-      "tint_named_backs_opponent": true
+      "tint_named_backs_opponent": true,
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "ucl",
@@ -796,7 +808,11 @@
       "tint_grey_unless": [],
       "tint_backup_teams": [
         "Eintracht Frankfurt"
-      ]
+      ],
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "uel",
@@ -875,7 +891,11 @@
       "tint_grey_unless": [],
       "tint_backup_teams": [
         "Eintracht Frankfurt"
-      ]
+      ],
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "uecl",
@@ -954,7 +974,11 @@
       "tint_grey_unless": [],
       "tint_backup_teams": [
         "Eintracht Frankfurt"
-      ]
+      ],
+      "highlight_demote_odds": {
+        "_comment": "A match the market has already settled is not one of the evening's events. Worse than this and the favourite is a near-certainty, so the row drops out of Highlights and into National. Arsenal and Chelsea are untouched: the rival rule answers before this one.",
+        "worse_than": -200
+      }
     },
     {
       "key": "wcq",

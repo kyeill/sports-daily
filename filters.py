@@ -1372,6 +1372,30 @@ def is_blowout(game, league):
     return True
 
 
+def one_sided(game, league):
+    """True when the market has already decided this one.
+
+    A competition he watches every round of still has nights where the tie is
+    a formality -- City away at AEK, Villa in Norway. At worse than the price
+    the league names, the favourite is a near-certainty and the match is an
+    ordinary fixture rather than one of the evening's events.
+
+    Costs one odds request, so it is asked only of a match already heading for
+    Highlights on its competition's say-so. The core API keeps a price after
+    the final whistle, so the answer does not change when the game ends; a
+    fixture priced too far out to have odds yet simply is not one-sided yet.
+    """
+    rules = league.get("highlight_demote_odds") or {}
+    limit = rules.get("worse_than")
+    if limit is None:
+        return False
+    side, price = espn.event_favourite(league, game.get("id"), game.get("id"))
+    if not side or not price:
+        return False
+    # Strictly worse: -200 itself is the line he drew, not past it.
+    return espn.american_value(price) < limit
+
+
 def national_rules_hit(rules, game):
     """A game its competition wants in National on its own terms.
 
@@ -1549,6 +1573,12 @@ def evaluate(game, league, config):
     national_only = bool(national_note) and not (fav_hit or watch_note or reasons)
     in_highlight_league = (bool(league.get("highlight_all")) and not fav_hit
                            and not national_only)
+    # A one-sided tie drops out of Highlights and into the ordinary sections.
+    # Only ever a game the competition swept up: a rival is still a rival at
+    # any price, and `rivals` keeps Arsenal and Chelsea where they are
+    # whatever this says.
+    if in_highlight_league and not rivals and one_sided(game, league):
+        in_highlight_league = False
 
     if fav_hit and not demoted:
         tier = "favorite"
