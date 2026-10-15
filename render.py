@@ -548,9 +548,11 @@ def sections_for(games, config):
         # window -- without changing which games are in it or their order.
         if name == "Football":
             out.extend(filters.split_football(ordered, config))
+        elif name == "Basketball":
+            out.extend(filters.split_basketball(ordered, config))
         else:
             out.append((filters.section_title(name, ordered, config), ordered))
-    return out
+    return filters.order_sections(out, config)
 
 
 def day_body(day, games, config, notes=None, info=None):
@@ -587,7 +589,7 @@ def _body(games, config, notes=None, info=None):
     # The football windows are wrapped and numbered so the live script can move
     # a finished one below the rest without having to pair each heading with
     # its own card by hand.
-    windows = filters.football_window_titles(config)
+    windows = filters.window_titles(config)
     seen = 0
     for name, block in sections_for(games, config):
         if name == "National":

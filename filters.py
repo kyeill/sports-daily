@@ -1949,24 +1949,35 @@ def sort_key_for(section, config):
 
 
 def split_football(block, config):
-    """[(heading, games)] -- the football section, by kickoff window.
+    return split_windows(block, config, "football_windows", "Football")
 
-    One entry unless `football_windows` says otherwise, so a month outside the
-    season, or a config without the block, behaves exactly as before. The
-    games and their order are untouched: this only decides where the headings
-    fall.
 
-    A kickoff ESPN has not set yet belongs in no window and says so, rather
-    than being filed under a time nobody chose. On a Saturday still a fortnight
-    out that can be the whole card.
+def split_basketball(block, config):
+    return split_windows(block, config, "basketball_windows", "Basketball")
+
+
+def split_windows(block, config, key, plain):
+    """[(heading, games)] -- one section, cut into start-time windows.
+
+    One entry unless the named block says otherwise, so a month outside the
+    season, or a config without it, behaves exactly as before. The games and
+    their order are untouched: this only decides where the headings fall.
+
+    A start ESPN has not set yet belongs in no window and says so, rather than
+    being filed under a time nobody chose. On a Saturday still a fortnight out
+    that can be the whole card.
+
+    Football and basketball want different cuts of the day -- three windows
+    against two, a season against the whole year -- but the cutting is the
+    same, so they share it and differ only in what the config says.
     """
-    rules = config.get("football_windows") or {}
+    rules = config.get(key) or {}
     groups = rules.get("groups") or []
     if not block or not groups:
-        return [("Football", block)]
+        return [(plain, block)]
     months = rules.get("months") or []
     if months and block[0]["start_local"].month not in months:
-        return [("Football", block)]
+        return [(plain, block)]
     # College football kickoffs are set about two Mondays out, so the times
     # only reach ESPN around twelve days before. Splitting a day further off
     # than that sorts a card that is almost entirely TBD into windows nobody
@@ -1978,12 +1989,12 @@ def split_football(block, config):
         when = block[0]["start_local"]
         today = datetime.datetime.now(when.tzinfo).date()
         if (when.date() - today).days > ahead:
-            return [("Football", block)]
+            return [(plain, block)]
     # Saturday is the only day with enough football to be worth sorting into
     # windows; a Thursday night game under a "Primetime" heading of its own
     # says less than one plain heading does.
     if rules.get("days") and not _on_day(block[0], rules["days"]):
-        return [("Football", block)]
+        return [(plain, block)]
 
     buckets = [[] for _ in groups]
     undecided = []
@@ -2004,20 +2015,52 @@ def split_football(block, config):
         else:
             undecided.append(game)
 
-    out = [(group.get("title") or "Football", games)
+    out = [(group.get("title") or plain, games)
            for group, games in zip(groups, buckets) if games]
     if undecided:
-        out.append((rules.get("tbd_title") or "Football - Time TBD", undecided))
-    return out or [("Football", block)]
+        out.append((rules.get("tbd_title") or (plain + " - Time TBD"), undecided))
+    return out or [(plain, block)]
 
 
-def football_window_titles(config):
-    """Every heading `split_football` can produce, for the renderer to spot."""
-    rules = config.get("football_windows") or {}
-    titles = {g.get("title") for g in (rules.get("groups") or []) if g.get("title")}
-    if rules.get("tbd_title"):
-        titles.add(rules["tbd_title"])
+def window_titles(config):
+    """Every heading the splitters can produce, for the renderer to spot.
+
+    Both sports' windows are wrapped and numbered together, so a finished one
+    sinks past the rest whichever sport it belongs to.
+    """
+    titles = set()
+    for key in ("football_windows", "basketball_windows"):
+        rules = config.get(key) or {}
+        titles |= {g.get("title") for g in (rules.get("groups") or []) if g.get("title")}
+        if rules.get("tbd_title"):
+            titles.add(rules["tbd_title"])
     return titles
+
+
+def order_sections(groups, config):
+    """Saturday's running order, when both sports have windows.
+
+    Football and basketball alternate rather than running one after the other
+    -- the afternoon basketball belongs with the afternoon, not behind the
+    night's football. Only the window headings move; Main Slate, Soccer and
+    National keep the places they already had, and each moved heading lands in
+    a slot one of them had vacated.
+    """
+    order = (config.get("saturday_layout") or {}).get("section_order") or []
+    if not order or not groups:
+        return groups
+    first = next((g[1][0] for g in groups if g[1]), None)
+    if not saturday_split(config, first):
+        return groups
+    rank = {title: i for i, title in enumerate(order)}
+    slots = [i for i, g in enumerate(groups) if g[0] in rank]
+    if len(slots) < 2:
+        return groups
+    movable = sorted((groups[i] for i in slots), key=lambda g: rank[g[0]])
+    out = list(groups)
+    for slot, group in zip(slots, movable):
+        out[slot] = group
+    return out
 
 
 SATURDAY = 5
@@ -2102,8 +2145,11 @@ def section_of(game, config):
         # belong to -- ranked or not, which the ordinary college rule would
         # have decided for them. Everything else goes to National's top half,
         # above the nightly slate rather than in it.
-        if (game.get("league_label") or "") == "College Football":
+        label = game.get("league_label") or ""
+        if label == "College Football":
             return "Football"
+        if label == "College Basketball":
+            return "Basketball"
         game["_national_card"] = 1
         return "National"
 
@@ -2120,6 +2166,12 @@ def section_of(game, config):
         reasons = game.get("reasons") or []
         return "Football" if ("standalone" in reasons or game.get("postseason"))             else "National"
     if label == "College Basketball":
+        # Saturday takes the lot. The windows are the point of that day, and a
+        # card split by tip-off says more than one split by who the pollsters
+        # like -- which on a winter Saturday was leaving National twenty rows
+        # long and the basketball section nearly empty.
+        if saturday_split(config, game):
+            return "Basketball"
         # The postseason rules already say who is worth showing, so anything
         # that survives them belongs with the basketball.
         return "Basketball" if (game.get("postseason") or ranked) else "National"
