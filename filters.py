@@ -2060,6 +2060,12 @@ def row_washed(game, config):
     rules = saturday_split(config, game)
     if not rules or not game.get("highlight"):
         return False
+    # One of his own against a rival is both at once, and Main Slate already
+    # says the louder of the two things: the blue only ever marks a row that
+    # is NOT on the slate. Spurs against Chelsea is the case -- a favourite
+    # carries `highlight` because the rival is in it.
+    if game.get("tier") == "favorite":
+        return False
     if moved_on_saturday(game, config):
         return True
     return any(_matches(t, n) for t in (game["home"], game["away"])
