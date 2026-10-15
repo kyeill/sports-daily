@@ -1834,7 +1834,7 @@ def _national_team_rank(game):
     return len(NATIONAL_TEAM_ORDER)
 
 
-def national_order(game):
+def national_order(game, config=None):
     """(bucket, done, start, tiebreak) -- the sort key for National.
 
     `done` sits after the bucket, not before it: the two buckets are drawn as
@@ -1844,9 +1844,9 @@ def national_order(game):
     of the second card, but not back above a game still being played, and not
     before a time it does not have yet.
 
-    Everything from `rank` on only separates two games starting the same
-    minute: the sport, then the better-ranked game, then the order he reads
-    his rivals in.
+    Everything after the kickoff only separates two games starting the same
+    minute: a Saturday row that moved here out of Highlights, then the sport,
+    then the better-ranked game, then the order he reads his rivals in.
     """
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
@@ -1855,8 +1855,9 @@ def national_order(game):
     lead = 0 if (bucket == 2 and (game.get("league_label") or "")
                  in NATIONAL_SECOND_FIRST) else 1
     return (bucket, finished(game), undated(game), lead,
-            game["start_local"], rank, _best_rank(game),
-            _national_team_rank(game), game.get("league_label") or "")
+            game["start_local"], 0 if row_washed(game, config) else 1,
+            rank, _best_rank(game), _national_team_rank(game),
+            game.get("league_label") or "")
 
 
 def _best_rank(game):
@@ -1935,12 +1936,15 @@ def sort_key_for(section, config):
     ever separates two games kicking off the same minute.
     """
     if section == "National":
-        return national_order
+        return lambda g: national_order(g, config)
     if section == "Highlights":
         return lambda g: (finished(g), undated(g), g["start_local"],
                           _highlight_rank(g, config))
     if section in ("Football", "Basketball"):
-        return lambda g: (finished(g), undated(g), g["start_local"], _best_rank(g))
+        # A rival that moved here on a Saturday goes ahead of anything else
+        # kicking off the same minute -- it is the reason the row is lit.
+        return lambda g: (finished(g), undated(g), g["start_local"],
+                          0 if row_washed(g, config) else 1, _best_rank(g))
     return lambda g: (finished(g), undated(g), g["start_local"])
 
 
@@ -2016,6 +2020,66 @@ def football_window_titles(config):
     return titles
 
 
+SATURDAY = 5
+
+
+def saturday_split(config, game=None):
+    """The Saturday layout, or '' when it does not apply.
+
+    Saturday already reads differently -- the football splits into its kickoff
+    windows and fills the page -- and Highlights on that day was a shelf of
+    unrelated sports sitting above the section each one belonged in. So on a
+    Saturday Highlights keeps only the soccer and everything else goes to the
+    section it would have had, carrying its wash with it.
+    """
+    rules = config.get("saturday_layout") or {}
+    if not rules:
+        return {}
+    if game is not None:
+        start = game.get("start_local")
+        if not start or start.weekday() != SATURDAY:
+            return {}
+    return rules
+
+
+def moved_on_saturday(game, config):
+    """A Highlights game that Saturday files somewhere else."""
+    if not game.get("highlight") or not saturday_split(config, game):
+        return False
+    return ((game.get("_league") or {}).get("sport") or "") != "Soccer"
+
+
+def row_washed(game, config):
+    """Whether this row is drawn on the Highlights wash.
+
+    Only ever on a Saturday. A game that moved out of Highlights keeps the
+    wash so it still reads as one in its new section; the soccer that stayed
+    behind gives it up, since a whole section of it says nothing -- except for
+    the three he is actually watching for.
+    """
+    rules = saturday_split(config, game)
+    if not rules or not game.get("highlight"):
+        return False
+    if moved_on_saturday(game, config):
+        return True
+    return any(_matches(t, n) for t in (game["home"], game["away"])
+               for n in (rules.get("wash_teams") or []))
+
+
+def section_title(name, games, config):
+    """What a section is called, which only Saturday changes.
+
+    Highlights there is the soccer and nothing else, so it says so. Guarded on
+    what is actually in the block rather than on the day alone: a heading that
+    reads SOCCER above a hockey game would be worse than the old one.
+    """
+    if name != "Highlights" or not saturday_split(config, games[0] if games else None):
+        return name
+    if all((g.get("_league") or {}).get("sport") == "Soccer" for g in games):
+        return "Soccer"
+    return name
+
+
 def section_of(game, config):
     """Which of the five a game belongs to.
 
@@ -2026,7 +2090,16 @@ def section_of(game, config):
     if game.get("tier") == "favorite":
         return "Main Slate"
     if game.get("highlight"):
-        return "Highlights"
+        if not moved_on_saturday(game, config):
+            return "Highlights"
+        # The rivals join the football, in whichever kickoff window they
+        # belong to -- ranked or not, which the ordinary college rule would
+        # have decided for them. Everything else goes to National's top half,
+        # above the nightly slate rather than in it.
+        if (game.get("league_label") or "") == "College Football":
+            return "Football"
+        game["_national_card"] = 1
+        return "National"
 
     label = game.get("league_label") or ""
     league = game.get("_league") or {}

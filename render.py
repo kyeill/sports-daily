@@ -64,6 +64,10 @@ h2 {
 .card.second { margin-top: 10px; }
 .pinned .card { background: var(--pin); border-color: var(--pin-line); }
 .watching .card { background: var(--watch); border-color: var(--watch-line); }
+/* One row on the Highlights wash inside a card that is not. Saturday sends
+   the rivals to the football and the rest to National, and this is what keeps
+   them reading as highlights once they are there. */
+.row.washed { background: var(--watch); }
 /* One game is two stacked team lines sharing a four-column grid -- crest,
    rank, name, record -- so every field lines up down the page regardless of
    how long the names are. The time and networks sit in a column of their own
@@ -430,7 +434,8 @@ def _game_html(game, show_league, config):
     # Your team's colour when you are involved, otherwise whichever team makes
     # the game interesting; black when both sides do.
     tint = (game.get("tint") or "").strip()
-    attrs = (' class="row tinted" style="--tint:#%s"' % _esc(tint))         if tint and config.get("show_colors", True) else ' class="row"'
+    washed = " washed" if filters.row_washed(game, config) else ""
+    attrs = (' class="row tinted%s" style="--tint:#%s"' % (washed, _esc(tint)))         if tint and config.get("show_colors", True) else ' class="row%s"' % washed
     # What the live script needs to refresh this row: which game, which
     # scoreboard to ask, and whether it is worth asking at all.
     league = game.get("_league") or {}
@@ -544,7 +549,7 @@ def sections_for(games, config):
         if name == "Football":
             out.extend(filters.split_football(ordered, config))
         else:
-            out.append((name, ordered))
+            out.append((filters.section_title(name, ordered, config), ordered))
     return out
 
 

@@ -275,7 +275,7 @@ def as_text(day, games, config, notes=None):
     # Only the top two name the competition; the rest are already by sport.
     for label, block in render.sections_for(games, config):
         lines.append(label.upper())
-        named = label in ("Main Slate", "Highlights")
+        named = label in ("Main Slate", "Highlights", "Soccer")
         lines += [line(g, with_league=named) for g in block]
         lines.append("")
 

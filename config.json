@@ -1705,5 +1705,13 @@
         "Chicago Blackhawks"
       ]
     }
-  ]
+  ],
+  "saturday_layout": {
+    "_comment": "Saturday reads differently: the football fills the page in its kickoff windows, and a Highlights shelf of unrelated sports sat above the section each one belonged in. So on a Saturday the rivals join the football in their window, everything else non-soccer goes to National's top half, and Highlights keeps the soccer and is called that. A moved row keeps the Highlights wash and leads the minute it starts in. The soccer gives the wash up -- a whole section of it says nothing -- except for these three.",
+    "wash_teams": [
+      "Atlanta United",
+      "Arsenal",
+      "Chelsea"
+    ]
+  }
 }
