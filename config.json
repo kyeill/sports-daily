@@ -211,7 +211,6 @@
         "postseason_top_division_only": true
       },
       "sort_rank": 1,
-      "split_ranked": true,
       "team_detail": "record",
       "max_spread": 30,
       "spread_exempt_teams": [
@@ -365,7 +364,6 @@
         ]
       },
       "sort_rank": 2,
-      "split_ranked": true,
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
