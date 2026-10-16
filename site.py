@@ -196,7 +196,14 @@ APP_JS = """
     if (!panel) { return []; }
     return Array.prototype.filter.call(
       panel.querySelectorAll('.row[data-game][data-path]'),
-      function (row) { return row.dataset.state !== 'post'; });
+      function (row) {
+        // A finished playoff game is still worth asking about. ESPN moves the
+        // series on at the whistle but not always in the same breath as the
+        // status, and a row dropped from the list the moment it went final
+        // read one poll too early and kept the old caption for good. Only
+        // postseason rows carry the slot, so this is a handful of games.
+        return row.dataset.state !== 'post' || !!row.querySelector('.series');
+      });
   }
 
   // What a reload paints first is the build's own numbers -- a start time and
@@ -308,6 +315,10 @@ APP_JS = """
       Array.prototype.forEach.call(row.querySelectorAll('.s-spread'),
         function (el) { el.parentNode.removeChild(el); });
     }
+    if (st.series) {
+      var slot = row.querySelector('.series');
+      if (slot) { slot.textContent = ' (' + st.series + ')'; }
+    }
     row.dataset.state = st.state;
     if (st.state === 'post' && row.parentNode) { resort(row.parentNode); }
   }
@@ -414,12 +425,12 @@ APP_JS = """
     var type = ((comp.status || {}).type) || {};
     var state = type.state || '';
     // ESPN moves the series on the moment a playoff game is final, so the
-    // caption can follow without waiting for tomorrow's build.
-    var slot = row.querySelector('.series');
-    if (slot) {
-      var short = seriesShort(((comp.series || {}).summary) || '');
-      if (short) { slot.textContent = ' (' + short + ')'; }
-    }
+    // caption can follow without waiting for tomorrow's build. Carried on the
+    // state rather than written straight to the slot, so it is remembered:
+    // painted on the DOM alone it survived until the next reload, which put
+    // the build's stale caption back on a row that is never polled again.
+    var series = row.querySelector('.series')
+      ? seriesShort(((comp.series || {}).summary) || '') : '';
     var when = row.querySelector('.when');
     if (!when) { return; }
     var scores = {};
@@ -454,7 +465,7 @@ APP_JS = """
         : state === 'in' ? (type.shortDetail || 'live')
         : when.textContent,
       home: scores.home, away: scores.away,
-      drawn: drawn, losing: losing,
+      drawn: drawn, losing: losing, series: series,
       // An upset shows while it is happening; the rest are results, so they
       // wait for the final whistle. A finished derby comes first: whoever won,
       // a rival won, so nothing about that score is worth lighting up.
