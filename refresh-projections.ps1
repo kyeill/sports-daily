@@ -5,8 +5,8 @@
 # browser User-Agent -- so it is the address being refused. This machine the
 # site will talk to, so it fetches and commits, and the build reads the file.
 #
-# [skip ci] on the commit: the morning build picks the new numbers up on its
-# own, and a push at noon should not rebuild the page out from under anyone.
+# The push rebuilds the page: lines move during the day, and waiting for the
+# 6am build would mean showing this morning's view of tonight's card.
 $ErrorActionPreference = "Stop"
 $repo   = "C:\Users\kyleh\My Drive\Documents\Claude\sports-daily"
 $python = "C:\Users\kyleh\AppData\Local\Programs\Python\Python312-arm64\python.exe"
@@ -29,7 +29,7 @@ try {
         & git reset --quiet
         exit 0
     }
-    & git commit --quiet -m "Projections: $(Get-Date -Format 'yyyy-MM-dd') [skip ci]"
+    & git commit --quiet -m "Projections: $(Get-Date -Format 'yyyy-MM-dd')"
     & git pull --quiet --rebase origin main
     & git push --quiet origin main
     Note "pushed. $tail"

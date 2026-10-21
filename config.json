@@ -864,9 +864,7 @@
               "soccer/ita.1",
               "soccer/fra.1"
             ],
-            "note": "Europe",
-            "second_card_unless": "@european_elite",
-            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
+            "note": "Europe"
           },
           {
             "_comment": "The league phase here is worth a row on two counts: two of the elite meeting, or one of them against an English club -- which the knockout rule above covers only once the bracket starts.",
@@ -953,9 +951,7 @@
               "soccer/ita.1",
               "soccer/fra.1"
             ],
-            "note": "Europe",
-            "second_card_unless": "@european_elite",
-            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
+            "note": "Europe"
           },
           {
             "_comment": "The league phase here is worth a row on two counts: two of the elite meeting, or one of them against an English club -- which the knockout rule above covers only once the bracket starts.",

@@ -1451,16 +1451,6 @@ def national_rules_hit(rules, game):
         # the words the tier rules already use.
         if not rule_matches(game, rule):
             continue
-        # A rule can say its match only leads when one of the names is in it:
-        # two of Europe's four big leagues meeting is worth a row, but Girona
-        # against Bologna is not the night's event the way Madrid or Bayern
-        # would be. Judged here, where the rule that promoted the game is in
-        # hand, rather than guessed at again from the sort.
-        named = rule.get("second_card_unless")
-        if named is not None:
-            game["_national_card"] = 1 if any(
-                _matches(t, n) for t in (game["home"], game["away"])
-                for n in named) else 2
         return rule.get("note") or "standalone"
     return ""
 
@@ -1789,11 +1779,11 @@ NATIONAL_SPORT_ORDER = ("Soccer", "College Football", "College Basketball",
 NATIONAL_OWN_SLOT = ("MLS", "NFL", "MLB", "NBA", "NHL",
                      "College Football", "College Basketball")
 
-# What leads the SECOND card. College hockey there is the three rivals and
-# nothing else, which is the one thing in that half he is actually waiting on;
-# the rest of it is the nightly slate. Only ahead of games still to be played,
-# so a finished one still sinks and a kickoff nobody has set still waits.
-NATIONAL_SECOND_FIRST = ("College Hockey",)
+# First among games starting the same minute. College hockey in National is
+# the three rivals and nothing else, which is the one thing here he is
+# actually waiting on. It led a card of its own until National became one
+# card; now it leads its own minute, and the section stays in time order.
+NATIONAL_FIRST = ("College Hockey",)
 
 # The last word between two games level on everything else -- same card, same
 # minute, same sport, neither better ranked. In practice the hockey rivals,
@@ -1814,31 +1804,6 @@ def is_event_round(game, league):
     rounds = (league or {}).get("promote_rounds") or []
     current = (game.get("round") or "").lower()
     return bool(current) and any(fnmatch.fnmatch(current, r.lower()) for r in rounds)
-
-
-def national_bucket(game):
-    """1 leads, 2 follows after a gap.
-
-    A postseason game from the pro leagues belongs with the first half -- a
-    playoff game is an event; a Tuesday night on TNT is not.
-    """
-    # A National rule that named the clubs worth leading with has already
-    # answered this, and says so outright.
-    card = game.get("_national_card")
-    if card:
-        return card
-    label = game.get("league_label") or ""
-    # Deliberately before the postseason test: the Leagues Cup knockouts are
-    # named rounds, but he wants the whole competition in the second half.
-    if label == "Leagues Cup":
-        return 2
-    # College hockey here is the three rivals and nothing else -- his own two
-    # teams are answered higher up the page -- so a Friday night in Potsdam
-    # is the same kind of row as a Tuesday on TNT. The tournament still leads:
-    # that is an event, and the test below says so.
-    if label in ("MLB", "NBA", "NHL", "MLS", "College Hockey"):
-        return 1 if is_event_round(game, game.get("_league")) else 2
-    return 1
 
 
 def finished(game):
@@ -1867,25 +1832,18 @@ def _national_team_rank(game):
 def national_order(game, config=None):
     """(bucket, done, start, tiebreak) -- the sort key for National.
 
-    `done` sits after the bucket, not before it: the two buckets are drawn as
-    separate cards, so a finished game sinks within its own card rather than
-    past the gap into the other one. `lead` sits after both `done` and
-    `undated` for the same reason in miniature: college hockey goes to the top
-    of the second card, but not back above a game still being played, and not
-    before a time it does not have yet.
-
-    Everything after the kickoff only separates two games starting the same
-    minute: a Saturday row that moved here out of Highlights, then the sport,
-    then the better-ranked game, then the order he reads his rivals in.
+    Finished games sink, then games with no time yet, and the rest is in
+    start order. Everything after the kickoff only separates two games
+    starting the same minute: a Saturday row that moved here out of
+    Highlights, then college hockey, then the sport, then the better-ranked
+    game, then the order he reads his rivals in.
     """
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
             else len(NATIONAL_SPORT_ORDER))
-    bucket = national_bucket(game)
-    lead = 0 if (bucket == 2 and (game.get("league_label") or "")
-                 in NATIONAL_SECOND_FIRST) else 1
-    return (bucket, finished(game), undated(game), lead,
-            game["start_local"], 0 if row_washed(game, config) else 1,
+    return (finished(game), undated(game), game["start_local"],
+            0 if row_washed(game, config) else 1,
+            0 if (game.get("league_label") or "") in NATIONAL_FIRST else 1,
             rank, _best_rank(game), _national_team_rank(game),
             game.get("league_label") or "")
 
@@ -2180,7 +2138,6 @@ def section_of(game, config):
             return "Football"
         if label == "College Basketball":
             return "Basketball"
-        game["_national_card"] = 1
         return "National"
 
     label = game.get("league_label") or ""
