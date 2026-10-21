@@ -1791,11 +1791,21 @@ NATIONAL_SPORT_ORDER = ("Soccer", "College Football", "College Basketball",
 NATIONAL_OWN_SLOT = ("MLS", "NFL", "MLB", "NBA", "NHL",
                      "College Football", "College Basketball")
 
-# First among games starting the same minute. College hockey in National is
-# the three rivals and nothing else, which is the one thing here he is
-# actually waiting on. It led a card of its own until National became one
-# card; now it leads its own minute, and the section stays in time order.
-NATIONAL_FIRST = ("College Hockey",)
+# Who wins a minute in National, in three bands. The college game and any
+# bracket lead; college hockey -- the three rivals and nothing else -- comes
+# next, ahead of a regular-season professional game or a tennis match, which
+# is the rest of what lands here.
+NATIONAL_LEADS = ("College Football", "College Basketball")
+NATIONAL_SECOND = ("College Hockey",)
+
+
+def _national_priority(game):
+    label = game.get("league_label") or ""
+    if label in NATIONAL_LEADS or game.get("postseason"):
+        return 0
+    if label in NATIONAL_SECOND:
+        return 1
+    return 2
 
 # The last word between two games level on everything else -- same card, same
 # minute, same sport, neither better ranked. In practice the hockey rivals,
@@ -1846,16 +1856,16 @@ def national_order(game, config=None):
 
     Finished games sink, then games with no time yet, and the rest is in
     start order. Everything after the kickoff only separates two games
-    starting the same minute: a row that moved here out of Highlights, then
-    college hockey, then the sport, then the better-ranked game, then the
-    order he reads his rivals in.
+    starting the same minute: the college game and the brackets, then college
+    hockey, then anything that moved here out of Highlights, then the sport,
+    then the better-ranked game, then the order he reads his rivals in.
     """
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
             else len(NATIONAL_SPORT_ORDER))
     return (finished(game), undated(game), game["start_local"],
+            _national_priority(game),
             0 if game.get("highlight") else 1,
-            0 if (game.get("league_label") or "") in NATIONAL_FIRST else 1,
             rank, _best_rank(game), _national_team_rank(game),
             game.get("league_label") or "")
 
@@ -1973,11 +1983,18 @@ def split_windows(block, config, key, plain):
     """
     rules = config.get(key) or {}
     groups = rules.get("groups") or []
+    # Lifted out before anything else, and kept out of the windows: these are
+    # here because they are football rather than because of when they start,
+    # and a kickoff window is the wrong thing to file them under.
+    various = [g for g in block if g.get("_various")]
+    if various:
+        block = [g for g in block if not g.get("_various")]
+    tail = [("%s | Various" % plain, various)] if various else []
     if not block or not groups:
-        return [(plain, block)]
+        return ([(plain, block)] if block else []) + tail
     months = rules.get("months") or []
     if months and block[0]["start_local"].month not in months:
-        return [(plain, block)]
+        return [(plain, block)] + tail
     # College football kickoffs are set about two Mondays out, so the times
     # only reach ESPN around twelve days before. Splitting a day further off
     # than that sorts a card that is almost entirely TBD into windows nobody
@@ -1989,12 +2006,12 @@ def split_windows(block, config, key, plain):
         when = block[0]["start_local"]
         today = datetime.datetime.now(when.tzinfo).date()
         if (when.date() - today).days > ahead:
-            return [(plain, block)]
+            return [(plain, block)] + tail
     # Saturday is the only day with enough football to be worth sorting into
     # windows; a Thursday night game under a "Primetime" heading of its own
     # says less than one plain heading does.
     if rules.get("days") and not _on_day(block[0], rules["days"]):
-        return [(plain, block)]
+        return [(plain, block)] + tail
 
     buckets = [[] for _ in groups]
     undecided = []
@@ -2019,7 +2036,7 @@ def split_windows(block, config, key, plain):
            for group, games in zip(groups, buckets) if games]
     if undecided:
         out.append((rules.get("tbd_title") or (plain + " - Time TBD"), undecided))
-    return out or [(plain, block)]
+    return (out or [(plain, block)]) + tail
 
 
 def window_titles(config):
@@ -2251,7 +2268,15 @@ def section_of(game, config):
         if game.get("postseason"):
             # The CFP in full; a bowl only if it clears the bar.
             return "Football" if (is_cfp(game) or bowl_in_football(game, league))                 else "National"
-        return "Football" if ranked else "National"
+        if ranked:
+            return "Football"
+        # On a Saturday the unranked games are still football, and reading
+        # them among the basketball and the hockey made the day harder to
+        # follow than it needed to be. They keep their own heading instead.
+        if saturday_split(config, game):
+            game["_various"] = True
+            return "Football"
+        return "National"
     # The NFL used to lead the Football section on a Sunday, which made the
     # heading mean two different things depending on the month. It is National
     # now, every week of the year, and Football is the college game.

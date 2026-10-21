@@ -1068,7 +1068,10 @@
         "womens-singles"
       ],
       "sort_rank": 11,
-      "team_detail": "none"
+      "team_detail": "none",
+      "national_teams": [
+        "Frances Tiafoe"
+      ]
     },
     {
       "key": "wta",
@@ -1087,7 +1090,10 @@
         "womens-singles"
       ],
       "sort_rank": 11,
-      "team_detail": "none"
+      "team_detail": "none",
+      "national_teams": [
+        "Emma Raducanu"
+      ]
     }
   ],
   "national_networks": [
@@ -1782,7 +1788,9 @@
       "Football | Primetime",
       "Basketball | Primetime",
       "Football | Time TBD",
-      "Basketball | Time TBD"
+      "Basketball | Time TBD",
+      "Football | Various",
+      "Basketball | Various"
     ],
     "_section_order_comment": "The two sports alternate rather than running one after the other: the afternoon basketball belongs with the afternoon, not behind the night's football. A day with only one of them simply skips the other's headings, and \"Football\" unsplit -- the NFL in January -- takes the place of its own windows."
   },
