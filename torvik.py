@@ -89,8 +89,17 @@ def _key(home, away):
     return "|".join(sorted((_norm(home), _norm(away))))
 
 
+_why = ""
+
+
 def _fetch(date_key):
-    """The schedule page's HTML, or '' -- answering the browser check once."""
+    """The schedule page's HTML, or '' -- answering the browser check once.
+
+    `_why` keeps the reason for the build log: a silent dependency is bad
+    enough without having to guess whether it was blocked, timed out or simply
+    had no games that day.
+    """
+    global _why
     global _session
     if _session is None:
         _session = requests.Session()
@@ -100,7 +109,8 @@ def _fetch(date_key):
         try:
             reply = _session.get(URL, params={"date": date_key}, timeout=30)
             reply.raise_for_status()
-        except Exception:
+        except Exception as exc:
+            _why = "%s: %s" % (type(exc).__name__, str(exc)[:120])
             return ""
         if "js_test_submitted" not in reply.text:
             return reply.text
@@ -112,7 +122,9 @@ def _fetch(date_key):
             posted.raise_for_status()
             if "js_test_submitted" not in posted.text:
                 return posted.text
-        except Exception:
+            _why = "the browser check came back again (HTTP %s)" % posted.status_code
+        except Exception as exc:
+            _why = "%s: %s" % (type(exc).__name__, str(exc)[:120])
             return ""
     return ""
 
@@ -182,8 +194,9 @@ def mark_projected(games, league, date_key, max_age_min=720):
         global _warned
         if not _warned:
             _warned = True
-            print("  note: no T-Rank lines for %s; the blowout filter has "
-                  "nothing to read on games Vegas has not priced yet" % date_key)
+            print("  note: no T-Rank lines for %s (%s); the blowout filter has "
+                  "nothing to read on games Vegas has not priced yet"
+                  % (date_key, _why or "the page listed no games"))
         return 0
     hit = 0
     for game in games:
