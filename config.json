@@ -372,7 +372,8 @@
           "Big 12",
           "SEC",
           "Big East"
-        ]
+        ],
+        "exclude_lower_division": true
       },
       "sort_rank": 2,
       "team_detail": "record",
@@ -392,7 +393,14 @@
         "conference"
       ],
       "spread_proxy": "torvik",
-      "_spread_proxy_comment": "Vegas does not price a college game until the day before, so `max_spread` had nothing to read on a card built a fortnight out. Bart Torvik's projection stands in where there is no real line: unbiased against the closing number over 238 games of last season, and agreeing about this fifteen-point limit on 97% of them."
+      "_spread_proxy_comment": "Vegas does not price a college game until the day before, so `max_spread` had nothing to read on a card built a fortnight out. Bart Torvik's projection stands in where there is no real line: unbiased against the closing number over 238 games of last season, and agreeing about this fifteen-point limit on 97% of them.",
+      "top_division": {
+        "_comment": "Division I, which the core API will list but the teams endpoint will not. Used to drop the Division II visitors that fill November. The season is basketball's, so 2027 means 2026-27 and wants bumping each autumn -- if it is ever left behind the list comes back empty and the rule simply stops excluding anything, rather than excluding the wrong thing.",
+        "sport": "basketball",
+        "league": "mens-college-basketball",
+        "season": 2027,
+        "group": "50"
+      }
     },
     {
       "key": "mens-college-hockey",

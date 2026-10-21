@@ -1627,6 +1627,12 @@ def evaluate(game, league, config):
         if not (fav_hit or watch_note or national_only):
             keep = False
 
+    # A Division II visitor is nobody's idea of a game worth a row, and no
+    # other rule can see it: there is no line on it to call it a blowout, and
+    # the host alone is often reason enough to keep it.
+    if rules.get("exclude_lower_division") and not both_top_division(game, league):
+        keep = False
+
     # The FCS bracket rides in on the blanket postseason rule; it is not wanted.
     if (rules.get("postseason_top_division_only") and game.get("postseason")
             and not is_fbs(game, league)):
@@ -2175,6 +2181,20 @@ def is_fbs(game, league):
     if not ids:
         return True
     return any(str(t.get("id")) in ids for t in (game["home"], game["away"]))
+
+
+def both_top_division(game, league):
+    """BOTH sides in the top division -- a real fixture, not an exhibition.
+
+    November is full of Division II visitors, and they are invisible to every
+    other rule: nobody prices them, so the blowout filter has no line to read,
+    and the host is usually from a conference worth keeping. The division is
+    the only honest signal, and it is one the host's own list carries.
+    """
+    ids = fbs_team_ids(league)
+    if not ids:
+        return True
+    return all(str(t.get("id")) in ids for t in (game["home"], game["away"]))
 
 
 _fbs_cache = {}
