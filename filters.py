@@ -1800,7 +1800,7 @@ NATIONAL_SECOND = ("College Hockey",)
 
 
 def national_bucket(game, config):
-    """Which half of National a game is in: 1 early, 2 late.
+    """Which part of National a game is in: 1 early, 2 late, 3 his own.
 
     The clock and nothing else. Mon-Fri the evening starts at six, Sunday at
     one -- the afternoon is the day there -- and Saturday is one card, because
@@ -1813,6 +1813,12 @@ def national_bucket(game, config):
     start = game.get("start_local")
     if not start:
         return 2
+    # The foot of the section, whatever the hour: his own teams out of the
+    # regular season, and the college hockey. Reading the evening meant
+    # stepping over them, and they are the rows he goes looking for rather
+    # than scans past.
+    if row_washed(game, config) or (game.get("league_label") or "") in NATIONAL_SECOND:
+        return 3
     cut = rules.get(start.strftime("%a"), rules.get("default"))
     if not cut:
         return 1
@@ -2141,6 +2147,21 @@ def moved_from_highlights(game, config):
     return ((game.get("_league") or {}).get("sport") or "") != "Soccer"
 
 
+def soccer_section_team(game, config):
+    """A side whose soccer always belongs in the soccer section.
+
+    Atlanta and the USMNT, who sit there whatever the day and whatever else
+    the rules would have done with them -- including coming off the Main
+    Slate. A rival on the other side of the pitch does not count: Tottenham
+    against Chelsea is a Tottenham game, and belongs where his own games go.
+    """
+    rules = config.get("saturday_layout") or {}
+    if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
+        return False
+    return any(_matches(t, n) for t in (game["home"], game["away"])
+               for n in (rules.get("section_teams") or []))
+
+
 def moved_soccer(game, config):
     """A soccer match Highlights keeps only on a Saturday.
 
@@ -2153,6 +2174,8 @@ def moved_soccer(game, config):
         return False
     if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
         return False
+    if soccer_section_team(game, config):
+        return False
     start = game.get("start_local")
     return bool(start) and start.weekday() != SATURDAY
 
@@ -2160,22 +2183,29 @@ def moved_soccer(game, config):
 def row_washed(game, config):
     """Whether this row is drawn on the Highlights wash.
 
-    Only ever on a Saturday. A game that moved out of Highlights keeps the
-    wash so it still reads as one in its new section; the soccer that stayed
-    behind gives it up, since a whole section of it says nothing -- except for
-    the three he is actually watching for.
+    A game that moved out of Highlights keeps the wash, so it still reads as
+    one in the section it landed in; the soccer that stayed behind gives it
+    up, since a whole section of it says nothing -- except for the few he is
+    actually watching for.
     """
     rules = config.get("saturday_layout") or {}
-    if not rules or not game.get("highlight"):
+    if not rules:
+        return False
+    if not (game.get("highlight") or soccer_section_team(game, config)):
         return False
     # One of his own against a rival is both at once, and Main Slate already
     # says the louder of the two things: the blue only ever marks a row that
     # is NOT on the slate. Spurs against Chelsea is the case -- a favourite
-    # carries `highlight` because the rival is in it.
-    if game.get("tier") == "favorite":
+    # carries `highlight` because the rival is in it. The soccer section's own
+    # teams are the exception: there is no slate under them to paint over.
+    if game.get("tier") == "favorite" and not soccer_section_team(game, config):
         return False
     if moved_from_highlights(game, config):
         return True
+    # The soccer that stayed behind gives the wash up -- a whole section of
+    # it says nothing -- except for the few he is actually watching for.
+    if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
+        return False
     return any(_matches(t, n) for t in (game["home"], game["away"])
                for n in (rules.get("wash_teams") or []))
 
@@ -2272,6 +2302,10 @@ def section_of(game, config):
     is by sport, with the college split turning on whether a game is ranked --
     except in the postseason, where the bracket decides instead.
     """
+    # Before the Main Slate, which is the point of it: these belong with the
+    # soccer whatever else they are.
+    if soccer_section_team(game, config):
+        return "Highlights"
     if game.get("tier") == "favorite":
         return "Main Slate"
     if game.get("highlight"):

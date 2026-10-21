@@ -1176,15 +1176,25 @@
     "mls": [
       "Atlanta United"
     ],
-    "usmnt": [
-      "United States"
-    ],
     "atp": [
       "Frances Tiafoe"
     ],
     "wta": [
       "Emma Raducanu"
-    ]
+    ],
+    "wcq": [
+      "United States"
+    ],
+    "worldcup": [
+      "United States"
+    ],
+    "goldcup": [
+      "United States"
+    ],
+    "nations": [
+      "United States"
+    ],
+    "_comment_usmnt": "The USMNT is named per competition, because that is what the leagues are keyed by. It sat under \"usmnt\" for a while, which matched no league, so none of its games were ever kept."
   },
   "following": {
     "nfl": [],
@@ -1778,7 +1788,8 @@
     "wash_teams": [
       "Atlanta United",
       "Arsenal",
-      "Chelsea"
+      "Chelsea",
+      "United States"
     ],
     "section_order": [
       "Football | Early Window",
@@ -1792,7 +1803,12 @@
       "Football | Various",
       "Basketball | Various"
     ],
-    "_section_order_comment": "The two sports alternate rather than running one after the other: the afternoon basketball belongs with the afternoon, not behind the night's football. A day with only one of them simply skips the other's headings, and \"Football\" unsplit -- the NFL in January -- takes the place of its own windows."
+    "_section_order_comment": "The two sports alternate rather than running one after the other: the afternoon basketball belongs with the afternoon, not behind the night's football. A day with only one of them simply skips the other's headings, and \"Football\" unsplit -- the NFL in January -- takes the place of its own windows.",
+    "_wash_comment": "wash_teams: the soccer that keeps the Highlights wash wherever it lands. section_teams: the soccer that always sits in the soccer section, even off the Main Slate -- his own clubs, where a rival on the other side of the pitch does not count, since Tottenham against Chelsea is a Tottenham game.",
+    "section_teams": [
+      "Atlanta United",
+      "United States"
+    ]
   },
   "basketball_windows": {
     "_comment": "The football's windows, cut for basketball: two, not three, because the card runs from lunchtime to late evening without football's three distinct television slots. Every Saturday of the year -- unlike football, there is no month to gate on, and a Saturday with no basketball simply has no headings. Tip-offs are set further ahead than kickoffs, so there is no `split_within_days` either; what ESPN has not set yet goes under its own heading.",

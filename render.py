@@ -510,10 +510,10 @@ def _national(block, config):
     first. Split by the time itself the gap says something the reader is
     already looking for: here is the afternoon, here is tonight.
     """
-    early = [g for g in block if filters.national_bucket(g, config) == 1]
-    late = [g for g in block if filters.national_bucket(g, config) == 2]
+    parts = [[g for g in block if filters.national_bucket(g, config) == n]
+             for n in (1, 2, 3)]
     cards = []
-    for group in (early, late):
+    for group in parts:
         if not group:
             continue
         # The gap belongs between the halves, so it is only asked for once
