@@ -1726,7 +1726,10 @@ def _round_tag(game):
 
 # The five sections, in the order they appear. A section with no games is not
 # drawn at all.
-SECTIONS = ("Main Slate", "Highlights", "Football", "Basketball", "National")
+# Highlights is his own teams; Soccer is the soccer. The first was called
+# Main Slate while a separate Highlights shelf existed above it, and that
+# shelf is gone.
+SECTIONS = ("Highlights", "Soccer", "Football", "Basketball", "National")
 
 # Leagues that name their reason in National, because "NBA" alone says nothing
 # about why the game is there.
@@ -1796,6 +1799,10 @@ NATIONAL_OWN_SLOT = ("MLS", "NFL", "MLB", "NBA", "NHL",
 # next, ahead of a regular-season professional game or a tennis match, which
 # is the rest of what lands here.
 NATIONAL_LEADS = ("College Football", "College Basketball")
+# The regular-season nights that are the furniture of National rather than a
+# reason to read it. The NFL is not among them: there are sixteen of its games
+# in a week and every one is worth knowing about.
+BACKGROUND_LEAGUES = ("MLB", "NBA", "NHL")
 NATIONAL_SECOND = ("College Hockey",)
 
 
@@ -1826,6 +1833,22 @@ def national_bucket(game, config):
         return 2
     minutes = start.hour * 60 + start.minute
     return 1 if minutes < _clock_minutes(cut) else 2
+
+
+def all_background(games, config):
+    """Nothing here but a regular-season night from the pro leagues.
+
+    What decides whether his own teams lead National or follow it: a card of
+    ordinary basketball and hockey is the background of an evening, where a
+    college game, a bracket or a European tie is something he came to read.
+    An empty card counts -- there is nothing in it to read past.
+    """
+    for game in games:
+        if game.get("postseason"):
+            return False
+        if (game.get("league_label") or "") not in BACKGROUND_LEAGUES:
+            return False
+    return True
 
 
 def _national_priority(game):
@@ -1977,7 +2000,10 @@ def sort_key_for(section, config):
     """
     if section == "National":
         return lambda g: national_order(g, config)
-    if section == "Highlights":
+    if section in ("Highlights", "Soccer"):
+        # `highlight_order` was written for exactly these two: his own teams
+        # in the order he reads them, then Arsenal before Chelsea before the
+        # rest of the soccer.
         return lambda g: (finished(g), undated(g), g["start_local"],
                           _highlight_rank(g, config))
     if section in ("Football", "Basketball"):
@@ -2158,6 +2184,11 @@ def soccer_section_team(game, config):
     rules = config.get("saturday_layout") or {}
     if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
         return False
+    # A knockout is an event in itself and leads the page from Highlights.
+    # The section is for the rest of it -- a group game, a league match, a
+    # friendly in June.
+    if is_event_round(game, game.get("_league")):
+        return False
     return any(_matches(t, n) for t in (game["home"], game["away"])
                for n in (rules.get("section_teams") or []))
 
@@ -2281,20 +2312,6 @@ def _only_on_national_tv(game):
     return "national tv" in (game.get("reasons") or [])
 
 
-def section_title(name, games, config):
-    """What a section is called, which only Saturday changes.
-
-    Highlights there is the soccer and nothing else, so it says so. Guarded on
-    what is actually in the block rather than on the day alone: a heading that
-    reads SOCCER above a hockey game would be worse than the old one.
-    """
-    if name != "Highlights" or not games:
-        return name
-    if all((g.get("_league") or {}).get("sport") == "Soccer" for g in games):
-        return "Soccer"
-    return name
-
-
 def section_of(game, config):
     """Which of the five a game belongs to.
 
@@ -2305,16 +2322,16 @@ def section_of(game, config):
     # Before the Main Slate, which is the point of it: these belong with the
     # soccer whatever else they are.
     if soccer_section_team(game, config):
-        return "Highlights"
+        return "Soccer"
     if game.get("tier") == "favorite":
-        return "Main Slate"
+        return "Highlights"
     if game.get("highlight"):
         # Soccer first: a midweek tie leaves Highlights on every day but
         # Saturday, where the soccer IS the section.
         if moved_soccer(game, config):
             return "National"
         if not moved_from_highlights(game, config):
-            return "Highlights"
+            return "Soccer"
         # The rivals join the football, in whichever kickoff window they
         # belong to -- ranked or not, which the ordinary college rule would
         # have decided for them. Everything else goes to National's top half,

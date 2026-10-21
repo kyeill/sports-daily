@@ -1021,7 +1021,16 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "promote_rounds": [
+        "round-of-32",
+        "round-of-16",
+        "quarterfinals",
+        "semifinals",
+        "3rd-place-match",
+        "final"
+      ],
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
     },
     {
       "key": "goldcup",
@@ -1035,7 +1044,16 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "promote_rounds": [
+        "round-of-32",
+        "round-of-16",
+        "quarterfinals",
+        "semifinals",
+        "3rd-place-match",
+        "final"
+      ],
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
     },
     {
       "key": "nations",
@@ -1049,7 +1067,16 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "promote_rounds": [
+        "round-of-32",
+        "round-of-16",
+        "quarterfinals",
+        "semifinals",
+        "3rd-place-match",
+        "final"
+      ],
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
     },
     {
       "key": "atp",

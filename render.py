@@ -512,6 +512,15 @@ def _national(block, config):
     """
     parts = [[g for g in block if filters.national_bucket(g, config) == n]
              for n in (1, 2, 3)]
+    # His own move up past any card that is nothing but a regular-season night
+    # of basketball or hockey -- the background of an evening rather than the
+    # thing he opened the page for. Past that card, not to the top: a European
+    # tie or a bracket above it is still something he came to read.
+    mine = parts.pop()
+    if mine:
+        at = next((i for i, group in enumerate(parts)
+                   if group and filters.all_background(group, config)), len(parts))
+        parts.insert(at, mine)
     cards = []
     for group in parts:
         if not group:
@@ -553,7 +562,7 @@ def sections_for(games, config):
         elif name == "Basketball":
             out.extend(filters.split_basketball(ordered, config))
         else:
-            out.append((filters.section_title(name, ordered, config), ordered))
+            out.append((name, ordered))
     return filters.order_sections(out, config)
 
 
@@ -585,9 +594,9 @@ def _body(games, config, notes=None, info=None):
     for line in info or []:
         parts.append('<div class="info">%s</div>' % _esc(line))
 
-    # Main Slate and Highlights keep their tinted cards; the three sport
-    # sections are plain.
-    wrapper = {"Main Slate": "pinned", "Highlights": "watching"}
+    # Highlights -- his own teams -- keeps its tinted card; everything else is
+    # plain, and marks its own rows instead.
+    wrapper = {"Highlights": "pinned"}
     # The football windows are wrapped and numbered so the live script can move
     # a finished one below the rest without having to pair each heading with
     # its own card by hand.
