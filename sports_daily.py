@@ -8,6 +8,7 @@
 """
 
 import argparse
+import collections
 import difflib
 import json
 import os
@@ -242,6 +243,13 @@ def collect(config, day, tz, only=None):
                 game["spread_side"], game["spread_label"] = side, label
         kept.extend(passed)
         stats.append((league["label"], len(passed), len(games)))
+    # Decided across the whole day rather than game by game: a national
+    # broadcast earns its row by being the only thing on.
+    kept, dropped = filters.drop_crowded_national(kept, config)
+    if dropped:
+        gone = collections.Counter(g.get("league_label") for g in dropped)
+        stats = [(label, passed - gone.get(label, 0), total)
+                 for label, passed, total in stats]
     return kept, stats
 
 

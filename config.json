@@ -85,7 +85,8 @@
         "Detroit Pistons",
         "Cleveland Cavaliers"
       ],
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "quiet_night_only": true
     },
     {
       "key": "mlb",
@@ -110,7 +111,8 @@
         "Detroit Tigers"
       ],
       "tint_grey_unless": [],
-      "odds_moneyline": true
+      "odds_moneyline": true,
+      "quiet_night_only": true
     },
     {
       "key": "nhl",
@@ -146,7 +148,8 @@
       "hide_networks": [
         "Disney+",
         "Hulu"
-      ]
+      ],
+      "quiet_night_only": true
     },
     {
       "key": "college-football",
@@ -217,9 +220,6 @@
         "both_power": 21,
         "mismatch": 14
       },
-      "spread_exempt_teams": [
-        "Syracuse Orange"
-      ],
       "spread_exempt_windows": [
         {
           "days": [
@@ -385,9 +385,6 @@
         "both_power": 15,
         "mismatch": 10
       },
-      "spread_exempt_teams": [
-        "Syracuse Orange"
-      ],
       "tint_grey_unless": [
         "ranked",
         "conference"
@@ -1774,5 +1771,14 @@
       "Paris Saint-Germain",
       "Eintracht Frankfurt"
     ]
+  },
+  "quiet_night": {
+    "_comment": "A regular-season national broadcast from the pro leagues earns its row by being the only thing on. Any of these on the page that evening, or any playoff game anywhere, and it goes. European soccer is deliberately absent: it has finished by the time these start. Over a year this leaves 39 of 346 such games -- mostly January Thursdays, when the power conferences do not play basketball and the football is over.",
+    "blocked_by": [
+      "NFL",
+      "College Football",
+      "College Basketball"
+    ],
+    "postseason_blocks": true
   }
 }

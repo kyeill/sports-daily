@@ -1662,6 +1662,10 @@ def evaluate(game, league, config):
                          rooting_for, rooting_against) or RIVAL_GREY
     # Both a rival and a demoted favourite live in the Highlights block.
     game["highlight"] = bool(rivals) or (demoted and not to_national)         or in_highlight_league
+    # Which of the three reasons it is here for. Only the rival keeps a soccer
+    # match in Highlights off a Saturday, so the section needs to tell them
+    # apart afterwards.
+    game["has_rival"] = bool(rivals)
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
@@ -1840,15 +1844,15 @@ def national_order(game, config=None):
 
     Finished games sink, then games with no time yet, and the rest is in
     start order. Everything after the kickoff only separates two games
-    starting the same minute: a Saturday row that moved here out of
-    Highlights, then college hockey, then the sport, then the better-ranked
-    game, then the order he reads his rivals in.
+    starting the same minute: a row that moved here out of Highlights, then
+    college hockey, then the sport, then the better-ranked game, then the
+    order he reads his rivals in.
     """
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
             else len(NATIONAL_SPORT_ORDER))
     return (finished(game), undated(game), game["start_local"],
-            0 if row_washed(game, config) else 1,
+            0 if game.get("highlight") else 1,
             0 if (game.get("league_label") or "") in NATIONAL_FIRST else 1,
             rank, _best_rank(game), _national_team_rank(game),
             game.get("league_label") or "")
@@ -2086,6 +2090,22 @@ def moved_on_saturday(game, config):
     return ((game.get("_league") or {}).get("sport") or "") != "Soccer"
 
 
+def moved_soccer(game, config):
+    """A soccer match Highlights keeps only on a Saturday.
+
+    Saturday is the day the soccer is the point -- a morning of it under its
+    own heading. On any other day a single midweek tie sat alone above five
+    sections, which flattered it: it belongs with the rest of the evening.
+    Arsenal and Chelsea are the exception, as they are everywhere.
+    """
+    if not game.get("highlight") or game.get("has_rival"):
+        return False
+    if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
+        return False
+    start = game.get("start_local")
+    return bool(start) and start.weekday() != SATURDAY
+
+
 def row_washed(game, config):
     """Whether this row is drawn on the Highlights wash.
 
@@ -2107,6 +2127,56 @@ def row_washed(game, config):
         return True
     return any(_matches(t, n) for t in (game["home"], game["away"])
                for n in (rules.get("wash_teams") or []))
+
+
+QUIET_BLOCKERS = "quiet_night"
+
+
+def drop_crowded_national(games, config):
+    """Take the national-TV pro games off a night with something better on.
+
+    A Tuesday on TNT earns its place by being the only thing on. Once there is
+    college football, college basketball, any NFL game or a playoff anywhere,
+    it is the fifth thing on the page and nobody is watching it. Measured over
+    a year: 346 of these games, 39 of them on a night with nothing competing.
+
+    European soccer never counts as competition -- it is finished by the time
+    these start, and most of it is not something he would sit down for either.
+    His own teams are untouched: they are never in this tier.
+
+    Judged across the whole day at once, which is why it is a pass over the
+    kept list rather than a rule inside `evaluate`.
+    """
+    rules = config.get(QUIET_BLOCKERS) or {}
+    leagues = rules.get("blocked_by") or []
+    if not leagues or not games:
+        return games, []
+    busy = False
+    for game in games:
+        label = game.get("league_label") or ""
+        if label in leagues:
+            busy = True
+            break
+        if rules.get("postseason_blocks") and game.get("postseason"):
+            busy = True
+            break
+    if not busy:
+        return games, []
+    dropped = [g for g in games if _only_on_national_tv(g)]
+    if not dropped:
+        return games, []
+    keep = [g for g in games if g not in dropped]
+    return keep, dropped
+
+
+def _only_on_national_tv(game):
+    """Kept for the broadcast alone -- no team here he follows, no bracket."""
+    league = game.get("_league") or {}
+    if not league.get("quiet_night_only"):
+        return False
+    if game.get("postseason") or game.get("tier") != "interest":
+        return False
+    return "national tv" in (game.get("reasons") or [])
 
 
 def section_title(name, games, config):
@@ -2133,6 +2203,10 @@ def section_of(game, config):
     if game.get("tier") == "favorite":
         return "Main Slate"
     if game.get("highlight"):
+        # Soccer first: a midweek tie leaves Highlights on every day but
+        # Saturday, where the soccer IS the section.
+        if moved_soccer(game, config):
+            return "National"
         if not moved_on_saturday(game, config):
             return "Highlights"
         # The rivals join the football, in whichever kickoff window they
