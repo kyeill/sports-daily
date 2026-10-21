@@ -212,7 +212,11 @@
       },
       "sort_rank": 1,
       "team_detail": "record",
-      "max_spread": 30,
+      "max_spread": {
+        "_comment": "Two Power Four sides at twenty-one points is a real game having a bad week; the same number against a visitor from outside the four is the whole story, so that one goes at fourteen.",
+        "both_power": 21,
+        "mismatch": 14
+      },
       "spread_exempt_teams": [
         "Syracuse Orange"
       ],
@@ -361,6 +365,13 @@
             ],
             "tag": "prefix"
           }
+        ],
+        "power_conferences": [
+          "ACC",
+          "Big Ten",
+          "Big 12",
+          "SEC",
+          "Big East"
         ]
       },
       "sort_rank": 2,
@@ -368,7 +379,11 @@
       "highlight_teams": [
         "Cornell Big Red"
       ],
-      "max_spread": 15,
+      "max_spread": {
+        "_comment": "The same thought as football, on basketball's scale: fifteen between two of the high majors, ten when one side is from outside them.",
+        "both_power": 15,
+        "mismatch": 10
+      },
       "spread_exempt_teams": [
         "Syracuse Orange"
       ],

@@ -1339,13 +1339,29 @@ def _final_margin(game):
         return None
 
 
+def _spread_limit(game, league):
+    """How lopsided is too lopsided here, which depends on the matchup.
+
+    Two power-conference sides are worth more rope: a twenty-point line
+    between them is a real game having a bad week, while the same number
+    against a visiting cupcake is the whole story. A plain number in the
+    config still means one limit for everything.
+    """
+    limit = league.get("max_spread")
+    if not isinstance(limit, dict):
+        return limit
+    power = (league.get("include") or {}).get("power_conferences") or []
+    both = bool(power) and _both_power(game, league, power)
+    return limit.get("both_power" if both else "mismatch")
+
+
 def is_blowout(game, league):
     """A game nobody expects to be competitive, and no reason to keep it.
 
     Only ever applied to the ordinary sections: your own teams and the
     highlights are never dropped for being lopsided.
     """
-    limit = league.get("max_spread")
+    limit = _spread_limit(game, league)
     if not limit:
         return False
     points = _spread_points(game)
