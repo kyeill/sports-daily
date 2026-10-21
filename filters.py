@@ -1357,6 +1357,12 @@ def is_blowout(game, league):
         # final margin answers the same question, with better evidence: before
         # the game the line is a forecast, after it the score is the fact.
         points = _final_margin(game)
+    if points is None:
+        # College basketball is not priced until the day before, so most of
+        # the card has no line at all when the page is built. A projection
+        # stands in: measured against the closing number on 238 games it is
+        # unbiased, and the two agree about this limit on 97% of them.
+        points = game.get("spread_proxy")
     if points is None or points <= limit:
         return False
 

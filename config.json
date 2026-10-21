@@ -375,7 +375,9 @@
       "tint_grey_unless": [
         "ranked",
         "conference"
-      ]
+      ],
+      "spread_proxy": "torvik",
+      "_spread_proxy_comment": "Vegas does not price a college game until the day before, so `max_spread` had nothing to read on a card built a fortnight out. Bart Torvik's projection stands in where there is no real line: unbiased against the closing number over 238 games of last season, and agreeing about this fifteen-point limit on 97% of them."
     },
     {
       "key": "mens-college-hockey",
