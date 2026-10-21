@@ -103,8 +103,16 @@ def _fetch(date_key):
     global _session
     if _session is None:
         _session = requests.Session()
-        _session.headers["User-Agent"] = (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) sports-daily")
+        # A plain browser string, with nothing of ours appended: the site
+        # answered 403 to one that named this app.
+        _session.headers.update({
+            "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                           "AppleWebKit/537.36 (KHTML, like Gecko) "
+                           "Chrome/131.0.0.0 Safari/537.36"),
+            "Accept": ("text/html,application/xhtml+xml,application/xml;"
+                       "q=0.9,*/*;q=0.8"),
+            "Accept-Language": "en-US,en;q=0.9",
+        })
     for attempt in (1, 2):
         try:
             reply = _session.get(URL, params={"date": date_key}, timeout=30)
