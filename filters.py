@@ -330,6 +330,14 @@ def rule_matches(game, rule):
         if not current or not any(fnmatch.fnmatch(current, r.lower()) for r in rounds):
             return False
 
+    # Every side on the list, not merely one: how a tie earns National on the
+    # strength of the pairing -- Barcelona against PSG, Bayern against
+    # Atletico -- where the same clubs against the other thirty of a league
+    # phase do not.
+    both = rule.get("both_teams")
+    if both and not all(any(_matches(t, name) for name in both) for t in sides):
+        return False
+
     teams = rule.get("teams")
     if teams:
         named = [t for t in sides if any(_matches(t, name) for name in teams)]

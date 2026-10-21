@@ -771,25 +771,12 @@
         ],
         "national_rules": [
           {
-            "both_clubs_from": [
-              "soccer/esp.1",
-              "soccer/ger.1",
-              "soccer/ita.1",
-              "soccer/fra.1"
+            "_comment": "Thirty-six clubs play a league phase and most of it is not an event. A tie between two of the elite is; the same clubs against the other thirty are not, and an English side's league-phase match is already in Highlights on its own rule.",
+            "round": [
+              "league-phase"
             ],
-            "note": "Europe",
-            "second_card_unless": [
-              "Barcelona",
-              "Real Madrid",
-              "Atlético Madrid",
-              "Bayern Munich",
-              "Borussia Dortmund",
-              "Juventus",
-              "AC Milan",
-              "Internazionale",
-              "Paris Saint-Germain"
-            ],
-            "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
+            "both_teams": "@european_elite",
+            "note": "Europe"
           },
           {
             "teams": [
@@ -861,18 +848,24 @@
               "soccer/fra.1"
             ],
             "note": "Europe",
-            "second_card_unless": [
-              "Barcelona",
-              "Real Madrid",
-              "Atlético Madrid",
-              "Bayern Munich",
-              "Borussia Dortmund",
-              "Juventus",
-              "AC Milan",
-              "Internazionale",
-              "Paris Saint-Germain"
-            ],
+            "second_card_unless": "@european_elite",
             "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
+          },
+          {
+            "_comment": "The league phase here is worth a row on two counts: two of the elite meeting, or one of them against an English club -- which the knockout rule above covers only once the bracket starts.",
+            "round": [
+              "league-phase"
+            ],
+            "both_teams": "@european_elite",
+            "note": "Europe"
+          },
+          {
+            "round": [
+              "league-phase"
+            ],
+            "teams": "@european_elite",
+            "clubs_from": "soccer/eng.1",
+            "note": "Europe"
           },
           {
             "teams": [
@@ -944,18 +937,24 @@
               "soccer/fra.1"
             ],
             "note": "Europe",
-            "second_card_unless": [
-              "Barcelona",
-              "Real Madrid",
-              "Atlético Madrid",
-              "Bayern Munich",
-              "Borussia Dortmund",
-              "Juventus",
-              "AC Milan",
-              "Internazionale",
-              "Paris Saint-Germain"
-            ],
+            "second_card_unless": "@european_elite",
             "_second_card_comment": "Two of the four big leagues meeting is worth a row, but it is only the night's event when one of these is in it. Anything else drops to the second card."
+          },
+          {
+            "_comment": "The league phase here is worth a row on two counts: two of the elite meeting, or one of them against an English club -- which the knockout rule above covers only once the bracket starts.",
+            "round": [
+              "league-phase"
+            ],
+            "both_teams": "@european_elite",
+            "note": "Europe"
+          },
+          {
+            "round": [
+              "league-phase"
+            ],
+            "teams": "@european_elite",
+            "clubs_from": "soccer/eng.1",
+            "note": "Europe"
           },
           {
             "teams": [
@@ -1739,5 +1738,20 @@
       }
     ],
     "tbd_title": "Basketball | Time TBD"
+  },
+  "team_lists": {
+    "_comment": "Named once here and written as \"@name\" anywhere else in this file, so adding a club is one edit instead of five. An unknown name stops the build rather than quietly matching nothing.",
+    "european_elite": [
+      "Barcelona",
+      "Real Madrid",
+      "Atlético Madrid",
+      "Bayern Munich",
+      "Borussia Dortmund",
+      "Juventus",
+      "AC Milan",
+      "Internazionale",
+      "Paris Saint-Germain",
+      "Eintracht Frankfurt"
+    ]
   }
 }

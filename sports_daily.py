@@ -25,6 +25,27 @@ import sheets
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def _expand_lists(node, lists):
+    """Replace any "@name" with the list `team_lists` gives that name.
+
+    A typo is fatal rather than quietly left as a string: a rule testing
+    against the literal "@europen_elite" would match nothing and say nothing.
+    """
+    if isinstance(node, dict):
+        for key, value in list(node.items()):
+            if isinstance(value, str) and value.startswith("@"):
+                name = value[1:]
+                if name not in lists:
+                    raise SystemExit(
+                        'config.json: "%s" names no entry in team_lists' % value)
+                node[key] = list(lists[name])
+            else:
+                _expand_lists(value, lists)
+    elif isinstance(node, list):
+        for item in node:
+            _expand_lists(item, lists)
+
+
 def load_config(path=None):
     path = path or os.path.join(HERE, "config.json")
     # utf-8-sig: Notepad and PowerShell write a BOM that plain json rejects.
@@ -42,6 +63,11 @@ def load_config(path=None):
             "  line %s: %s\n"
             "  (usually a missing comma between entries, or a stray comma "
             "before a closing } or ])" % (exc, line, context))
+
+    # One club named once. The European elite are now the test in five rules
+    # across three competitions, and a list copied five times is a list that
+    # ends up disagreeing with itself.
+    _expand_lists(config, config.get("team_lists") or {})
 
     # Display names live in their own file so other tools can read the same
     # table -- see team-names.json. Missing is fine: every league without an
