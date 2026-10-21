@@ -397,7 +397,11 @@
         "league": "mens-college-basketball",
         "season": 2027,
         "group": "50"
-      }
+      },
+      "section_teams": [
+        "Syracuse Orange"
+      ],
+      "_section_teams_comment": "Kept with the basketball whatever the poll says. Saturday files it under VARIOUS with the rest of the unranked card; on a weekday there is one basketball section and it goes there."
     },
     {
       "key": "mens-college-hockey",

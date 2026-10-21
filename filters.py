@@ -2380,6 +2380,12 @@ def section_of(game, config):
             if not (game.get("postseason") or ranked):
                 game["_various"] = True
             return "Basketball"
+        # A team the league keeps whether or not the pollsters rate it, which
+        # otherwise read as a National row on a weekday: Syracuse is watched
+        # all season, so its games belong with the basketball all season.
+        if any(_matches(t, n) for t in (game["home"], game["away"])
+               for n in (league.get("section_teams") or [])):
+            return "Basketball"
         # The postseason rules already say who is worth showing, so anything
         # that survives them belongs with the basketball.
         return "Basketball" if (game.get("postseason") or ranked) else "National"
