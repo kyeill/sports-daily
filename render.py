@@ -400,9 +400,9 @@ def _game_html(game, show_league, config):
     # Which competition, for a club that plays in several -- on the detail line
     # rather than as a right-hand badge: "Carabao Cup Second Round".
     if show_league and (game.get("sport") or "") == "Soccer":
-        label = game["league_label"]
+        label = filters.competition_label(game)
         # "MLS MLS Cup" reads badly; the round already names it.
-        if not detail.startswith(label):
+        if label and not detail.startswith(label):
             detail = ("%s %s" % (label, detail)).strip()
     # Stacking drops the "at"/"vs", and with it the only sign of a neutral
     # site. Bowls and tournament rounds already say so by name, so this only

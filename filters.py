@@ -2529,6 +2529,21 @@ def _hockey_round(text):
     return "NCAA Hockey - %s" % tail
 
 
+def competition_label(game):
+    """The competition a soccer row names on its own detail line, or ''.
+
+    A second answer to the same question `label_for` asks, because a club row
+    reaches the line by a different route: the competition is prepended to
+    whatever round the row already carries, which is how "Carabao Cup Second
+    Round" reads. The section still decides -- in National the Premier League
+    is two English club names and says nothing.
+    """
+    label = game.get("league_label") or ""
+    if (game.get("_section") or "") == "National" and label in QUIET_IN_NATIONAL:
+        return ""
+    return label
+
+
 def label_for(game, section):
     """The competition named on the detail line, or "".
 
