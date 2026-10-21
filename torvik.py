@@ -205,6 +205,18 @@ def mark_projected(games, league, date_key, max_age_min=720):
             print("  note: no T-Rank lines for %s (%s); the blowout filter has "
                   "nothing to read on games Vegas has not priced yet"
                   % (date_key, _why or "the page listed no games"))
+            # Temporary: the schedule page is a PHP route behind a browser
+            # check, the ratings are a static file. If only the first is
+            # refused, the second is a way back in -- worth one line in the
+            # log to find out rather than designing for a guess.
+            try:
+                probe = _session.get(
+                    "https://barttorvik.com/2027_team_results.json", timeout=30)
+                print("  note: the static ratings file answered %s (%d bytes)"
+                      % (probe.status_code, len(probe.content)))
+            except Exception as exc:
+                print("  note: the static ratings file failed: %s"
+                      % str(exc)[:110])
         return 0
     hit = 0
     for game in games:
