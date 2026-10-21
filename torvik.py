@@ -31,6 +31,14 @@ import requests
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, "cache")
 URL = "https://www.barttorvik.com/schedule.php"
+# The build cannot read the site: barttorvik.com answers GitHub's runners 403,
+# the schedule page and the static ratings file alike, so it is the address
+# that is refused rather than anything we send. The projections are therefore
+# fetched from a machine the site will talk to and committed, and the build
+# reads the file. They age gently, and the ageing barely matters: a real line
+# appears the day before the game and takes precedence, so a stale projection
+# only ever decides whether to show something still days away.
+SNAPSHOT = os.path.join(HERE, "projections.json")
 
 # ESPN names the school, T-Rank names it its own way. Twenty-seven of 362
 # disagree, every one of them found by diffing the two lists rather than
@@ -157,8 +165,31 @@ def _parse(text):
     return out
 
 
+_snapshot_cache = None
+
+
+def snapshot():
+    """The committed projections, or {} -- read once a build."""
+    global _snapshot_cache
+    if _snapshot_cache is None:
+        try:
+            with open(SNAPSHOT, encoding="utf-8") as fh:
+                _snapshot_cache = json.load(fh)
+        except (OSError, ValueError):
+            _snapshot_cache = {}
+    return _snapshot_cache
+
+
 def lines(date_key, max_age_min=720):
-    """{pair key: points} for one day, cached on disk like every other fetch."""
+    """{pair key: points} for one day: the committed file, else the site.
+
+    The file is what the build runs on. The live fetch behind it is for this
+    machine, where the site answers -- which is how the file gets written in
+    the first place, and how a date beyond its end still works locally.
+    """
+    stored = snapshot().get(date_key)
+    if stored:
+        return stored
     os.makedirs(CACHE, exist_ok=True)
     path = os.path.join(CACHE, "torvik-%s.json" % date_key)
     if os.path.exists(path):
@@ -177,6 +208,33 @@ def lines(date_key, max_age_min=720):
         except OSError:
             pass
     return found
+
+
+def refresh(start, days, verbose=True):
+    """Fetch `days` dates from `start` and write them into the snapshot.
+
+    Run from a machine the site will answer -- the build cannot. Existing
+    dates are replaced, dates outside the range are left alone, so a partial
+    run adds rather than truncates.
+    """
+    import datetime
+    book = dict(snapshot())
+    book.pop("_built", None)
+    added = 0
+    for i in range(days):
+        date_key = (start + datetime.timedelta(days=i)).strftime("%Y%m%d")
+        found = {_key(a, b): p for a, b, p in _parse(_fetch(date_key))}
+        if found:
+            book[date_key] = found
+            added += len(found)
+        if verbose and (i % 10 == 0 or i == days - 1):
+            print("  %s  %d games (%d so far)" % (date_key, len(found), added))
+    book["_built"] = datetime.date.today().isoformat()
+    with open(SNAPSHOT, "w", encoding="utf-8") as fh:
+        json.dump(book, fh, separators=(",", ":"), sort_keys=True)
+    if verbose:
+        print("wrote %s: %d dates, %d games" % (SNAPSHOT, len(book) - 1, added))
+    return added
 
 
 def _school(team):
@@ -205,18 +263,6 @@ def mark_projected(games, league, date_key, max_age_min=720):
             print("  note: no T-Rank lines for %s (%s); the blowout filter has "
                   "nothing to read on games Vegas has not priced yet"
                   % (date_key, _why or "the page listed no games"))
-            # Temporary: the schedule page is a PHP route behind a browser
-            # check, the ratings are a static file. If only the first is
-            # refused, the second is a way back in -- worth one line in the
-            # log to find out rather than designing for a guess.
-            try:
-                probe = _session.get(
-                    "https://barttorvik.com/2027_team_results.json", timeout=30)
-                print("  note: the static ratings file answered %s (%d bytes)"
-                      % (probe.status_code, len(probe.content)))
-            except Exception as exc:
-                print("  note: the static ratings file failed: %s"
-                      % str(exc)[:110])
         return 0
     hit = 0
     for game in games:
@@ -225,3 +271,21 @@ def mark_projected(games, league, date_key, max_age_min=720):
             game["spread_proxy"] = points
             hit += 1
     return hit
+
+
+if __name__ == "__main__":
+    import argparse
+    import datetime
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--refresh", action="store_true",
+                    help="rewrite projections.json from the site")
+    ap.add_argument("--from", dest="start", default="",
+                    help="first date, YYYY-MM-DD (default: today)")
+    ap.add_argument("--days", type=int, default=160,
+                    help="how many dates to walk (default: the rest of a season)")
+    args = ap.parse_args()
+    if not args.refresh:
+        ap.error("nothing to do; pass --refresh")
+    first = (datetime.date.fromisoformat(args.start) if args.start
+             else datetime.date.today())
+    refresh(first, args.days)
