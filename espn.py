@@ -590,6 +590,129 @@ def _parse_start(raw):
     return None
 
 
+def _athlete(competitor):
+    """One side of a tennis match, in the shape the rest of the app expects.
+
+    A player is a team of one. The seed goes where a poll ranking would, the
+    country flag where a crest would, and the score is sets won rather than
+    points -- a row saying "6" would be a set, not a result.
+    """
+    who = competitor.get("athlete") or {}
+    sets = sum(1 for line in competitor.get("linescores") or [] if line.get("winner"))
+    played = bool(competitor.get("linescores"))
+    seed = (competitor.get("curatedRank") or {}).get("current")
+    flag = (who.get("flag") or {}).get("href") or ""
+    return {
+        "id": str(who.get("id") or competitor.get("id") or ""),
+        "abbr": who.get("shortName") or "",
+        "name": who.get("displayName") or who.get("fullName") or "",
+        "short": who.get("shortName") or who.get("displayName") or "",
+        "location": who.get("displayName") or "",
+        "logo": flag,
+        # Flags are drawn for a light background and read fine on ours, so
+        # there is no dark variant to swap in.
+        "logo_dark": flag,
+        "color": "",
+        "alt_color": "",
+        "conference_id": "",
+        "rank": seed if seed and seed != UNRANKED else None,
+        "record": "",
+        "score": str(sets) if played else None,
+    }
+
+
+def _tennis_games(league, date_yyyymmdd, tz, cache_minutes=30):
+    """Matches from one tour on one date.
+
+    Tennis is shaped differently from every other sport here: the scoreboard
+    returns the TOURNAMENT, with every match of the fortnight inside it, so
+    one request covers the whole event and the date is a filter rather than a
+    query. `major` on the event is ESPN's own flag for the four that matter.
+    """
+    rules = league.get("include") or {}
+    wanted_rounds = league.get("groupings") or ["mens-singles", "womens-singles"]
+    data = _get("%s/%s/scoreboard" % (SITE, league["path"]), {"dates": date_yyyymmdd},
+                cache_key="%s-%s" % (league["key"], date_yyyymmdd),
+                max_age_min=cache_minutes)
+    out = []
+    for event in (data or {}).get("events") or []:
+        if rules.get("majors_only") and not event.get("major"):
+            continue
+        tournament = event.get("name") or ""
+        for group in event.get("groupings") or []:
+            slug = ((group.get("grouping") or {}).get("slug") or "")
+            if wanted_rounds and slug not in wanted_rounds:
+                continue
+            for comp in group.get("competitions") or []:
+                start = _parse_start(comp.get("date") or "")
+                if not start:
+                    continue
+                local = start.astimezone(tz)
+                if local.strftime("%Y%m%d") != date_yyyymmdd:
+                    continue
+                home = away = None
+                for competitor in comp.get("competitors") or []:
+                    side = _athlete(competitor)
+                    if competitor.get("homeAway") == "home":
+                        home = side
+                    else:
+                        away = side
+                if not home or not away or not (home["name"] and away["name"]):
+                    continue
+                status = ((comp.get("status") or {}).get("type")) or {}
+                rnd = (comp.get("round") or {}).get("displayName") or ""
+                tv, tv_national, national, tv_market = _broadcasts(comp)
+                out.append({
+                    "league": league["key"],
+                    # The tournament, not the tour: a row reading "US Open"
+                    # says what it is, where "ATP" says only where it came
+                    # from.
+                    "league_label": tournament,
+                    "sport": league.get("sport") or "Tennis",
+                    "source": "",
+                    "id": str(comp.get("id") or ""),
+                    "start_utc": start,
+                    "start_local": local,
+                    "state": status.get("state") or "pre",
+                    "postseason": False,
+                    "season_type": 2,
+                    # Both the round and the caption carry the tournament:
+                    # "Round 4" alone is the same words in January and in
+                    # September, and which major it is matters more.
+                    "round": ("%s - %s" % (tournament, rnd)) if rnd else tournament,
+                    "status_detail": status.get("shortDetail") or "",
+                    "delayed": "DELAY" in (status.get("name") or "").upper(),
+                    "called_off": any(w in (status.get("name") or "").upper()
+                                      for w in ("POSTPONED", "CANCEL", "SUSPEND")),
+                    "status_note": status.get("description") or "",
+                    "period": (comp.get("status") or {}).get("period"),
+                    "clock": None,
+                    "home": home,
+                    "away": away,
+                    "tv": tv,
+                    "tv_national": tv_national,
+                    "tv_home": tv_market["home"],
+                    "tv_away": tv_market["away"],
+                    "national": national,
+                    "series": "",
+                    "aggregate": "",
+                    "spread": "",
+                    "spread_side": "",
+                    "spread_label": "",
+                    "over_under": "",
+                    "conference": "",
+                    "neutral": True,
+                    "time_tbd": comp.get("timeValid") is False,
+                    "venue": (comp.get("venue") or {}).get("fullName") or "",
+                    # The caption names both: "Round 4" alone is the same
+                    # words in January and September, and which major it is
+                    # matters more than which round.
+                    "note": ("%s - %s" % (tournament, rnd)) if rnd else tournament,
+                    "link": "https://www.espn.com/tennis/",
+                })
+    return out
+
+
 def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
     """Normalized game dicts for one league on one date (local to tz).
 
@@ -597,6 +720,10 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
     lives in groups=80 and FCS in groups=81, and an Ivy League team like
     Cornell is invisible to the FBS call.
     """
+    # Tennis answers with the tournament rather than the day, so it has its
+    # own reader.
+    if (league.get("sport") or "") == "Tennis":
+        return _tennis_games(league, date_yyyymmdd, tz, cache_minutes)
     variants = league.get("params_variants") or [{"params": league.get("params") or {}}]
     url = "%s/%s/scoreboard" % (SITE, league["path"])
     events, seen = [], set()

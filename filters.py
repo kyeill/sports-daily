@@ -1716,7 +1716,9 @@ def _round_tag(game):
         return "R%s" % joined.rsplit(" ", 1)[1]
     small = ("of", "the", "and")
     pretty = " ".join(
-        w.upper() if w in ("mls", "nit")
+        # The slug arrives lowercased, so an initialism has to be named:
+        # "us open round 4" would otherwise come back as "Us Open".
+        w.upper() if w in ("mls", "nit", "us")
         else w if (w in small and i) else w.capitalize()
         for i, w in enumerate(words))
     return pretty
@@ -2148,16 +2150,15 @@ def drop_crowded_national(games, config):
     kept list rather than a rule inside `evaluate`.
     """
     rules = config.get(QUIET_BLOCKERS) or {}
-    leagues = rules.get("blocked_by") or []
-    if not leagues or not games:
+    blockers = rules.get("blocked_by") or []
+    if not blockers or not games:
         return games, []
     busy = False
     for game in games:
-        label = game.get("league_label") or ""
-        if label in leagues:
+        if rules.get("postseason_blocks") and game.get("postseason"):
             busy = True
             break
-        if rules.get("postseason_blocks") and game.get("postseason"):
+        if any(_blocks(game, b) for b in blockers):
             busy = True
             break
     if not busy:
@@ -2167,6 +2168,28 @@ def drop_crowded_national(games, config):
         return games, []
     keep = [g for g in games if g not in dropped]
     return keep, dropped
+
+
+def _blocks(game, blocker):
+    """Whether this game is the better thing on.
+
+    A blocker may name a window as well as a league, which is how the NFL
+    blocks on its own nights without Christmas afternoon counting: three games
+    on Netflix and FOX on a Friday are not the reason nobody is watching the
+    basketball, and the basketball that day is the whole point of the day.
+    """
+    if (game.get("league_label") or "") != blocker.get("league"):
+        return False
+    if blocker.get("days") and not _on_day(game, blocker["days"]):
+        return False
+    floor = blocker.get("from")
+    if floor is not None:
+        start = game.get("start_local")
+        if not start:
+            return False
+        if start.hour * 60 + start.minute < _clock_minutes(floor):
+            return False
+    return True
 
 
 def _only_on_national_tv(game):
@@ -2229,9 +2252,11 @@ def section_of(game, config):
             # The CFP in full; a bowl only if it clears the bar.
             return "Football" if (is_cfp(game) or bowl_in_football(game, league))                 else "National"
         return "Football" if ranked else "National"
+    # The NFL used to lead the Football section on a Sunday, which made the
+    # heading mean two different things depending on the month. It is National
+    # now, every week of the year, and Football is the college game.
     if label == "NFL":
-        reasons = game.get("reasons") or []
-        return "Football" if ("standalone" in reasons or game.get("postseason"))             else "National"
+        return "National"
     if label == "College Basketball":
         # Saturday takes the lot. The windows are the point of that day, and a
         # card split by tip-off says more than one split by who the pollsters

@@ -1050,6 +1050,44 @@
       },
       "sort_rank": 5,
       "team_detail": "none"
+    },
+    {
+      "key": "atp",
+      "path": "tennis/atp",
+      "label": "Tennis (ATP)",
+      "sport": "Tennis",
+      "enabled": true,
+      "_comment": "Only the four majors, and only this player's singles matches. ESPN's scoreboard answers with the whole tournament, so one request a day covers it, and `major` is ESPN's own flag for the four.",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "majors_only": true
+      },
+      "groupings": [
+        "mens-singles",
+        "womens-singles"
+      ],
+      "sort_rank": 11,
+      "team_detail": "none"
+    },
+    {
+      "key": "wta",
+      "path": "tennis/wta",
+      "label": "Tennis (WTA)",
+      "sport": "Tennis",
+      "enabled": true,
+      "_comment": "Only the four majors, and only this player's singles matches. ESPN's scoreboard answers with the whole tournament, so one request a day covers it, and `major` is ESPN's own flag for the four.",
+      "include": {
+        "favorites": true,
+        "all": false,
+        "majors_only": true
+      },
+      "groupings": [
+        "mens-singles",
+        "womens-singles"
+      ],
+      "sort_rank": 11,
+      "team_detail": "none"
     }
   ],
   "national_networks": [
@@ -1134,6 +1172,12 @@
     ],
     "usmnt": [
       "United States"
+    ],
+    "atp": [
+      "Frances Tiafoe"
+    ],
+    "wta": [
+      "Emma Raducanu"
     ]
   },
   "following": {
@@ -1200,8 +1244,10 @@
     "Crystal Palace": "1b458f",
     "Detroit Tigers": "#0a2240",
     "Eintracht Frankfurt": "e1000f",
+    "Emma Raducanu": "ccf000",
     "Everton": "003399",
     "Ferris State Bulldogs": "ba0c2f",
+    "Frances Tiafoe": "ccf000",
     "Fulham": "45454e",
     "Iowa Hawkeyes": "45454e",
     "Ipswich Town": "#3a64a3",
@@ -1773,11 +1819,29 @@
     ]
   },
   "quiet_night": {
-    "_comment": "A regular-season national broadcast from the pro leagues earns its row by being the only thing on. Any of these on the page that evening, or any playoff game anywhere, and it goes. European soccer is deliberately absent: it has finished by the time these start. Over a year this leaves 39 of 346 such games -- mostly January Thursdays, when the power conferences do not play basketball and the football is over.",
+    "_comment": "A regular-season national broadcast from the pro leagues earns its row by being the only thing on. Any of these that evening, or any playoff game anywhere, and it goes. European soccer and college hockey are deliberately absent. Over a winter this leaves 39 of 346 such games -- mostly January Thursdays, when the power conferences do not play basketball and the football is over. Summer is another matter: nothing competes with baseball, so most of it survives.",
     "blocked_by": [
-      "NFL",
-      "College Football",
-      "College Basketball"
+      {
+        "league": "College Football"
+      },
+      {
+        "league": "College Basketball"
+      },
+      {
+        "_note": "The NFL's own nights. Christmas afternoon does not count -- there is no college basketball that day and the NBA's card is the point of it.",
+        "league": "NFL",
+        "days": [
+          "Thu",
+          "Mon"
+        ]
+      },
+      {
+        "league": "NFL",
+        "days": [
+          "Sun"
+        ],
+        "from": "19:00"
+      }
     ],
     "postseason_blocks": true
   }
