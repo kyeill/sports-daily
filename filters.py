@@ -1803,6 +1803,9 @@ NATIONAL_LEADS = ("College Football", "College Basketball")
 # reason to read it. The NFL is not among them: there are sixteen of its games
 # in a week and every one is worth knowing about.
 BACKGROUND_LEAGUES = ("MLB", "NBA", "NHL")
+
+# Competitions that go unnamed in National, where the row speaks for itself.
+QUIET_IN_NATIONAL = ("College Hockey", "Premier League")
 NATIONAL_SECOND = ("College Hockey",)
 
 
@@ -2538,6 +2541,12 @@ def label_for(game, section):
     if not label:
         return ""
     if not (section == "National" or label == "College Hockey"):
+        return ""
+    # Named everywhere else, but not down here. In National the college hockey
+    # is his three rivals and the Premier League is two English clubs, and a
+    # row carrying either already says which sport it is -- the line was
+    # repeating the names above it.
+    if section == "National" and label in QUIET_IN_NATIONAL:
         return ""
     if label in QUIET_LEAGUES:
         # A playoff game already names its round, and a national-TV night has
