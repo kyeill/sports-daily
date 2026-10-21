@@ -1852,5 +1852,11 @@
       }
     ],
     "postseason_blocks": true
+  },
+  "national_windows": {
+    "_comment": "Where National breaks into afternoon and evening, by weekday. Sunday's evening starts at one because its afternoon is the day. Saturday is left whole -- the day is already cut four ways above it.",
+    "default": "18:00",
+    "Sun": "13:00",
+    "Sat": null
   }
 }

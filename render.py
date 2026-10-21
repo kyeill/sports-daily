@@ -59,6 +59,9 @@ h2 {
   background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   overflow: hidden;
 }
+/* The two halves of National, afternoon and evening. The gap matches the one
+   between a heading and its card, so the break reads as deliberate. */
+.card.second { margin-top: 10px; }
 .pinned .card { background: var(--pin); border-color: var(--pin-line); }
 .watching .card { background: var(--watch); border-color: var(--watch-line); }
 /* One row on the Highlights wash inside a card that is not. Saturday sends
@@ -500,14 +503,25 @@ def _section(title, games, show_league, config):
 
 
 def _national(block, config):
-    """National under one heading, in one card.
+    """National under one heading, in two cards split by the clock.
 
-    It ran in two for a while -- the events, then the nightly slate -- and the
-    gap did less than it cost: a reader looking for a time had to find which
-    half it was in first.
+    It split by what kind of game it was once, and the gap did less than it
+    cost -- a reader looking for a time had to find which half it was in
+    first. Split by the time itself the gap says something the reader is
+    already looking for: here is the afternoon, here is tonight.
     """
-    rows = "".join(_game_html(g, True, config) for g in block)
-    return '<h2>National</h2><div class="card">%s</div>' % rows
+    early = [g for g in block if filters.national_bucket(g, config) == 1]
+    late = [g for g in block if filters.national_bucket(g, config) == 2]
+    cards = []
+    for group in (early, late):
+        if not group:
+            continue
+        # The gap belongs between the halves, so it is only asked for once
+        # there is something above to separate from.
+        cls = "card second" if cards else "card"
+        cards.append('<div class="%s">%s</div>'
+                     % (cls, "".join(_game_html(g, True, config) for g in group)))
+    return "<h2>National</h2>" + "".join(cards)
 
 
 def sections_for(games, config):

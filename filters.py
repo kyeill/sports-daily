@@ -1799,6 +1799,29 @@ NATIONAL_LEADS = ("College Football", "College Basketball")
 NATIONAL_SECOND = ("College Hockey",)
 
 
+def national_bucket(game, config):
+    """Which half of National a game is in: 1 early, 2 late.
+
+    The clock and nothing else. Mon-Fri the evening starts at six, Sunday at
+    one -- the afternoon is the day there -- and Saturday is one card, because
+    the day is already cut four ways above it. A start nobody has set yet goes
+    late, where it sinks to the foot of the section anyway.
+    """
+    rules = config.get("national_windows") or {}
+    if not rules:
+        return 1
+    start = game.get("start_local")
+    if not start:
+        return 2
+    cut = rules.get(start.strftime("%a"), rules.get("default"))
+    if not cut:
+        return 1
+    if undated(game):
+        return 2
+    minutes = start.hour * 60 + start.minute
+    return 1 if minutes < _clock_minutes(cut) else 2
+
+
 def _national_priority(game):
     label = game.get("league_label") or ""
     if label in NATIONAL_LEADS or game.get("postseason"):
@@ -1863,7 +1886,8 @@ def national_order(game, config=None):
     name = _national_sport(game)
     rank = (NATIONAL_SPORT_ORDER.index(name) if name in NATIONAL_SPORT_ORDER
             else len(NATIONAL_SPORT_ORDER))
-    return (finished(game), undated(game), game["start_local"],
+    return (national_bucket(game, config or {}),
+            finished(game), undated(game), game["start_local"],
             _national_priority(game),
             0 if game.get("highlight") else 1,
             rank, _best_rank(game), _national_team_rank(game),
@@ -2102,9 +2126,17 @@ def saturday_split(config, game=None):
     return rules
 
 
-def moved_on_saturday(game, config):
-    """A Highlights game that Saturday files somewhere else."""
-    if not game.get("highlight") or not saturday_split(config, game):
+def moved_from_highlights(game, config):
+    """A game that used to sit in Highlights and now goes to its own sport.
+
+    Highlights was a shelf above the sections each of its games belonged in:
+    the Tigers over the baseball, a rival's basketball over the basketball.
+    Everything on it now goes where its sport goes and keeps the wash, so it
+    still reads as a highlight without needing a section to say so. Soccer is
+    the exception -- it has nowhere else to be, so it keeps the section and
+    the section takes its name.
+    """
+    if not game.get("highlight"):
         return False
     return ((game.get("_league") or {}).get("sport") or "") != "Soccer"
 
@@ -2133,7 +2165,7 @@ def row_washed(game, config):
     behind gives it up, since a whole section of it says nothing -- except for
     the three he is actually watching for.
     """
-    rules = saturday_split(config, game)
+    rules = config.get("saturday_layout") or {}
     if not rules or not game.get("highlight"):
         return False
     # One of his own against a rival is both at once, and Main Slate already
@@ -2142,7 +2174,7 @@ def row_washed(game, config):
     # carries `highlight` because the rival is in it.
     if game.get("tier") == "favorite":
         return False
-    if moved_on_saturday(game, config):
+    if moved_from_highlights(game, config):
         return True
     return any(_matches(t, n) for t in (game["home"], game["away"])
                for n in (rules.get("wash_teams") or []))
@@ -2226,7 +2258,7 @@ def section_title(name, games, config):
     what is actually in the block rather than on the day alone: a heading that
     reads SOCCER above a hockey game would be worse than the old one.
     """
-    if name != "Highlights" or not saturday_split(config, games[0] if games else None):
+    if name != "Highlights" or not games:
         return name
     if all((g.get("_league") or {}).get("sport") == "Soccer" for g in games):
         return "Soccer"
@@ -2247,7 +2279,7 @@ def section_of(game, config):
         # Saturday, where the soccer IS the section.
         if moved_soccer(game, config):
             return "National"
-        if not moved_on_saturday(game, config):
+        if not moved_from_highlights(game, config):
             return "Highlights"
         # The rivals join the football, in whichever kickoff window they
         # belong to -- ranked or not, which the ordinary college rule would
@@ -2288,6 +2320,11 @@ def section_of(game, config):
         # like -- which on a winter Saturday was leaving National twenty rows
         # long and the basketball section nearly empty.
         if saturday_split(config, game):
+            # The windows are for the games worth planning a day around; the
+            # rest is still basketball and still wanted, under its own
+            # heading rather than filed under a tip-off time.
+            if not (game.get("postseason") or ranked):
+                game["_various"] = True
             return "Basketball"
         # The postseason rules already say who is worth showing, so anything
         # that survives them belongs with the basketball.
