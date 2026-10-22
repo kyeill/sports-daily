@@ -1865,6 +1865,12 @@ def _national_priority(game):
 # The last word between two games level on everything else -- same card, same
 # minute, same sport, neither better ranked. In practice the hockey rivals,
 # kicking off together on a Friday night.
+# His own, in the order he reads them, and ahead of the sport order: the
+# Cavaliers come last although basketball comes before hockey. Kept apart from
+# the list below because these cross sports and that one does not.
+NATIONAL_OWN_ORDER = ("Detroit Tigers", "Detroit Pistons", "Detroit Red Wings",
+                      "Cleveland Cavaliers")
+
 NATIONAL_TEAM_ORDER = ("Michigan State Spartans", "Ohio State Buckeyes",
                        "Notre Dame Fighting Irish")
 
@@ -1898,6 +1904,14 @@ def _national_sport(game):
     return label
 
 
+def _national_own_rank(game):
+    """Where a game sits on NATIONAL_OWN_ORDER, or past the end of it."""
+    for i, name in enumerate(NATIONAL_OWN_ORDER):
+        if any(_matches(t, name) for t in (game["home"], game["away"])):
+            return i
+    return len(NATIONAL_OWN_ORDER)
+
+
 def _national_team_rank(game):
     """Where a game sits on NATIONAL_TEAM_ORDER, or past the end of it."""
     for i, name in enumerate(NATIONAL_TEAM_ORDER):
@@ -1922,6 +1936,7 @@ def national_order(game, config=None):
             finished(game), undated(game), game["start_local"],
             _national_priority(game),
             0 if game.get("highlight") else 1,
+            _national_own_rank(game),
             rank, _best_rank(game), _national_team_rank(game),
             game.get("league_label") or "")
 
