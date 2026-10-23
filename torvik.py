@@ -161,7 +161,8 @@ def _parse(text):
             continue
         one = html.unescape(urllib.parse.unquote_plus(pair.group(1)))
         two = html.unescape(urllib.parse.unquote_plus(pair.group(2)))
-        out.append((one, two, abs(float(margin.group(2)))))
+        out.append((one, two, margin.group(1).strip(),
+                    abs(float(margin.group(2)))))
     return out
 
 
@@ -200,7 +201,11 @@ def lines(date_key, max_age_min=720):
                     return json.load(fh)
             except (OSError, ValueError):
                 pass
-    found = {_key(one, two): points for one, two, points in _parse(_fetch(date_key))}
+    # [favourite, points] rather than a bare number: the margin tells the
+    # blowout rule how lopsided it is, and the name tells the stripe which
+    # side is getting them.
+    found = {_key(one, two): [_norm(fav), points]
+             for one, two, fav, points in _parse(_fetch(date_key))}
     if found:
         try:
             with open(path, "w", encoding="utf-8") as fh:
@@ -223,7 +228,8 @@ def refresh(start, days, verbose=True):
     added = 0
     for i in range(days):
         date_key = (start + datetime.timedelta(days=i)).strftime("%Y%m%d")
-        found = {_key(a, b): p for a, b, p in _parse(_fetch(date_key))}
+        found = {_key(a, b): [_norm(fav), p]
+                 for a, b, fav, p in _parse(_fetch(date_key))}
         if found:
             book[date_key] = found
             added += len(found)
@@ -266,10 +272,21 @@ def mark_projected(games, league, date_key, max_age_min=720):
         return 0
     hit = 0
     for game in games:
-        points = table.get(_key(_school(game["home"]), _school(game["away"])))
-        if points is not None:
-            game["spread_proxy"] = points
-            hit += 1
+        found = table.get(_key(_school(game["home"]), _school(game["away"])))
+        if found is None:
+            continue
+        # A file written before the favourite was recorded holds a bare
+        # number, and still answers the question it was written for.
+        if isinstance(found, list):
+            fav, points = found[0], found[1]
+        else:
+            fav, points = "", found
+        game["spread_proxy"] = points
+        for side in ("home", "away"):
+            if fav and _norm(_school(game[side])) == fav:
+                game["spread_proxy_side"] = side
+                break
+        hit += 1
     return hit
 
 

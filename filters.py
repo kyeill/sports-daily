@@ -694,6 +694,21 @@ def _conference_of(league, team):
     return espn.conference_names(league["path"]).get(team.get("conference_id"), "")
 
 
+def _underdog_side(game):
+    """'home', 'away' or '' -- which side is getting the points.
+
+    The real line first. Behind it the projection, so a college game three
+    weeks out is coloured the day the fixture appears rather than the day
+    before it is played -- Vegas does not price those until then, and the
+    stripe would have sat grey for a fortnight waiting.
+    """
+    for key in ("spread_side", "spread_proxy_side"):
+        side = game.get(key)
+        if side in ("home", "away"):
+            return "away" if side == "home" else "home"
+    return ""
+
+
 def _tint_fallback(game, sides, league, config):
     """Which side to colour when nobody involved is yours or notable.
 
@@ -721,11 +736,11 @@ def _tint_fallback(game, sides, league, config):
         # Both ranked: back the lower of the two, which is the bigger number.
         if ranked[0] and sides[0]["rank"] != sides[1]["rank"]:
             return max(sides, key=lambda t: t["rank"])
-        # No poll to read, or no daylight in it: the market knows who the
-        # underdog is, and the underdog is who you watch for.
-        side = game.get("spread_side")
-        if side in ("home", "away"):
-            return game["away"] if side == "home" else game["home"]
+        # No poll to read, or no daylight in it: whoever is getting the
+        # points is the one you watch for.
+        side = _underdog_side(game)
+        if side:
+            return game[side]
 
     return game["home"]
 
@@ -781,7 +796,7 @@ def _worth_colouring(game, sides, mine, notable, rivals, preferred, league, conf
     # and the underdog is who you watch for. Without one and without a poll
     # there is nothing to say about an unranked game between two teams he has
     # no stake in, and grey says exactly that.
-    if "spread" in rules and game.get("spread_side") in ("home", "away"):
+    if "spread" in rules and _underdog_side(game):
         return True
     if "conference" in rules:
         # The same list the fallback roots with, rather than a second copy.
@@ -1896,8 +1911,8 @@ def _national_priority(game):
 # His own, in the order he reads them, and ahead of the sport order: the
 # Cavaliers come last although basketball comes before hockey. Kept apart from
 # the list below because these cross sports and that one does not.
-NATIONAL_OWN_ORDER = ("Detroit Tigers", "Detroit Pistons", "Detroit Red Wings",
-                      "Cleveland Cavaliers")
+NATIONAL_OWN_ORDER = ("Detroit Tigers", "Atlanta United", "Detroit Pistons",
+                      "Detroit Red Wings", "Cleveland Cavaliers")
 
 NATIONAL_TEAM_ORDER = ("Cornell Big Red", "Michigan State Spartans",
                        "Ohio State Buckeyes", "Notre Dame Fighting Irish")
