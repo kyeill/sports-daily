@@ -1804,8 +1804,21 @@ NATIONAL_LEADS = ("College Football", "College Basketball")
 # in a week and every one is worth knowing about.
 BACKGROUND_LEAGUES = ("MLB", "NBA", "NHL")
 
-# Competitions that go unnamed in National, where the row speaks for itself.
-QUIET_IN_NATIONAL = ("College Hockey", "Premier League")
+# Competitions that go unnamed, by the section they are in. "" is every
+# section. The Premier League is two English club names wherever it appears,
+# and college hockey is his own team or a rival in both the places it can
+# land -- the line was repeating what the row already said.
+QUIET_LABELS = {
+    "": ("Premier League",),
+    "National": ("College Hockey",),
+    "Highlights": ("College Hockey",),
+}
+
+
+def _unnamed(label, section):
+    """Whether this competition keeps quiet in this section."""
+    return (label in QUIET_LABELS.get("", ())
+            or label in QUIET_LABELS.get(section or "", ()))
 NATIONAL_SECOND = ("College Hockey",)
 
 
@@ -2582,7 +2595,7 @@ def competition_label(game):
     is two English club names and says nothing.
     """
     label = game.get("league_label") or ""
-    if (game.get("_section") or "") == "National" and label in QUIET_IN_NATIONAL:
+    if _unnamed(label, game.get("_section") or ""):
         return ""
     return label
 
@@ -2627,11 +2640,7 @@ def label_for(game, section):
         return ""
     if not (section == "National" or label == "College Hockey"):
         return ""
-    # Named everywhere else, but not down here. In National the college hockey
-    # is his three rivals and the Premier League is two English clubs, and a
-    # row carrying either already says which sport it is -- the line was
-    # repeating the names above it.
-    if section == "National" and label in QUIET_IN_NATIONAL:
+    if _unnamed(label, section):
         return ""
     if label in QUIET_LEAGUES:
         # A playoff game already names its round, and a national-TV night has
