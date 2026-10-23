@@ -1852,6 +1852,23 @@ def _unnamed(label, section):
 NATIONAL_SECOND = ("College Hockey",)
 
 
+def worth_splitting(early, late, config):
+    """Whether National's clock gap earns its place today.
+
+    A Sunday whose whole National card is the morning game from London and
+    the night game was being cut in two to separate one row from one row.
+    The same test the basketball uses: enough rows to divide, and enough on
+    each side of the line to be worth drawing.
+    """
+    rules = (config.get("national_windows") or {}).get("split_when") or {}
+    if not rules:
+        return True
+    if len(early) + len(late) < (rules.get("min_games") or 0):
+        return False
+    least = rules.get("min_each") or 0
+    return len(early) >= least and len(late) >= least
+
+
 def national_bucket(game, config):
     """Which part of National a game is in: 1 early, 2 late, 3 his own.
 

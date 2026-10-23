@@ -1924,7 +1924,12 @@
     "_comment": "Where National breaks into afternoon and evening, by weekday. Sunday's evening starts at one because its afternoon is the day. Saturday is left whole -- the day is already cut four ways above it.",
     "default": "18:00",
     "Sun": "13:00",
-    "Sat": null
+    "Sat": null,
+    "split_when": {
+      "_comment": "The clock only earns a gap when there is enough either side of it -- the same test the basketball split uses. His own teams at the foot are a separate card and are not counted here.",
+      "min_games": 5,
+      "min_each": 2
+    }
   },
   "soccer_order": [
     {

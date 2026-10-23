@@ -512,6 +512,10 @@ def _national(block, config):
     """
     parts = [[g for g in block if filters.national_bucket(g, config) == n]
              for n in (1, 2, 3)]
+    # The gap says "here is the afternoon, here is tonight", which is worth
+    # nothing when either side of it is a single row.
+    if not filters.worth_splitting(parts[0], parts[1], config):
+        parts = [parts[0] + parts[1], [], parts[2]]
     # His own move up past any card that is nothing but a regular-season night
     # of basketball or hockey -- the background of an evening rather than the
     # thing he opened the page for. Past that card, not to the top: a European
