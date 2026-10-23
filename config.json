@@ -373,7 +373,9 @@
           "SEC",
           "Big East"
         ],
-        "exclude_lower_division": true
+        "exclude_lower_division": true,
+        "power_conferences_both": true,
+        "_power_comment": "Both sides from the five, which is what makes this a game worth keeping rather than a power team's warm-up. Any Big Ten game is kept by `conferences` above whoever the opponent is."
       },
       "sort_rank": 2,
       "team_detail": "record",
@@ -1343,10 +1345,7 @@
     "conference_exclude": [
       "Ohio State",
       "Michigan State"
-    ],
-    "conference_colors": {
-      "Big Ten": "0085ca"
-    }
+    ]
   },
   "team_names": {
     "Ajax": "Ajax"
