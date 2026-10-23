@@ -1855,7 +1855,12 @@
         "from": "18:00"
       }
     ],
-    "tbd_title": "Basketball | Time TBD"
+    "tbd_title": "Basketball | Time TBD",
+    "off_saturday_split": {
+      "_comment": "Any day but Saturday, which has its tip-off windows instead. The ranked games keep the heading and the rest go under VARIOUS, but only when the card is big enough to be worth dividing and both sides are big enough to be worth drawing -- a Monday with three games stays one block.",
+      "min_games": 5,
+      "min_each": 2
+    }
   },
   "team_lists": {
     "_comment": "Named once here and written as \"@name\" anywhere else in this file, so adding a club is one edit instead of five. An unknown name stops the build rather than quietly matching nothing.",

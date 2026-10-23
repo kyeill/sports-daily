@@ -2072,7 +2072,35 @@ def split_football(block, config):
 
 
 def split_basketball(block, config):
+    _mark_off_saturday(block, config)
     return split_windows(block, config, "basketball_windows", "Basketball")
+
+
+def _mark_off_saturday(block, config):
+    """Off a Saturday, cut the card into the ranked games and the rest.
+
+    A February Tuesday is fourteen to eighteen games and basketball IS the
+    page; a Monday is two. So the split is asked for by size rather than by
+    the day: enough games to be worth dividing, and enough on each side of
+    the line to be worth drawing. The tip-offs cluster too tightly for the
+    clock to divide them -- six o'clock would leave one side empty.
+    """
+    rules = (config.get("basketball_windows") or {}).get("off_saturday_split") or {}
+    if not rules or not block:
+        return
+    start = block[0].get("start_local")
+    if not start or start.weekday() == SATURDAY:
+        return
+    if len(block) < (rules.get("min_games") or 0):
+        return
+    rest = [g for g in block
+            if not (g.get("postseason")
+                    or any(t.get("rank") for t in (g["home"], g["away"])))]
+    least = rules.get("min_each") or 0
+    if len(rest) < least or len(block) - len(rest) < least:
+        return
+    for game in rest:
+        game["_various"] = True
 
 
 def split_windows(block, config, key, plain):
