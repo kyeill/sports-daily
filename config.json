@@ -291,11 +291,12 @@
       ],
       "tint_grey_unless": [
         "ranked",
-        "conference"
+        "spread"
       ],
       "national_teams": [
         "Cornell Big Red"
-      ]
+      ],
+      "_tint_grey_comment": "A poll place or a line. Being in the conference is no longer enough on its own: two unranked Big Ten teams with no line between them is a game he has no stake in, and grey says so."
     },
     {
       "key": "mens-college-basketball",
@@ -389,7 +390,7 @@
       },
       "tint_grey_unless": [
         "ranked",
-        "conference"
+        "spread"
       ],
       "spread_proxy": "torvik",
       "_spread_proxy_comment": "Vegas does not price a college game until the day before, so `max_spread` had nothing to read on a card built a fortnight out. Bart Torvik's projection stands in where there is no real line: unbiased against the closing number over 238 games of last season, and agreeing about this fifteen-point limit on 97% of them.",
@@ -403,7 +404,8 @@
       "section_teams": [
         "Syracuse Orange"
       ],
-      "_section_teams_comment": "Kept with the basketball whatever the poll says. Saturday files it under VARIOUS with the rest of the unranked card; on a weekday there is one basketball section and it goes there."
+      "_section_teams_comment": "Kept with the basketball whatever the poll says. Saturday files it under VARIOUS with the rest of the unranked card; on a weekday there is one basketball section and it goes there.",
+      "_tint_grey_comment": "A poll place or a line. Being in the conference is no longer enough on its own: two unranked Big Ten teams with no line between them is a game he has no stake in, and grey says so."
     },
     {
       "key": "mens-college-hockey",

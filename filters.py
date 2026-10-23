@@ -699,8 +699,8 @@ def _tint_fallback(game, sides, league, config):
 
     Two rooting rules. Conference comes FIRST: a ranked Big Ten team against an
     unranked outsider takes the Big Ten side. Only when both or neither are in
-    the conference does the underdog rule decide -- and where both sides are
-    ranked, the lower of the two is the underdog.
+    the conference does the underdog rule decide -- the lower of two ranks, or
+    where the poll has nothing to say, whoever is getting the points.
     """
     rules = config.get("tint_rules") or {}
 
@@ -721,6 +721,11 @@ def _tint_fallback(game, sides, league, config):
         # Both ranked: back the lower of the two, which is the bigger number.
         if ranked[0] and sides[0]["rank"] != sides[1]["rank"]:
             return max(sides, key=lambda t: t["rank"])
+        # No poll to read, or no daylight in it: the market knows who the
+        # underdog is, and the underdog is who you watch for.
+        side = game.get("spread_side")
+        if side in ("home", "away"):
+            return game["away"] if side == "home" else game["home"]
 
     return game["home"]
 
@@ -771,6 +776,12 @@ def _worth_colouring(game, sides, mine, notable, rivals, preferred, league, conf
     if "postseason" in rules and game.get("postseason"):
         return True
     if "ranked" in rules and any(t.get("rank") for t in sides):
+        return True
+    # A line is a rooting interest of its own: it says who is supposed to lose,
+    # and the underdog is who you watch for. Without one and without a poll
+    # there is nothing to say about an unranked game between two teams he has
+    # no stake in, and grey says exactly that.
+    if "spread" in rules and game.get("spread_side") in ("home", "away"):
         return True
     if "conference" in rules:
         # The same list the fallback roots with, rather than a second copy.
