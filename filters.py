@@ -1871,8 +1871,8 @@ def _national_priority(game):
 NATIONAL_OWN_ORDER = ("Detroit Tigers", "Detroit Pistons", "Detroit Red Wings",
                       "Cleveland Cavaliers")
 
-NATIONAL_TEAM_ORDER = ("Michigan State Spartans", "Ohio State Buckeyes",
-                       "Notre Dame Fighting Irish")
+NATIONAL_TEAM_ORDER = ("Cornell Big Red", "Michigan State Spartans",
+                       "Ohio State Buckeyes", "Notre Dame Fighting Irish")
 
 
 def is_event_round(game, league):
@@ -1936,8 +1936,8 @@ def national_order(game, config=None):
             finished(game), undated(game), game["start_local"],
             _national_priority(game),
             0 if game.get("highlight") else 1,
-            _national_own_rank(game),
-            rank, _best_rank(game), _national_team_rank(game),
+            _national_own_rank(game), _national_team_rank(game),
+            rank, _best_rank(game),
             game.get("league_label") or "")
 
 
@@ -1949,7 +1949,18 @@ def _best_rank(game):
     return min(ranks) if ranks else 999
 
 
-def _highlight_rank(game, config):
+def _alphabetical(game):
+    """The two names in order, as the last word on a tie."""
+    return tuple(sorted((game["home"].get("name") or "",
+                         game["away"].get("name") or "")))
+
+
+def _order_rank(game, config, key):
+    """Where a game sits on a named order list. See `_highlight_rank`."""
+    return _highlight_rank(game, config, key)
+
+
+def _highlight_rank(game, config, key="highlight_order"):
     """Where a Highlights game sits against another starting the same minute.
 
     `highlight_order` is one list read top to bottom, and the first rule the
@@ -1967,7 +1978,7 @@ def _highlight_rank(game, config):
     label = game.get("league_label") or ""
     sport = league.get("sport") or ""
     sides = (game["home"], game["away"])
-    for i, rule in enumerate(config.get("highlight_order") or []):
+    for i, rule in enumerate(config.get(key) or []):
         # A team the rule steps aside for, so a later one can have it: the
         # college football group would otherwise swallow every Cornell game
         # on its way past, and Cornell football is meant to sit at the foot of
@@ -2018,18 +2029,29 @@ def sort_key_for(section, config):
     """
     if section == "National":
         return lambda g: national_order(g, config)
-    if section in ("Highlights", "Soccer"):
-        # `highlight_order` was written for exactly these two: his own teams
-        # in the order he reads them, then Arsenal before Chelsea before the
-        # rest of the soccer.
+    if section == "Highlights":
         return lambda g: (finished(g), undated(g), g["start_local"],
-                          _highlight_rank(g, config))
+                          _highlight_rank(g, config), _alphabetical(g))
+    if section == "Soccer":
+        # Its own list, not the Highlights one: a knockout leads the page from
+        # Highlights but sits below Arsenal and Chelsea here, where the
+        # section is the competition rather than the occasion.
+        return lambda g: (finished(g), undated(g), g["start_local"],
+                          _order_rank(g, config, "soccer_order"), _alphabetical(g))
     if section in ("Football", "Basketball"):
-        # A rival that moved here on a Saturday goes ahead of anything else
-        # kicking off the same minute -- it is the reason the row is lit.
+        # A rival first, whatever the poll says, then the poll, then Cornell,
+        # then the names. The rivals read in a different order in each sport,
+        # which is why the list is per section.
+        rivals = (config.get("tiebreaks") or {}).get(section)
         return lambda g: (finished(g), undated(g), g["start_local"],
-                          0 if row_washed(g, config) else 1, _best_rank(g))
-    return lambda g: (finished(g), undated(g), g["start_local"])
+                          _order_rank(g, {"x": rivals}, "x"), _best_rank(g),
+                          0 if _cornell(g, config) else 1, _alphabetical(g))
+    return lambda g: (finished(g), undated(g), g["start_local"], _alphabetical(g))
+
+
+def _cornell(game, config):
+    """A Cornell game, which sits behind the ranking but ahead of the rest."""
+    return any(_matches(t, "Cornell") for t in (game["home"], game["away"]))
 
 
 def split_football(block, config):

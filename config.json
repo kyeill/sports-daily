@@ -1905,5 +1905,62 @@
     "default": "18:00",
     "Sun": "13:00",
     "Sat": null
+  },
+  "soccer_order": [
+    {
+      "_comment": "Two matches kicking off the same minute in the soccer section, read top to bottom. A knockout sits below Arsenal and Chelsea here -- it leads the page from Highlights instead -- and the four clubs at the foot only ever separate matches none of the above is in. Anything past them goes alphabetically."
+    },
+    {
+      "teams": [
+        "United States"
+      ]
+    },
+    {
+      "teams": [
+        "Atlanta United"
+      ]
+    },
+    {
+      "teams": [
+        "Arsenal"
+      ]
+    },
+    {
+      "teams": [
+        "Chelsea"
+      ]
+    },
+    {
+      "postseason": true
+    },
+    {
+      "teams": [
+        "Manchester City",
+        "Liverpool",
+        "Manchester United",
+        "West Ham"
+      ]
+    }
+  ],
+  "tiebreaks": {
+    "_comment": "The rivals, in the order he reads them in each sport, for two games kicking off the same minute. A rival comes before the poll; Cornell comes after it.",
+    "Football": [
+      {
+        "teams": [
+          "Ohio State",
+          "Michigan State",
+          "Notre Dame"
+        ]
+      }
+    ],
+    "Basketball": [
+      {
+        "teams": [
+          "Michigan State",
+          "Ohio State",
+          "Notre Dame"
+        ]
+      }
+    ]
   }
 }
