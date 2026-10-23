@@ -1666,6 +1666,10 @@ def evaluate(game, league, config):
     # match in Highlights off a Saturday, so the section needs to tell them
     # apart afterwards.
     game["has_rival"] = bool(rivals)
+    # `national_teams` sent this one down on purpose -- Atlanta's regular
+    # season, the USMNT outside the tournaments it leads the page for. Soccer
+    # otherwise keeps its own, so the section needs to know the difference.
+    game["_to_national"] = to_national
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
@@ -2255,68 +2259,24 @@ def moved_from_highlights(game, config):
     return ((game.get("_league") or {}).get("sport") or "") != "Soccer"
 
 
-def soccer_section_team(game, config):
-    """A side whose soccer always belongs in the soccer section.
-
-    Atlanta and the USMNT, who sit there whatever the day and whatever else
-    the rules would have done with them -- including coming off the Main
-    Slate. A rival on the other side of the pitch does not count: Tottenham
-    against Chelsea is a Tottenham game, and belongs where his own games go.
-    """
-    rules = config.get("saturday_layout") or {}
-    if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
-        return False
-    # A knockout is an event in itself and leads the page from Highlights.
-    # The section is for the rest of it -- a group game, a league match, a
-    # friendly in June.
-    if is_event_round(game, game.get("_league")):
-        return False
-    return any(_matches(t, n) for t in (game["home"], game["away"])
-               for n in (rules.get("section_teams") or []))
-
-
-def moved_soccer(game, config):
-    """A soccer match Highlights keeps only on a Saturday.
-
-    Saturday is the day the soccer is the point -- a morning of it under its
-    own heading. On any other day a single midweek tie sat alone above five
-    sections, which flattered it: it belongs with the rest of the evening.
-    Arsenal and Chelsea are the exception, as they are everywhere.
-    """
-    if not game.get("highlight") or game.get("has_rival"):
-        return False
-    if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
-        return False
-    if soccer_section_team(game, config):
-        return False
-    start = game.get("start_local")
-    return bool(start) and start.weekday() != SATURDAY
-
-
 def row_washed(game, config):
     """Whether this row is drawn on the Highlights wash.
 
     A game that moved out of Highlights keeps the wash, so it still reads as
-    one in the section it landed in; the soccer that stayed behind gives it
-    up, since a whole section of it says nothing -- except for the few he is
-    actually watching for.
+    one in the section it landed in. The soccer section gives it up -- a whole
+    section of blue says nothing -- except for the few he is watching for, and
+    Atlanta carries it into National so it sits with his own teams.
     """
     rules = config.get("saturday_layout") or {}
     if not rules:
         return False
-    if not (game.get("highlight") or soccer_section_team(game, config)):
-        return False
-    # One of his own against a rival is both at once, and Main Slate already
-    # says the louder of the two things: the blue only ever marks a row that
-    # is NOT on the slate. Spurs against Chelsea is the case -- a favourite
-    # carries `highlight` because the rival is in it. The soccer section's own
-    # teams are the exception: there is no slate under them to paint over.
-    if game.get("tier") == "favorite" and not soccer_section_team(game, config):
+    # Highlights has its own wash and the blue would paint over it. Spurs
+    # against Chelsea is the case worth naming: a favourite carries
+    # `highlight` because the rival is in the game.
+    if game.get("_section") == "Highlights":
         return False
     if moved_from_highlights(game, config):
         return True
-    # The soccer that stayed behind gives the wash up -- a whole section of
-    # it says nothing -- except for the few he is actually watching for.
     if ((game.get("_league") or {}).get("sport") or "") != "Soccer":
         return False
     return any(_matches(t, n) for t in (game["home"], game["away"])
@@ -2401,17 +2361,15 @@ def section_of(game, config):
     is by sport, with the college split turning on whether a game is ranked --
     except in the postseason, where the bracket decides instead.
     """
-    # Before the Main Slate, which is the point of it: these belong with the
-    # soccer whatever else they are.
-    if soccer_section_team(game, config):
-        return "Soccer"
     if game.get("tier") == "favorite":
         return "Highlights"
+    # All of it, not just the matches with a name in them: a Champions League
+    # night is the soccer section, and a tie reading as a National row among
+    # the basketball said nothing about what it was. The exceptions are the
+    # ones sent down by name.
+    if ((game.get("_league") or {}).get("sport") or "") == "Soccer"             and not game.get("_to_national"):
+        return "Soccer"
     if game.get("highlight"):
-        # Soccer first: a midweek tie leaves Highlights on every day but
-        # Saturday, where the soccer IS the section.
-        if moved_soccer(game, config):
-            return "National"
         if not moved_from_highlights(game, config):
             return "Soccer"
         # The rivals join the football, in whichever kickoff window they
@@ -2430,9 +2388,13 @@ def section_of(game, config):
     ranked = any(t.get("rank") for t in (game["home"], game["away"]))
 
     if label == "College Football":
+        # Every bowl, as with every regular-season game: it is football and it
+        # goes with the football. The filler used to go to National, which put
+        # one game below the whole page on a December afternoon.
         if game.get("postseason"):
-            # The CFP in full; a bowl only if it clears the bar.
-            return "Football" if (is_cfp(game) or bowl_in_football(game, league))                 else "National"
+            if not (is_cfp(game) or bowl_in_football(game, league)):
+                game["_various"] = True
+            return "Football"
         if ranked:
             return "Football"
         # The unranked games are still football. One of them sitting in

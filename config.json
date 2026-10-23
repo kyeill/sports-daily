@@ -483,14 +483,15 @@
         "*conference-playoffs*": "MLS Playoffs {round}",
         "mls-cup": "MLS Cup Final"
       },
-      "highlight_teams": [
-        "Atlanta United"
-      ],
       "promote_rounds": [
         "*playoffs*",
         "mls-cup"
       ],
-      "tint_grey_unless": []
+      "tint_grey_unless": [],
+      "national_teams": [
+        "Atlanta United"
+      ],
+      "_national_teams_comment": "The regular season goes to National with his other teams; the playoffs are an event and the promotion puts them back on Highlights."
     },
     {
       "key": "usopen",
@@ -1013,7 +1014,11 @@
         "all": false
       },
       "sort_rank": 5,
-      "team_detail": "none"
+      "team_detail": "none",
+      "national_teams": [
+        "United States"
+      ],
+      "_national_teams_comment": "All of qualifying goes to National: there is no knockout in it to promote."
     },
     {
       "key": "worldcup",
@@ -1036,7 +1041,8 @@
         "3rd-place-match",
         "final"
       ],
-      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup.",
+      "_comment_usmnt": "The World Cup leads the page in every round, group stage included."
     },
     {
       "key": "goldcup",
@@ -1059,7 +1065,11 @@
         "3rd-place-match",
         "final"
       ],
-      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup.",
+      "national_teams": [
+        "United States"
+      ],
+      "_national_teams_comment": "Qualifying and the group stages go to National. A knockout is promoted past this by `promote_rounds` and leads the page from Highlights -- except in qualifying, which has none."
     },
     {
       "key": "nations",
@@ -1082,7 +1092,11 @@
         "3rd-place-match",
         "final"
       ],
-      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup."
+      "_promote_comment": "A knockout is an event in itself: it comes off the soccer section and leads the page from Highlights. The slugs are ESPN's own, read off the 2026 World Cup.",
+      "national_teams": [
+        "United States"
+      ],
+      "_national_teams_comment": "Qualifying and the group stages go to National. A knockout is promoted past this by `promote_rounds` and leads the page from Highlights -- except in qualifying, which has none."
     },
     {
       "key": "atp",
@@ -1823,8 +1837,7 @@
     "wash_teams": [
       "Atlanta United",
       "Arsenal",
-      "Chelsea",
-      "United States"
+      "Chelsea"
     ],
     "section_order": [
       "Football | Early Window",
@@ -1839,11 +1852,7 @@
       "Basketball | Various"
     ],
     "_section_order_comment": "The two sports alternate rather than running one after the other: the afternoon basketball belongs with the afternoon, not behind the night's football. A day with only one of them simply skips the other's headings, and \"Football\" unsplit -- the NFL in January -- takes the place of its own windows.",
-    "_wash_comment": "wash_teams: the soccer that keeps the Highlights wash wherever it lands. section_teams: the soccer that always sits in the soccer section, even off the Main Slate -- his own clubs, where a rival on the other side of the pitch does not count, since Tottenham against Chelsea is a Tottenham game.",
-    "section_teams": [
-      "Atlanta United",
-      "United States"
-    ]
+    "_wash_comment": "The soccer that keeps the Highlights wash wherever it lands: Arsenal and Chelsea in the soccer section, and Atlanta down in National, where the wash is what files it with his own teams."
   },
   "basketball_windows": {
     "_comment": "The football's windows, cut for basketball: two, not three, because the card runs from lunchtime to late evening without football's three distinct television slots. Every Saturday of the year -- unlike football, there is no month to gate on, and a Saturday with no basketball simply has no headings. Tip-offs are set further ahead than kickoffs, so there is no `split_within_days` either; what ESPN has not set yet goes under its own heading.",
