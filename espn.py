@@ -839,6 +839,10 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             # and the wrong one. The flag is the only way to tell them apart.
             "time_tbd": comp.get("timeValid") is False,
             "venue": (comp.get("venue") or {}).get("fullName") or "",
+            # The town, which is what a neutral college game is really saying:
+            # nobody can place the Rock Hill Sports & Event Center, everybody
+            # can place Rock Hill.
+            "venue_city": (((comp.get("venue") or {}).get("address")) or {}).get("city") or "",
             "note": notes[0] if notes else "",
             "link": _game_link(event, league),
         })

@@ -2587,6 +2587,25 @@ def competition_label(game):
     return label
 
 
+# The college labels, for the rules that treat the three the same way.
+COLLEGE_LABELS = ("College Football", "College Basketball", "College Hockey")
+
+
+def _where(game):
+    """The place a neutral game names: a college town, an arena otherwise.
+
+    A neutral college game is really saying "this is being played somewhere
+    odd", and the town carries that where the building does not -- nobody can
+    place the Rock Hill Sports & Event Center, everybody can place Rock Hill.
+
+    A tournament never reaches here: a named round becomes the caption and
+    the location is dropped, which is why this needs no test for one.
+    """
+    if (game.get("league_label") or "") not in COLLEGE_LABELS:
+        return game.get("venue") or ""
+    return game.get("venue_city") or game.get("venue") or ""
+
+
 def label_for(game, section):
     """The competition named on the detail line, or "".
 
@@ -2677,6 +2696,6 @@ def detail_of(game, config=None, league=None):
     # A named round already says where you are; a bowl game does not also need
     # the stadium, nor a regional final its arena.
     if game.get("neutral") and game.get("venue") and not lead:
-        parts.append(game["venue"])
+        parts.append(_where(game))
     return " · ".join(p for p in parts if p)
 
