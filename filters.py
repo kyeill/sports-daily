@@ -2068,15 +2068,16 @@ def _cornell(game, config):
 
 
 def split_football(block, config):
+    _mark_off_saturday(block, config, "football_windows")
     return split_windows(block, config, "football_windows", "Football")
 
 
 def split_basketball(block, config):
-    _mark_off_saturday(block, config)
+    _mark_off_saturday(block, config, "basketball_windows")
     return split_windows(block, config, "basketball_windows", "Basketball")
 
 
-def _mark_off_saturday(block, config):
+def _mark_off_saturday(block, config, key):
     """Off a Saturday, cut the card into the ranked games and the rest.
 
     A February Tuesday is fourteen to eighteen games and basketball IS the
@@ -2085,7 +2086,7 @@ def _mark_off_saturday(block, config):
     the line to be worth drawing. The tip-offs cluster too tightly for the
     clock to divide them -- six o'clock would leave one side empty.
     """
-    rules = (config.get("basketball_windows") or {}).get("off_saturday_split") or {}
+    rules = (config.get(key) or {}).get("off_saturday_split") or {}
     if not rules or not block:
         return
     start = block[0].get("start_local")
@@ -2434,13 +2435,13 @@ def section_of(game, config):
             return "Football" if (is_cfp(game) or bowl_in_football(game, league))                 else "National"
         if ranked:
             return "Football"
-        # On a Saturday the unranked games are still football, and reading
-        # them among the basketball and the hockey made the day harder to
-        # follow than it needed to be. They keep their own heading instead.
+        # The unranked games are still football. One of them sitting in
+        # National below the football and the basketball was the oddest row
+        # on a Friday night. They keep their own heading instead, on Saturday
+        # and on any other day the card is big enough to divide.
         if saturday_split(config, game):
             game["_various"] = True
-            return "Football"
-        return "National"
+        return "Football"
     # The NFL used to lead the Football section on a Sunday, which made the
     # heading mean two different things depending on the month. It is National
     # now, every week of the year, and Football is the college game.

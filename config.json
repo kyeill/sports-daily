@@ -1780,7 +1780,12 @@
         "from": "19:00"
       }
     ],
-    "tbd_title": "Football | Time TBD"
+    "tbd_title": "Football | Time TBD",
+    "off_saturday_split": {
+      "_comment": "The same test the basketball uses, for the rare midweek card big enough to want it. A Thursday with two games stays one block.",
+      "min_games": 5,
+      "min_each": 2
+    }
   },
   "short_name_with_spread": {
     "_comment": "Only used when this side is the favourite and carries the line. Washington Commanders is the widest name in the four American leagues: 151px against a 145px cell on a phone, 177px with the spread. The city alone is unambiguous -- the other Washingtons are a different sport. Nothing else in those leagues overflows with a line beside it; Minnesota Timberwolves is next at 146px and fits.",
