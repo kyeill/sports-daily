@@ -2598,11 +2598,19 @@ def _where(game):
     odd", and the town carries that where the building does not -- nobody can
     place the Rock Hill Sports & Event Center, everybody can place Rock Hill.
 
-    A tournament never reaches here: a named round becomes the caption and
-    the location is dropped, which is why this needs no test for one.
+    An event named by ESPN is better than either: a game at the Players Era
+    is there for the Players Era, and the town is incidental. Only the bracket
+    is dropped from it -- "Fort Myers Tip-Off - Beach Division" is a detail
+    about a detail.
+
+    A real tournament never reaches here: a named round becomes the caption
+    and the location is dropped, which is why this needs no test for one.
     """
     if (game.get("league_label") or "") not in COLLEGE_LABELS:
         return game.get("venue") or ""
+    event = (game.get("note") or "").split(" - ")[0].strip()
+    if event:
+        return event
     return game.get("venue_city") or game.get("venue") or ""
 
 
