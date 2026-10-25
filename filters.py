@@ -1995,8 +1995,13 @@ def national_order(game, config=None):
     return (national_bucket(game, config or {}),
             finished(game), undated(game), game["start_local"],
             _national_priority(game),
+            # His own order before the "came out of Highlights" flag: Atlanta
+            # reaches National by being sent there rather than by falling out
+            # of Highlights, so it carries no flag, and the flag was putting
+            # the Cavaliers above it on a 7:30 they share.
+            _national_own_rank(game),
             0 if game.get("highlight") else 1,
-            _national_own_rank(game), _national_team_rank(game),
+            _national_team_rank(game),
             rank, _best_rank(game),
             game.get("league_label") or "")
 
