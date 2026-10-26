@@ -228,6 +228,9 @@ def collect(config, day, tz, only=None):
         # UTC day, so trust our own local-day comparison instead.
         games = [g for g in games if g["start_local"].date() == day]
         mark_standalone(games)
+        # Which of the day's named events cover more than one game, so a row
+        # can tell a tournament from a one-off with a title.
+        filters.mark_shared_events(games)
         # A projected line for the leagues whose real one arrives too late to
         # be any use when the page is built. Before evaluate, which is where
         # the blowout rule reads it.

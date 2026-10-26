@@ -550,6 +550,7 @@ def sections_for(games, config):
         # National without naming it everywhere else.
         game["_section"] = section
         buckets[section].append(game)
+    filters.join_soccer_section(buckets, config)
     out = []
     for name in filters.SECTIONS:
         block = buckets[name]

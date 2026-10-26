@@ -9,6 +9,7 @@ widening the config can only add games. A game shows up once, in its highest
 bucket.
 """
 
+import collections
 import datetime
 import fnmatch
 import re
@@ -2244,6 +2245,38 @@ def window_titles(config):
     return titles
 
 
+def mark_shared_events(games):
+    """Flag the games whose event name covers more than one of them.
+
+    Counted over the whole slate rather than the kept games: one Players Era
+    tie worth keeping is still part of the Players Era, and the event is what
+    it is there for.
+    """
+    counts = collections.Counter((g.get("note") or "").split(" - ")[0].strip()
+                                 for g in games)
+    for game in games:
+        name = (game.get("note") or "").split(" - ")[0].strip()
+        game["_event_shared"] = bool(name) and counts[name] > 1
+
+
+def join_soccer_section(buckets, config):
+    """Atlanta joins the soccer when there is a soccer section to join.
+
+    Its own section every night would be one row; among his teams at the foot
+    of National it reads as one of them, which is what it is. But on a night
+    the soccer is already on the page it belongs with the soccer.
+    """
+    names = (config.get("saturday_layout") or {}).get("join_soccer") or []
+    if not names or not buckets.get("Soccer"):
+        return
+    moving = [g for g in buckets.get("National") or []
+              if any(_matches(t, n) for t in (g["home"], g["away"]) for n in names)]
+    for game in moving:
+        buckets["National"].remove(game)
+        game["_section"] = "Soccer"
+        buckets["Soccer"].append(game)
+
+
 def sink_finished_soccer(groups):
     """Put the soccer last once every match in it is over.
 
@@ -2670,8 +2703,11 @@ def _where(game):
     """
     if (game.get("league_label") or "") not in COLLEGE_LABELS:
         return game.get("venue") or ""
+    # Only when the event is more than this one game: the US Hockey Hall of
+    # Fame Game is a name for a single night, and "Cedar Park" says more
+    # about where it is than its own title does.
     event = (game.get("note") or "").split(" - ")[0].strip()
-    if event:
+    if event and game.get("_event_shared"):
         return event
     return game.get("venue_city") or game.get("venue") or ""
 

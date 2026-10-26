@@ -1854,7 +1854,10 @@
       "Basketball | Various"
     ],
     "_section_order_comment": "The two sports alternate rather than running one after the other: the afternoon basketball belongs with the afternoon, not behind the night's football. A day with only one of them simply skips the other's headings, and \"Football\" unsplit -- the NFL in January -- takes the place of its own windows.",
-    "_wash_comment": "The soccer that keeps the Highlights wash wherever it lands: Arsenal and Chelsea in the soccer section, and Atlanta down in National, where the wash is what files it with his own teams."
+    "_wash_comment": "The soccer that keeps the Highlights wash wherever it lands: Arsenal and Chelsea in the soccer section, and Atlanta down in National, where the wash is what files it with his own teams.",
+    "join_soccer": [
+      "Atlanta United"
+    ]
   },
   "basketball_windows": {
     "_comment": "The football's windows, cut for basketball: two, not three, because the card runs from lunchtime to late evening without football's three distinct television slots. Every Saturday of the year -- unlike football, there is no month to gate on, and a Saturday with no basketball simply has no headings. Tip-offs are set further ahead than kickoffs, so there is no `split_within_days` either; what ESPN has not set yet goes under its own heading.",
