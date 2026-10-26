@@ -567,7 +567,7 @@ def sections_for(games, config):
             out.extend(filters.split_basketball(ordered, config))
         else:
             out.append((name, ordered))
-    return filters.order_sections(out, config)
+    return filters.sink_finished_soccer(filters.order_sections(out, config))
 
 
 def day_body(day, games, config, notes=None, info=None):
@@ -614,6 +614,13 @@ def _body(games, config, notes=None, info=None):
         if name in windows:
             parts.append('<div class="fwin" data-window="%d">%s</div>' % (seen, html))
             seen += 1
+            continue
+        if name == "Soccer":
+            # Wrapped so the live script can move the whole section once its
+            # last match ends: the soccer kicks off in the morning and is over
+            # before the evening starts, and a dead section sat above a live
+            # one until the next build.
+            parts.append('<div class="sect soccer">%s</div>' % html)
             continue
         cls = wrapper.get(name)
         parts.append('<div class="%s">%s</div>' % (cls, html) if cls else html)

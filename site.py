@@ -507,6 +507,21 @@ APP_JS = """
     order.forEach(function (w) { parent.insertBefore(w, after); });
   }
 
+  // The soccer is over before the evening starts, and a section of results
+  // above a section of games reads as the wrong way round. The build already
+  // files it last when it is finished; this is for the match that ends while
+  // the page is open.
+  function sinkSoccer(panel) {
+    var sect = panel.querySelector('.sect.soccer');
+    if (!sect || !sect.parentNode) { return; }
+    var rows = sect.querySelectorAll('.row[data-state]');
+    if (!rows.length) { return; }
+    var over = Array.prototype.every.call(rows, function (r) {
+      return r.dataset.state === 'post';
+    });
+    if (over && sect.nextSibling) { sect.parentNode.appendChild(sect); }
+  }
+
   function primeFromMemory() {
     try {
       var was = Number(localStorage.getItem(STAMPED) || 0);
@@ -548,7 +563,7 @@ APP_JS = """
           });
           setStamp(Date.now(), true);
           var panel = todayPanel();
-          if (panel) { resortWindows(panel); }
+          if (panel) { resortWindows(panel); sinkSoccer(panel); }
         })
         // Silence is the right failure: the page keeps the build's numbers,
         // which is exactly what it showed before any of this existed.
@@ -598,7 +613,10 @@ APP_JS = """
     else if (live) { clearInterval(live); live = null; }
   });
   primeFromMemory();
-  (function () { var p = todayPanel(); if (p) { resortWindows(p); } })();
+  (function () {
+    var p = todayPanel();
+    if (p) { resortWindows(p); sinkSoccer(p); }
+  })();
   start();
 })();
 """

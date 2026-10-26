@@ -2244,6 +2244,20 @@ def window_titles(config):
     return titles
 
 
+def sink_finished_soccer(groups):
+    """Put the soccer last once every match in it is over.
+
+    It kicks off in the morning and is finished before the evening starts, so
+    by the time there is anything else to read it is a section of results
+    sitting above a section of games.
+    """
+    done = [g for g in groups
+            if g[0] == "Soccer" and g[1] and all(finished(x) for x in g[1])]
+    if not done:
+        return groups
+    return [g for g in groups if g not in done] + done
+
+
 def order_sections(groups, config):
     """Saturday's running order, when both sports have windows.
 
