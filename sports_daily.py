@@ -228,9 +228,6 @@ def collect(config, day, tz, only=None):
         # UTC day, so trust our own local-day comparison instead.
         games = [g for g in games if g["start_local"].date() == day]
         mark_standalone(games)
-        # Which of the day's named events cover more than one game, so a row
-        # can tell a tournament from a one-off with a title.
-        filters.mark_shared_events(games)
         # A projected line for the leagues whose real one arrives too late to
         # be any use when the page is built. Before evaluate, which is where
         # the blowout rule reads it.
@@ -249,6 +246,11 @@ def collect(config, day, tz, only=None):
     # Decided across the whole day rather than game by game: a national
     # broadcast earns its row by being the only thing on.
     kept, dropped = filters.drop_crowded_national(kept, config)
+    # Which named events have more than one row on the page. Counted on what
+    # survives rather than on the whole slate: a tournament the page shows one
+    # game of is, to a reader, a one-off with a title, and the town is the
+    # more useful half of what it could say.
+    filters.mark_shared_events(kept)
     if dropped:
         gone = collections.Counter(g.get("league_label") for g in dropped)
         stats = [(label, passed - gone.get(label, 0), total)

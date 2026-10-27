@@ -51,14 +51,7 @@
       "race_min_odds": 20,
       "sort_rank": 6,
       "team_detail": "conference_place",
-      "tint_grey_unless": [],
-      "network_tints": {
-        "_comment": "A prime-time game with nobody to root for was grey, which said nothing about which night it was. These paint the stripe with the broadcaster instead: Prime for Thursday (and the Black Friday game), NBC's black for Sunday night, ESPN's red for Monday. Matched on the network rather than the day, and skipped in the postseason, where a round is spread across five channels.",
-        "Prime Video": "00a8e1",
-        "NBC": "45454e",
-        "ESPN": "d4232c",
-        "ABC": "d4232c"
-      }
+      "tint_grey_unless": []
     },
     {
       "key": "nba",
@@ -1300,6 +1293,7 @@
   "team_colors": {
     "AFC Bournemouth": "45454e",
     "Alaska Anchorage Seawolves": "00583d",
+    "Atlanta United": "aa9767",
     "Augustana (SD) Vikings": "004d93",
     "Brentford": "a87b0a",
     "Brighton & Hove Albion": "0057b8",
