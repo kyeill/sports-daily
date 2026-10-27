@@ -1941,6 +1941,15 @@ def _national_sport(game):
     return label
 
 
+def own_team_row(game):
+    """One of the teams National is sorted around -- the same five.
+
+    Cornell is a favourite and is not on it: its hockey lands in National too,
+    and he reads that section for the Detroit teams and the Cavaliers.
+    """
+    return _national_own_rank(game) < len(NATIONAL_OWN_ORDER)
+
+
 def _national_own_rank(game):
     """Where a game sits on NATIONAL_OWN_ORDER, or past the end of it."""
     for i, name in enumerate(NATIONAL_OWN_ORDER):

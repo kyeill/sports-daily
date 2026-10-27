@@ -476,8 +476,8 @@ def _game_html(game, show_league, config):
     # watch: the network is the whole point of the row, and in the muted grey
     # it read like the small print. Only in National -- Highlights has the
     # amber card to say the same thing.
-    mine_on_tv = (game.get("_section") == "National" and game.get("my_side")
-                  and not marquee)
+    mine_on_tv = (game.get("_section") == "National"
+                  and filters.own_team_row(game) and not marquee)
     nets = ('<div class="nets%s%s">%s</div>'
             % (" marquee" if marquee else "", " mine" if mine_on_tv else "",
                _esc(networks))) if networks else ""
