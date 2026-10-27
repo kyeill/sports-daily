@@ -2157,11 +2157,20 @@ def split_windows(block, config, key, plain):
     if various:
         block = [g for g in block if not g.get("_various")]
     tail = [("%s | Various" % plain, various)] if various else []
+
+    def done(groups):
+        """Every exit goes through here, so the heading is named once."""
+        # With a VARIOUS group beside it, the plain heading is doing two jobs:
+        # naming the sport and saying which half this is. Say which half.
+        if tail and len(groups) == 1 and groups[0][0] == plain:
+            groups = [("%s | Ranked" % plain, groups[0][1])]
+        return groups + tail
+
     if not block or not groups:
-        return ([(plain, block)] if block else []) + tail
+        return done([(plain, block)] if block else [])
     months = rules.get("months") or []
     if months and block[0]["start_local"].month not in months:
-        return [(plain, block)] + tail
+        return done([(plain, block)])
     # College football kickoffs are set about two Mondays out, so the times
     # only reach ESPN around twelve days before. Splitting a day further off
     # than that sorts a card that is almost entirely TBD into windows nobody
@@ -2173,12 +2182,12 @@ def split_windows(block, config, key, plain):
         when = block[0]["start_local"]
         today = datetime.datetime.now(when.tzinfo).date()
         if (when.date() - today).days > ahead:
-            return [(plain, block)] + tail
+            return done([(plain, block)])
     # Saturday is the only day with enough football to be worth sorting into
     # windows; a Thursday night game under a "Primetime" heading of its own
     # says less than one plain heading does.
     if rules.get("days") and not _on_day(block[0], rules["days"]):
-        return [(plain, block)] + tail
+        return done([(plain, block)])
 
     buckets = [[] for _ in groups]
     undecided = []
@@ -2203,7 +2212,7 @@ def split_windows(block, config, key, plain):
            for group, games in zip(groups, buckets) if games]
     if undecided:
         out.append((rules.get("tbd_title") or (plain + " - Time TBD"), undecided))
-    return (out or [(plain, block)]) + tail
+    return done(out or [(plain, block)])
 
 
 def window_titles(config):
