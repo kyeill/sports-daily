@@ -537,7 +537,10 @@ def event_moneyline(league, event_id, competition_id):
 
 
 def _aggregate(comp, home, away):
-    """Two-legged aggregate as '3-1 ARS', or '1-1 agg' when level.
+    """Two-legged aggregate as 'ARS 3-1', or '1-1 agg' when level.
+
+    Leader first, as the series score reads. The level case keeps its shape:
+    'agg' is a unit, not a team, and nothing is being named.
 
     Built from series.competitors rather than the prose headline, so the
     figures are ESPN's own and the leader is identified by team id.
@@ -554,7 +557,7 @@ def _aggregate(comp, home, away):
         return "%s agg" % scores
     by_id = {t["id"]: t for t in (home, away) if t.get("id")}
     leader = by_id.get(str(top.get("id") or ""))
-    return "%s %s" % (scores, leader["abbr"]) if leader else "%s agg" % scores
+    return "%s %s" % (leader["abbr"], scores) if leader else "%s agg" % scores
 
 
 def _game_link(event, league):

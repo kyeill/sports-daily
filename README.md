@@ -314,7 +314,7 @@ with everything else about the state of the tie:
 World Series Gm 3 (LAD 2-1)
 Stanley Cup Final Gm 4 (Tied 2-2)
 Carabao Cup Second Round
-Champions League R16 - 2nd Leg (3-1 ARS)
+Champions League R16 - 2nd Leg (ARS 3-1)
 Pop-Tarts Bowl
 ```
 
