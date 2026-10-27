@@ -2161,8 +2161,12 @@ def split_windows(block, config, key, plain):
     def done(groups):
         """Every exit goes through here, so the heading is named once."""
         # With a VARIOUS group beside it, the plain heading is doing two jobs:
-        # naming the sport and saying which half this is. Say which half.
-        if tail and len(groups) == 1 and groups[0][0] == plain:
+        # naming the sport and saying which half this is. Asked for per sport,
+        # because only the basketball splits often enough to need it: the
+        # football does so once a season, on a Saturday still far enough out
+        # to have no kickoff times, and the windows replace it a few days
+        # later anyway.
+        if rules.get("ranked_title") and tail and len(groups) == 1                 and groups[0][0] == plain:
             groups = [("%s | Ranked" % plain, groups[0][1])]
         return groups + tail
 

@@ -1838,8 +1838,8 @@
     "section_order": [
       "Football | Early Window",
       "Football | Afternoon",
-      "Football | Ranked",
       "Football",
+      "Basketball | Ranked",
       "Basketball | Afternoon",
       "Football | Primetime",
       "Basketball | Primetime",
@@ -1874,7 +1874,8 @@
       "_comment": "Any day but Saturday, which has its tip-off windows instead. The ranked games keep the heading and the rest go under VARIOUS, but only when the card is big enough to be worth dividing and both sides are big enough to be worth drawing -- a Monday with three games stays one block.",
       "min_games": 5,
       "min_each": 2
-    }
+    },
+    "ranked_title": true
   },
   "team_lists": {
     "_comment": "Named once here and written as \"@name\" anywhere else in this file, so adding a club is one edit instead of five. An unknown name stops the build rather than quietly matching nothing.",
