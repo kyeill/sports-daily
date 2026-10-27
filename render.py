@@ -415,7 +415,7 @@ def _game_html(game, show_league, config):
     # The series sits in a slot of its own so the live script can rewrite it
     # when a playoff game ends -- ESPN updates its own summary the moment the
     # result is in, so no arithmetic is needed. The slot is emitted empty for
-    # a series that has not started, which is how Game 1 gains "(1-0 ATL)"
+    # a series that has not started, which is how Game 1 gains "(ATL 1-0)"
     # without a reload.
     series = filters.series_text(game)
     body = detail

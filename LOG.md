@@ -1,3 +1,14 @@
+## 2026-10-27 — the series score says who before it says what
+
+`(2-2 Tied)` is back to `(Tied 2-2)`, and `(3-0 MIL)` to `(MIL 3-0)`, undoing
+the flip of 2026-09-30. Score-first lined the numbers up down a card, but a
+score on its own says nothing until you know whose it is, and it is not how
+anyone says it out loud. The two-legged soccer aggregate is untouched: `(3-1
+ARS)` and `(1-1 agg)` keep their shape.
+
+Both the build and the live script format it, so both were changed --
+`filters._series_short` and `seriesShort` in `site.py`.
+
 ## 2026-10-02 — ESPN+ stops speaking for every NHL game
 
 ESPN+ carries every out-of-market game, so printing it said nothing: across a
