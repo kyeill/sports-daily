@@ -188,6 +188,9 @@ h2 {
    games are findable without reading every row. Matched on network AND
    kickoff: the same channels carry ordinary games at other hours. */
 .nets.marquee { color: var(--rank); }
+/* One of his own in National, on a channel anyone can watch. Down there the
+   network is the point of the row, and the muted grey read as small print. */
+.nets.mine { color: var(--ink); }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 .chip {
   background: var(--chip); border-radius: 999px; padding: 1px 8px;
@@ -469,8 +472,15 @@ def _game_html(game, show_league, config):
     # An empty network line would still occupy a team line's worth of height,
     # so it is left out entirely -- and when nothing else is there, the time
     # centres rather than sitting against the first team.
-    nets = ('<div class="nets%s">%s</div>'
-            % (" marquee" if marquee else "", _esc(networks))) if networks else ""
+    # One of his own, down in National, carried by something anyone can
+    # watch: the network is the whole point of the row, and in the muted grey
+    # it read like the small print. Only in National -- Highlights has the
+    # amber card to say the same thing.
+    mine_on_tv = (game.get("_section") == "National" and game.get("my_side")
+                  and not marquee)
+    nets = ('<div class="nets%s%s">%s</div>'
+            % (" marquee" if marquee else "", " mine" if mine_on_tv else "",
+               _esc(networks))) if networks else ""
     solo = " solo" if not networks and not tags else ""
 
     scores, loser, drawn = _scores(game)
