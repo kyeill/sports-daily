@@ -1,3 +1,9 @@
+## 2026-10-28 — Los Angeles Golf Club in the visible black
+
+Their colour is true black, and an explicit entry in `team_colors` returns
+straight out of `_colour()` with no contrast check, so the stripe was simply
+not there. `#45454e` instead, the same charcoal Newcastle and Fulham wear.
+
 ## 2026-10-27 — the loser is the side that went out, not the side that lost
 
 A cup tie level after extra time is settled on penalties, and the second leg
