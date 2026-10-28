@@ -1133,16 +1133,41 @@ def upset_happening(game, favourite, config=None):
     return (mine - theirs) <= rule.get("within", 0)
 
 
-def _outcome_of(game, side):
-    """'loss', 'draw', 'win' or '' for one side of a finished game."""
+def result_of(game):
+    """'home', 'away', 'draw' or '' -- who won a finished game.
+
+    The scoreline does not always say. A cup tie level after extra time is
+    settled on penalties, and the second leg of a European tie on aggregate:
+    Tottenham beat Atletico 3-2 in March and went out of the tie 7-5, and
+    Paris drew the final 1-1 and lifted it 4-3 on penalties. Both would read
+    backwards off the score alone -- one team struck through for winning, two
+    italics on a match that produced a champion.
+
+    ESPN answers it itself, marking the side that went through as the winner,
+    and that is what is read here. The scores are the fallback, for a feed
+    that does not carry the flag; both sides unmarked is also how it writes a
+    genuine draw, which the scores then agree with.
+    """
     if (game.get("state") or "") != "post" or game.get("called_off"):
         return ""
-    other = "away" if side == "home" else "home"
+    flags = [bool(game[s].get("winner")) for s in ("home", "away")]
+    if flags[0] != flags[1]:
+        return "home" if flags[0] else "away"
     try:
-        mine, theirs = int(game[side].get("score")), int(game[other].get("score"))
+        home, away = int(game["home"].get("score")), int(game["away"].get("score"))
     except (TypeError, ValueError):
         return ""
-    return "draw" if mine == theirs else ("win" if mine > theirs else "loss")
+    if home == away:
+        return "draw"
+    return "home" if home > away else "away"
+
+
+def _outcome_of(game, side):
+    """'loss', 'draw', 'win' or '' for one side of a finished game."""
+    result = result_of(game)
+    if result in ("", "draw"):
+        return result
+    return "win" if result == side else "loss"
 
 
 def _outcome_rule_hits(game, rule):
@@ -2777,8 +2802,8 @@ def detail_of(game, config=None, league=None):
     if series:
         lead = ("%s (%s)" % (lead, series)).strip()
 
-    if game.get("aggregate"):
-        lead = ("%s (%s)" % (lead, game["aggregate"])).strip()
+    if game.get("decider"):
+        lead = ("%s (%s)" % (lead, game["decider"])).strip()
 
     lead = _hockey_round(lead)
 

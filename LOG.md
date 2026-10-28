@@ -1,3 +1,29 @@
+## 2026-10-27 — the loser is the side that went out, not the side that lost
+
+A cup tie level after extra time is settled on penalties, and the second leg
+of a European tie on aggregate, and the page was reading neither. Tottenham
+beat Atletico 3-2 in March and went out 7-5, so **Atletico were struck
+through for winning the tie**; Paris drew the final 1-1 and lifted it 4-3 on
+penalties, which read as two italics on a match that produced a champion.
+
+**ESPN answers this itself.** Each competitor carries `winner`, and it is set
+on the side that ADVANCED -- true for Atletico on a night they lost. That is
+now the first thing read, with the scoreline as the fallback for a feed that
+does not carry it; both sides unmarked is also how ESPN writes a genuine
+draw, which the scores then agree with. No arithmetic, and nothing to get
+wrong about away goals or the order of the legs.
+
+It also carries `shootoutScore` per side, `aggregateScore` on the second leg
+only, `leg: {value: 2}` and a prose note. The shootout is now printed, as
+`(PSG 4-3 pens)`, because otherwise the strikethrough on a 1-1 final has
+nothing explaining it. The field that used to hold the aggregate is named
+`decider` for that reason, and penalties come before aggregate in it.
+
+One function, `filters.result_of`, answers it for the strikethrough, the
+italics and the good/bad colours alike, and the live script mirrors it so a
+tie that ends while the page is open lands the same way. The live script does
+not rewrite the caption, so the pens line waits for the next build.
+
 ## 2026-10-27 — TGL, for the two clubs he follows
 
 Simulator golf is two teams a match, so ESPN files it like an ordinary

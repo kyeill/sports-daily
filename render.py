@@ -374,13 +374,14 @@ def _scores(game):
         out[side] = "" if value is None else str(value)
     if game.get("state") != "post":
         return out, None, False
-    try:
-        home, away = int(out["home"]), int(out["away"])
-    except (TypeError, ValueError):
+    # Not off the scoreline: a tie settled on penalties or on aggregate has a
+    # loser the ninety minutes do not name.
+    result = filters.result_of(game)
+    if not result:
         return out, None, False
-    if home == away:
+    if result == "draw":
         return out, None, True
-    return out, ("home" if home < away else "away"), False
+    return out, ("away" if result == "home" else "home"), False
 
 
 def _game_html(game, show_league, config):

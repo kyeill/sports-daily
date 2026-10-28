@@ -299,6 +299,11 @@ def _team(competitor):
         "rank": rank if rank and rank != UNRANKED else None,
         "record": record,
         "score": competitor.get("score"),
+        # Who actually went through, which on a cup tie is not always who won
+        # on the night: ESPN sets it on the side that advanced, so Atletico
+        # carry it after losing 3-2 at Tottenham and going through 7-5.
+        "winner": competitor.get("winner"),
+        "shootout": competitor.get("shootoutScore"),
     }
 
 
@@ -536,6 +541,24 @@ def event_moneyline(league, event_id, competition_id):
     return side, "%s ML" % _american(price, 5)
 
 
+def _shootout(comp, home, away):
+    """A penalty shootout as 'PSG 4-3 pens', or ''.
+
+    Without it the strikethrough on a 1-1 final has nothing explaining it:
+    the scoreline is level and the losing side is struck out anyway.
+    """
+    entries = [c for c in comp.get("competitors") or []
+               if isinstance(c.get("shootoutScore"), (int, float))]
+    if len(entries) != 2:
+        return ""
+    entries.sort(key=lambda c: c["shootoutScore"], reverse=True)
+    top, bottom = entries
+    scores = "%g-%g" % (top["shootoutScore"], bottom["shootoutScore"])
+    by_id = {t["id"]: t for t in (home, away) if t.get("id")}
+    leader = by_id.get(str(top.get("id") or ""))
+    return "%s %s pens" % (leader["abbr"], scores) if leader else "%s pens" % scores
+
+
 def _aggregate(comp, home, away):
     """Two-legged aggregate as 'ARS 3-1', or '1-1 agg' when level.
 
@@ -698,7 +721,7 @@ def _tennis_games(league, date_yyyymmdd, tz, cache_minutes=30):
                     "tv_away": tv_market["away"],
                     "national": national,
                     "series": "",
-                    "aggregate": "",
+                    "decider": "",
                     "spread": "",
                     "spread_side": "",
                     "spread_label": "",
@@ -830,7 +853,10 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
             "national": national,
             # Series state for a playoff tie: "LAD lead series 2-1".
             "series": ((comp.get("series") or {}).get("summary") or ""),
-            "aggregate": _aggregate(comp, home, away),
+            # What settled a tie beyond the ninety minutes. Penalties first:
+            # a second leg level on aggregate is decided by them.
+            "decider": (_shootout(comp, home, away)
+                        or _aggregate(comp, home, away)),
             "spread": spread,
             "spread_side": spread_side,
             "spread_label": spread_label,

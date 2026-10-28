@@ -367,7 +367,9 @@ APP_JS = """
   // The row carries what would colour it -- "good:home:LD|bad:away:L" -- so
   // only the result is worked out here. Good beats bad where both apply:
   // Michigan beating Ohio State is the good one, not the quiet one.
-  function moodFor(row, scores) {
+  // `settled` is who went through, when that is not simply who scored more:
+  // the same question filters.result_of answers for the build.
+  function moodFor(row, scores, settled) {
     var spec = row.dataset.mood;
     if (!spec) { return ''; }
     var best = '';
@@ -377,7 +379,9 @@ APP_JS = """
       var other = side === 'home' ? 'away' : 'home';
       if (scores[side] == null || scores[other] == null) { return; }
       var mine = Number(scores[side]), theirs = Number(scores[other]);
-      var result = mine === theirs ? 'D' : (mine > theirs ? 'W' : 'L');
+      var result = settled
+        ? (settled === 'draw' ? 'D' : settled === side ? 'W' : 'L')
+        : mine === theirs ? 'D' : (mine > theirs ? 'W' : 'L');
       if (letters.indexOf(result) < 0) { return; }
       if (bits[0] === 'good') { best = 'good'; } else if (!best) { best = 'bad'; }
     });
@@ -437,13 +441,21 @@ APP_JS = """
     (comp.competitors || []).forEach(function (c) {
       scores[c.homeAway] = c.score;
     });
-    // A draw has no losing side, so the word carries it.
-    var drawn = state === 'post' && scores.home != null
-      && String(scores.home) === String(scores.away);
-    var losing = null;
-    if (state === 'post' && !drawn && scores.home != null && scores.away != null) {
-      losing = Number(scores.home) < Number(scores.away) ? 'home' : 'away';
+    // Who went through, which on a cup tie is not always who won on the
+    // night: penalties settle a draw, and a second leg goes on aggregate.
+    // ESPN marks the side that advanced, so that is read first and the
+    // scores are the fallback -- the same order filters.result_of uses.
+    var won = {};
+    (comp.competitors || []).forEach(function (c) { won[c.homeAway] = !!c.winner; });
+    var settled = null;
+    if (state === 'post' && scores.home != null && scores.away != null) {
+      settled = won.home !== won.away ? (won.home ? 'home' : 'away')
+        : Number(scores.home) === Number(scores.away) ? 'draw'
+        : Number(scores.home) > Number(scores.away) ? 'home' : 'away';
     }
+    // A draw has no losing side, so the word carries it.
+    var drawn = settled === 'draw';
+    var losing = settled === 'home' ? 'away' : settled === 'away' ? 'home' : null;
     // A delay reads as in-progress and buries the period in ESPN's own prose
     // ("Rain Delay, Top 1st"), so it is rewritten the way the build writes it.
     var name = String(type.name || '').toUpperCase();
@@ -473,7 +485,7 @@ APP_JS = """
         : (upsetHappening(row, scores, state, (comp.status || {}).period)
            || rivalInTrouble(row, scores, state, (comp.status || {}).period,
                              (comp.status || {}).clock)) ? 'good'
-        : (state === 'post' ? moodFor(row, scores) : '')
+        : (state === 'post' ? moodFor(row, scores, settled) : '')
     };
     applyState(row, st);
     // A game still to start has nothing worth remembering: the build's own
