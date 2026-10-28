@@ -367,6 +367,15 @@
           "SEC",
           "Big East"
         ],
+        "power_conference_days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sun"
+        ],
+        "_power_days_comment": "Football's days, for football's reason: Saturday has more basketball on it than the page can hold, and a Saturday game earns its place by rank, by a line, or by being on one of the big four networks -- `ranked_within`, `max_spread` and `major_networks` all still apply that day. Midweek there is room for an ordinary pairing of high majors.",
         "exclude_lower_division": true,
         "power_conferences_both": true,
         "_power_comment": "Both sides from the five, which is what makes this a game worth keeping rather than a power team's warm-up. Any Big Ten game is kept by `conferences` above whoever the opponent is."

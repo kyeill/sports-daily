@@ -1,3 +1,18 @@
+## 2026-10-28 — basketball keeps football's Saturday
+
+Two high majors with nothing else to say for themselves was reason enough to
+keep a game on any day of the week, which is how Creighton at Kansas State
+turned up on a Tuesday in November — grey, unranked, no line. Fine midweek.
+On a Saturday in February it meant thirteen of them at once: Georgetown at
+Marquette, Georgia Tech at North Carolina, Ole Miss at LSU, none of them
+ranked, none on a network, none of his.
+
+So basketball now carries the same `power_conference_days` football has —
+every day but Saturday — and for the same reason. Saturday still earns its
+place the other ways: a poll place, a line inside `max_spread`, one of the
+big four networks, or being a Big Ten game. 6 February goes from 34 cards to
+21; the November Tuesday is untouched, Creighton included.
+
 ## 2026-10-28 — Los Angeles Golf Club in the visible black
 
 Their colour is true black, and an explicit entry in `team_colors` returns
