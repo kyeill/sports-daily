@@ -1136,6 +1136,25 @@
       "national_teams": [
         "Emma Raducanu"
       ]
+    },
+    {
+      "key": "tgl",
+      "path": "golf/tgl",
+      "label": "TGL",
+      "sport": "Golf",
+      "enabled": true,
+      "_comment": "Simulator golf, two teams a match, so it reads like an ordinary league rather than a leaderboard. ESPN files two competitions on each event -- the triples session and the singles -- and only the first is read, which is what keeps a match to one row. Mondays and Tuesdays from late December to late February, on ESPN, ESPN2 or ABC.",
+      "include": {
+        "favorites": true,
+        "all": false
+      },
+      "sort_rank": 12,
+      "team_detail": "none",
+      "national_teams": [
+        "Motor City Golf Club",
+        "Los Angeles Golf Club"
+      ],
+      "_national_teams_comment": "Both of them: the whole league is here for these two, and they belong in National rather than on the Highlights shelf."
     }
   ],
   "national_networks": [
@@ -1236,7 +1255,11 @@
     "nations": [
       "United States"
     ],
-    "_comment_usmnt": "The USMNT is named per competition, because that is what the leagues are keyed by. It sat under \"usmnt\" for a while, which matched no league, so none of its games were ever kept."
+    "_comment_usmnt": "The USMNT is named per competition, because that is what the leagues are keyed by. It sat under \"usmnt\" for a while, which matched no league, so none of its games were ever kept.",
+    "tgl": [
+      "Motor City Golf Club",
+      "Los Angeles Golf Club"
+    ]
   },
   "following": {
     "nfl": [],
@@ -1313,8 +1336,10 @@
     "Iowa Hawkeyes": "45454e",
     "Ipswich Town": "#3a64a3",
     "Lindenwood Lions": "45454e",
+    "Los Angeles Golf Club": "000000",
     "Michigan Wolverines": "ffcb05",
     "Minnesota Duluth": "5e0a2f",
+    "Motor City Golf Club": "0a0841",
     "Newcastle United": "45454e",
     "Northern Michigan Wildcats": "005a3c",
     "Penn State": "061440",

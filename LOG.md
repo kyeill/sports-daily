@@ -1,3 +1,20 @@
+## 2026-10-27 — TGL, for the two clubs he follows
+
+Simulator golf is two teams a match, so ESPN files it like an ordinary
+league -- home, away, colours, a national broadcast -- and it needed no new
+reader. One trap: each event carries **two competitions**, the triples
+session and the singles, and the existing code already takes `competitions[0]`,
+which is what keeps a match to one row.
+
+Only **Motor City Golf Club** and **Los Angeles Golf Club**, through
+`favorites` plus `national_teams`, so they reach National rather than the
+Highlights shelf. 14 matches are on the schedule between 27 December and 24
+February; seven involve one of the two, and more weeks are still
+unpublished.
+
+TGL is deliberately absent from `quiet_night.blocked_by`, as college hockey
+is: a match here is not a reason to hide the night's NBA.
+
 ## 2026-10-27 — the series score says who before it says what
 
 `(2-2 Tied)` is back to `(Tied 2-2)`, and `(3-0 MIL)` to `(MIL 3-0)`, undoing
