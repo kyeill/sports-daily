@@ -214,6 +214,39 @@ def soccer_table(league_path):
     return out
 
 
+def soccer_groups(league_path):
+    """[[(club name lowercased, points)]] -- one list per table, or [].
+
+    The same payload `soccer_table` reads, kept separate because the place
+    shown on a card is worked out from the points rather than read off the
+    rank: clubs level on points are level in the table, whatever goal
+    difference says about the order they are printed in. The grouping has to
+    survive, because MLS files its two conferences as separate tables and an
+    Eastern club on 40 is not level with a Western one on 40.
+    """
+    url = "https://site.api.espn.com/apis/v2/sports/%s/standings" % league_path
+    data = _get(url, cache_key="table-%s" % league_path.replace("/", "-"),
+                max_age_min=180)
+    groups = []
+
+    def walk(node):
+        rows = []
+        for entry in (node.get("standings") or {}).get("entries") or []:
+            stats = {s.get("name"): s.get("displayValue") for s in entry.get("stats") or []}
+            points = _int(stats.get("points"))
+            name = (entry.get("team") or {}).get("displayName")
+            if name and points is not None:
+                rows.append((name.strip().lower(), points))
+        if rows:
+            groups.append(rows)
+        for child in node.get("children") or []:
+            walk(child)
+
+    if data:
+        walk(data)
+    return groups
+
+
 def season_window(league):
     """(start, end) dates of the current REGULAR season, or (None, None).
 

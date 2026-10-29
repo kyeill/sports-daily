@@ -1,3 +1,20 @@
+## 2026-10-29 — level on points is level in the table
+
+The place beside a club came off ESPN's `rank`, which breaks every tie on
+goal difference. Bournemouth and Tottenham both on nine read as 13th and
+14th, as though a goal swing somewhere had settled something between them.
+
+Counted from the points now: the place is the number of clubs clear of you
+plus one, and `t-` says it is shared. Both are **t-13th**, Fulham alone on
+eight is 15th, and Palace and United on seven are **t-16th**. A club alone on
+its total keeps the plain ordinal. ESPN's rank is still read for
+`table_top`, which wants a single number.
+
+MLS gets it too, and the grouping had to survive for it: ESPN files the two
+conferences as separate tables, and an Eastern club on 40 is not level with a
+Western one on 40. `espn.soccer_groups` returns one list per table for that
+reason.
+
 ## 2026-10-28 — basketball keeps football's Saturday
 
 Two high majors with nothing else to say for themselves was reason enough to

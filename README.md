@@ -353,6 +353,12 @@ or league **by record** -- `table_place`
 for the Premier League and MLS ("3rd"), and `none` for every other soccer
 competition, where a cup has no table to place anyone in.
 
+**A table place is shared when clubs are level on points** -- "t-13th" for
+both, and the next club down is 15th, not 14th. ESPN's own rank breaks every
+tie on goal difference; the points are counted here instead, because being
+level is the true thing to say in October. MLS is worked out inside each
+conference, so an Eastern club is never tied with a Western one.
+
 **In the postseason a seed is printed instead** ("2 seed"), since a
 regular-season standing means nothing once the bracket starts.
 

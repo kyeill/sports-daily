@@ -471,11 +471,27 @@ def _conference_places(league):
 
 
 def _table_places(league):
-    """{club name: '3rd'} from a league table."""
+    """{club name: '3rd'} or '{club name: 't-13th'} from a league table.
+
+    Level on points is level in the table. ESPN's own rank breaks every tie on
+    goal difference, which reads as a standing nobody has earned: Bournemouth
+    and Tottenham both on nine came back 13th and 14th, as though a goal
+    swing had settled something. Both are `t-13th` here -- the place is the
+    number of clubs clear of them plus one, and the prefix says it is shared.
+
+    So the points are counted rather than the rank read. A club alone on its
+    total keeps the plain ordinal.
+    """
     key = ("table", league["key"])
     if key not in _place_cache:
-        _place_cache[key] = {name: _ordinal(rank)
-                             for name, rank in espn.soccer_table(league["path"]).items()}
+        places = {}
+        for rows in espn.soccer_groups(league["path"]):
+            for name, points in rows:
+                ahead = sum(1 for _, other in rows if other > points)
+                level = sum(1 for _, other in rows if other == points)
+                place = _ordinal(ahead + 1)
+                places[name] = "t-%s" % place if level > 1 else place
+        _place_cache[key] = places
     return _place_cache[key]
 
 
