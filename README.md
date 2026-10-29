@@ -241,15 +241,20 @@ a row reads "#9 Iowa at #8 Clemson" rather than showing AP ranks.
 
 **College football tier 2:** any **Big Ten** game; any game with an **AP top-25**
 team (ESPN's curated rank switches to the CFP rankings once they exist, which is
-what you want); any **Power Four vs Power Four** game **midweek only** -- plus **week 0**, the last Saturday of August (`power_conference_extra_dates`, 08-23..08-29), where there is so little on that an unranked Power Four pairing is worth having; any **FOX/CBS/NBC/ABC**
-game **on Saturdays involving an FBS team**; and every bowl and CFP game.
+what you want); any **Power Four vs Power Four** game **midweek only**; any
+**FOX/CBS/NBC/ABC** game **on Saturdays involving an FBS team**; and every bowl
+and CFP game.
 
 The FBS requirement is why the two college-football feeds are labelled: FBS is
 `groups=80`, FCS is `groups=81`, and a rule can demand the game came from the
 FBS one. Without it an FCS season opener on ABC qualifies as a "National Game".
 
-**College basketball tier 2:** any Big Ten game, any ranked team, and
-FOX/CBS/NBC/ABC games **Friday through Sunday**.
+**College basketball tier 2:** any Big Ten game, any ranked team,
+FOX/CBS/NBC/ABC games **Friday through Sunday**, and any game with **both
+sides** from the ACC, Big Ten, Big 12, SEC or Big East -- that last one
+**every day but Saturday**, football's rule for football's reason: Saturday
+carries more basketball than the page can hold, so a game needs a rank, a
+line or a network to earn its place that day.
 
 **College hockey tier 2:** none — Michigan and Cornell, conference tournaments
 and the NCAA tournament.
@@ -621,9 +626,12 @@ This is `colors_sheet`, separate from the abandoned `control_sheet` on purpose
 ## Networks
 
 ESPN labels every broadcast as **national**, **home** or **away**, so the NFL,
-NBA and MLB show the national feed only (`national_only_display`). A game
-carried solely on regional networks shows no network at all, which is the
-honest answer — the regional feed is only useful if you happen to get it.
+NBA and MLB show the national feed only. That split is read in
+`espn._broadcasts`, which keeps the national names apart from the rest; there
+is no config key for it. A game carried solely on regional networks shows no
+network at all, which is the honest answer — the regional feed is only useful
+if you happen to get it. Watch for MLB.TV, which ESPN flags national despite
+being streaming, so `hide_networks` still matters.
 
 **Streaming is listed only when it is the only way to watch.** Anything in
 `streaming_networks` -- Peacock, Paramount+, ESPN+, Apple TV and the rest -- is

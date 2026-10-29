@@ -1,3 +1,38 @@
+## 2026-10-29 — a sweep for dead weight, which mostly found none
+
+Audited every file for bloat and for documentation that had drifted. The
+honest headline is that there was very little: **no unreferenced function in
+any module, no unused import in any file**, and the `.gitignore` already
+covers every generated thing. What did turn up:
+
+**`sort_rank` was read by nothing.** Twenty leagues carried it; no line of
+code has ever looked at it. Order comes from `soccer_order`,
+`highlight_order`, `national_windows` and start time. A knob that looks live
+and is not costs more than it saves, so it is gone, along with
+`section_teams`, the same story in one league.
+
+**The Week 0 branch went.** `power_conference_extra_days`/`_dates` let the
+Power Four rule fire on the last Saturday of August; 2026 was the last Week 0
+and no config has set them since. Its own comment said a rule left behind
+would misfire every August. Removing it also retired `_in_dates`, which had
+exactly that one caller.
+
+Kept deliberately: `spread_exempt_teams` and `spread_exempt_windows` are
+unused but they *work* — an unused capability is not the same thing as a lie.
+`_ordinal` stays duplicated in `filters.py` and `render.py`, four lines each;
+sharing it would mean importing a private name across modules to save
+nothing.
+
+**Three documentation fixes, all of them things the README asserted that were
+not true.** It still described Week 0. It credited the national-feed rule to
+a config key `national_only_display` that has never existed — the split is
+read in `espn._broadcasts`. And the college basketball rules listed Big Ten,
+ranked and the networks but never mentioned the power-conference rule at all,
+let alone yesterday's Saturday limit on it.
+
+Verified behaviour-neutral rather than assumed: 14 November rebuilt on the
+old code and the new, 33 of 238 kept both times, identical per league.
+
 ## 2026-10-29 — level on points is level in the table
 
 The place beside a club came off ESPN's `rank`, which breaks every tie on

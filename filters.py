@@ -186,23 +186,6 @@ def _on_day(game, days):
     return game["start_local"].strftime("%a").lower() in wanted
 
 
-def _in_dates(game, windows):
-    """True when the game falls inside one of the given month-day windows.
-
-    Each window is "MM-DD..MM-DD", inclusive at both ends and year-agnostic,
-    which is what a college season needs: week 0 is the last Saturday of
-    August whatever the year.
-    """
-    if not windows:
-        return False
-    stamp = game["start_local"].strftime("%m-%d")
-    for window in windows:
-        start, _, end = str(window).partition("..")
-        if start.strip() <= stamp <= (end.strip() or start.strip()):
-            return True
-    return False
-
-
 def on_networks(game, names):
     wanted = {_flat(n) for n in names or []}
     return any(_flat(name) in wanted for name in game.get("tv") or [])
@@ -1568,16 +1551,9 @@ def evaluate(game, league, config):
     if conf_hit:
         reasons.append("conf:%s" % conf_hit)
 
-    # Power conferences, but only on the days you asked for -- college
-    # football's midweek games are a different proposition from Saturday's.
-    # A dated exception can add days the main list leaves out -- Week 0 was a
-    # Saturday with so little on that a Power Four pairing was worth having
-    # unranked. Nothing asks for it now: 2026 was the last Week 0, and the
-    # dates are MM-DD, so a rule left behind would have fired every August
-    # after it against a normal week's card.
-    power_day = (_on_day(game, rules.get("power_conference_days"))
-                 or (_on_day(game, rules.get("power_conference_extra_days"))
-                     and _in_dates(game, rules.get("power_conference_extra_dates"))))
+    # Power conferences, but only on the days you asked for -- a midweek game
+    # is a different proposition from Saturday's card in both college sports.
+    power_day = _on_day(game, rules.get("power_conference_days"))
     if not tournament and rules.get("power_conferences") and power_day:
         wanted = rules["power_conferences"]
         if rules.get("power_conferences_both"):

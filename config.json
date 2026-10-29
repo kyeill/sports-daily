@@ -49,7 +49,6 @@
       "race_from_month": 11,
       "race_until_month": 2,
       "race_min_odds": 20,
-      "sort_rank": 6,
       "team_detail": "conference_place",
       "tint_grey_unless": []
     },
@@ -72,7 +71,6 @@
       "race_spot_label": "Playoff Race",
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 8,
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Pistons",
@@ -98,7 +96,6 @@
       "race_from_month": 7,
       "race_until_month": 10,
       "race_min_odds": 20,
-      "sort_rank": 7,
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Tigers"
@@ -125,7 +122,6 @@
       "race_until_settled": true,
       "race_from_month": 3,
       "race_until_season_end": true,
-      "sort_rank": 9,
       "team_detail": "conference_place",
       "highlight_teams": [
         "Detroit Red Wings"
@@ -206,7 +202,6 @@
         "power_conferences_both": true,
         "postseason_top_division_only": true
       },
-      "sort_rank": 1,
       "team_detail": "record",
       "max_spread": {
         "_comment": "Two Power Four sides at twenty-one points is a real game having a bad week; the same number against a visitor from outside the four is the whole story, so that one goes at fourteen.",
@@ -380,7 +375,6 @@
         "power_conferences_both": true,
         "_power_comment": "Both sides from the five, which is what makes this a game worth keeping rather than a power team's warm-up. Any Big Ten game is kept by `conferences` above whoever the opponent is."
       },
-      "sort_rank": 2,
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
@@ -403,10 +397,6 @@
         "season": 2027,
         "group": "50"
       },
-      "section_teams": [
-        "Syracuse Orange"
-      ],
-      "_section_teams_comment": "Kept with the basketball whatever the poll says. Saturday files it under VARIOUS with the rest of the unranked card; on a weekday there is one basketball section and it goes there.",
       "_tint_grey_comment": "A poll place or a line. Being in the conference is no longer enough on its own: two unranked Big Ten teams with no line between them is a game he has no stake in, and grey says so."
     },
     {
@@ -443,7 +433,6 @@
           }
         ]
       },
-      "sort_rank": 3,
       "team_detail": "record",
       "highlight_teams": [
         "Cornell Big Red"
@@ -480,7 +469,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "table_place",
       "round_overrides": {
         "regular-season": "MLS Regular Season",
@@ -508,7 +496,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_teams": [
         "Atlanta United"
@@ -537,7 +524,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "promote_rounds": [
         "quarterfinals",
@@ -560,7 +546,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "promote_rounds": [
         "round-one",
@@ -650,7 +635,6 @@
           }
         ]
       },
-      "sort_rank": 4,
       "team_detail": "table_place",
       "highlight_all": true,
       "tint_prefer_teams": [
@@ -705,7 +689,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_grey_unless": [],
@@ -748,7 +731,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_grey_unless": [],
@@ -819,7 +801,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
@@ -906,7 +887,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
@@ -993,7 +973,6 @@
           }
         ]
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "highlight_all": true,
       "tint_prefer_clubs_from": "soccer/eng.1",
@@ -1017,7 +996,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "national_teams": [
         "United States"
@@ -1035,7 +1013,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "promote_rounds": [
         "round-of-32",
@@ -1059,7 +1036,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "promote_rounds": [
         "round-of-32",
@@ -1086,7 +1062,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 5,
       "team_detail": "none",
       "promote_rounds": [
         "round-of-32",
@@ -1118,7 +1093,6 @@
         "mens-singles",
         "womens-singles"
       ],
-      "sort_rank": 11,
       "team_detail": "none",
       "national_teams": [
         "Frances Tiafoe"
@@ -1140,7 +1114,6 @@
         "mens-singles",
         "womens-singles"
       ],
-      "sort_rank": 11,
       "team_detail": "none",
       "national_teams": [
         "Emma Raducanu"
@@ -1157,7 +1130,6 @@
         "favorites": true,
         "all": false
       },
-      "sort_rank": 12,
       "team_detail": "none",
       "national_teams": [
         "Motor City Golf Club",
