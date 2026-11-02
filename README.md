@@ -309,9 +309,10 @@ UCL league phase Jan 28 6 of 18; UCL knockouts Mar 10 4 of 4; MLS playoffs Nov 1
 
 **Nothing is tagged beside the matchup.** A chip on the right of a row only
 ever restated something — the section (Ranked, Big Ten, National Game), or the
-line below it. A race is said once now, as the gap on its own: `2 GB`. The
-**round** is not a tag either. It goes on a single line under the matchup,
-along with everything else about the state of the tie:
+line below it. **A race is not written on the page at all**: it decides which
+games appear and then says nothing. The **round** is not a tag either. It goes
+on a single line under the matchup, along with everything else about the state
+of the tie:
 
 ```
 World Series Gm 3 (LAD 2-1)
@@ -334,9 +335,10 @@ ESPN writes the series as "LAD lead series 2-1" or "Series tied 1-1"; both are
 shortened to fit alongside the round.
 
 Underneath the matchup, a detail line carries the state of a tie: the game
-number and series score for American playoffs ("Game 3 · LAD lead series 2-1"),
-the aggregate for two-legged European ties ("Arsenal advance 3-1 on aggregate"),
-and the gap for a standings-derived team ("2 GB").
+number and series score for American playoffs ("Game 3 · LAD lead series 2-1")
+and the aggregate for two-legged European ties ("Arsenal advance 3-1 on
+aggregate"). It carried the gap for a standings-derived team ("2 GB") until
+2026-11-02; a race now shows nothing anywhere.
 
 Everything else was removed: `Ranked`, `Big Ten`, `Power Four`, `National
 Game`, `Standalone`, `Midweek`, `Knockout`, `Rival` and the rest merely
@@ -843,10 +845,12 @@ bracket:
 | just outside | Bears (NFC North leader) + Packers (last playoff spot) |
 | eliminated | nothing |
 
-Each of those rows carries the gap as context — "Lions 2 GB", "Red Wings 6 pts
-back" — so a highlighted team says not just *why* it is there but *how close* it
-is. Hockey is measured in points rather than games back, chosen from the
-league's sport rather than from whether a `points` field happens to exist.
+**None of this is written on the page.** The race decides which games appear
+and stops there — no chip, no caption, no gap, no odds line. Those rows used to
+carry "Lions 2 GB" or "Red Wings 6 pts back"; `gap()` survives only because the
+history file below still records it. Hockey is measured in points rather than
+games back, chosen from the league's sport rather than from whether a `points`
+field happens to exist.
 
 ### Games back history
 

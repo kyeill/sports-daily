@@ -1,3 +1,25 @@
+## 2026-11-02 — a race decides, and then says nothing
+
+Third pass. The gap is gone too, so a race is no longer written on the page in
+any form. Yesterday's Lions game now reads `Minnesota Vikings 15 · Detroit
+Lions 19 · Final · FOX` and that is the whole row.
+
+He kept the games. That is the part worth being clear about: `race.py` still
+derives the Vikings and the Packers from live standings every morning, their
+games are still pulled onto the page, and the note on the watchlist entry is
+still what keeps them — `watch_note` drives `keep`. What went is every attempt
+to explain it: the chip, the caption, the odds line, and now the gap.
+
+So `watch_context` is gone — the list, the stamp, the join, and the branch in
+`detail_of` that appended it. `_context()` in `race.py` went with it, and the
+`points_league` local that was computed for nothing else in `derive`. `gap()`
+itself survives, because `snapshot()` still writes the gap into
+`output/history/<league>.csv` for the standings app; the history is deliberately
+untouched, being a data file for something else rather than page furniture.
+
+The detail line is now round, series, aggregate and neutral-site venue — the
+state of a tie, which is all it was ever meant to be.
+
 ## 2026-11-02 — a race says one thing now: the gap
 
 Second pass, same afternoon, and it finishes what the entry below started. The

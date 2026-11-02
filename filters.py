@@ -1485,10 +1485,11 @@ def evaluate(game, league, config):
     fav_hit = any(_matches(t, f) for t in sides for f in pinned)
 
     # Both sides can be on the watchlist -- a game between the division leader
-    # and the wild card holder is doubly interesting, and says so.
+    # and the wild card holder is doubly interesting, though the row no longer
+    # says so: the note exists to keep the game, not to caption it.
     notable, rivals = [], []
     rooting_for, rooting_against = [], []
-    watch_notes, watch_context = [], []
+    watch_notes = []
     for entry in watchlist_for(config, league["key"]):
         hits = [t for t in sides if _matches(t, entry.get("team"))]
         notable.extend(t for t in hits if t not in notable)
@@ -1503,8 +1504,6 @@ def evaluate(game, league, config):
             note = entry.get("note") or "watchlist"
             if note not in watch_notes:
                 watch_notes.append(note)
-            if entry.get("context") and entry["context"] not in watch_context:
-                watch_context.append(entry["context"])
     # Rule-driven Key opponents, alongside the sheet's manual watchlist.
     for rule in rules.get("tier3_rules") or []:
         if rule_matches(game, rule):
@@ -1686,7 +1685,6 @@ def evaluate(game, league, config):
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
-    game["watch_context"] = " · ".join(watch_context)
     game["reasons"] = reasons
     return keep, tier, reasons
 
@@ -2773,8 +2771,6 @@ def detail_of(game, config=None, league=None):
         lead = ("%s · %s" % (named, lead)) if lead else named
 
     parts = [lead]
-    if game.get("watch_context"):
-        parts.append(game["watch_context"])
     # A named round already says where you are; a bowl game does not also need
     # the stadium, nor a regional final its arena.
     if game.get("neutral") and game.get("venue") and not lead:

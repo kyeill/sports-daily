@@ -132,7 +132,6 @@ def derive(config, league, today=None):
         if percent is not None and percent < floor:
             return []
 
-    points_league = (league.get("sport") or "").lower() == "hockey"
     out, seen = [], {mine["team"]}
     spots = league.get("playoff_spots", 7)
 
@@ -144,8 +143,7 @@ def derive(config, league, today=None):
         rival = (division[1] if len(division) > 1 else None) \
             if leader["team"] in seen else leader
         if rival and rival["team"] not in seen:
-            out.append({"team": rival["team"], "note": "Division Race",
-                        "context": _context(mine, rival, points_league)})
+            out.append({"team": rival["team"], "note": "Division Race"})
             seen.add(rival["team"])
 
     conference = [r for r in _seeded(rows) if r["conference"] == mine["conference"]]
@@ -154,15 +152,9 @@ def derive(config, league, today=None):
     target = by_seed.get(spots + 1 if mine.get("seed") == spots else spots)
     if target and target["team"] not in seen:
         out.append({"team": target["team"],
-                    "note": league.get("race_spot_label") or "Wild Card Race",
-                    "context": _context(mine, target, points_league)})
+                    "note": league.get("race_spot_label") or "Wild Card Race"})
 
     return out
-
-
-def _context(mine, other, use_points=False):
-    """Just the gap: "2 GB", "6 pts back". The team is obvious from the row."""
-    return gap(mine, other, use_points)
 
 
 def snapshot(config, league):
