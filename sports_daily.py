@@ -355,10 +355,9 @@ def main(argv=None):
     # browsing to a November date shows November's race.
     race_log = race.merge_into(config, today=day)
     race_log += ["history: %s" % w for w in record_history(config, day, tz)]
-    # Derived teams are console detail; the odds line goes on the page.
-    info = [line for line in
-            (race.status(lg) for lg in config.get("leagues", [])
-             if not only or lg["key"] in only) if line]
+    # Only failures reach the page now. The race used to print its odds here
+    # -- "Detroit Lions 66% to make the playoffs" -- every day for months.
+    info = []
 
     if args.check:
         print("Checking team names against ESPN...")

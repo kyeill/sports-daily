@@ -20,11 +20,6 @@ import sheets
 
 TIERS = ("favorite", "watch", "interest")
 
-# The standings-derived notes. `label_for` turns them into "Playoff Race" on
-# the detail line of a National row; nothing else reads them. The chips that
-# used to repeat them beside the matchup said the same thing twice.
-CHASE_NOTES = ("Division Race", "Wild Card Race", "Playoff Race")
-
 # Two rivals in one game has no honest answer, so the stripe takes neither
 # side. Black said that too, but said it invisibly.
 RIVAL_GREY = "9a9a95"
@@ -1691,8 +1686,6 @@ def evaluate(game, league, config):
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
-    game["watch_note"] = watch_note
-    game["watch_notes"] = watch_notes
     game["watch_context"] = " · ".join(watch_context)
     game["reasons"] = reasons
     return keep, tier, reasons
@@ -1751,10 +1744,6 @@ def _round_tag(game):
 # Main Slate while a separate Highlights shelf existed above it, and that
 # shelf is gone.
 SECTIONS = ("Highlights", "Soccer", "Football", "Basketball", "National")
-
-# Leagues that name their reason in National, because "NBA" alone says nothing
-# about why the game is there.
-REASON_LEAGUES = ("NFL", "MLB", "NBA", "NHL", "MLS")
 
 # The four he recognises on sight. Their name earns nothing on the detail
 # line: in the playoffs the round already says what the game is, and on an
@@ -2716,9 +2705,8 @@ def label_for(game, section):
     """The competition named on the detail line, or "".
 
     College hockey always says so, and everything in National does -- that
-    section mixes every sport, so a row that does not name itself is a
-    guess. The pro leagues add why they are there, because "NBA" alone
-    answers nothing.
+    section mixes every sport, so a row that does not name itself is a guess.
+    The four he knows on sight are the exception, and say nothing at all.
     """
     label = game.get("league_label") or ""
     if not label:
@@ -2729,16 +2717,8 @@ def label_for(game, section):
         return ""
     if label in QUIET_LEAGUES:
         # A playoff game already names its round, and a national-TV night has
-        # nothing to say beyond the two teams. What survives is the chase,
-        # which says why the game matters -- without the league in front of it.
-        chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
-        return "Playoff Race" if chase else ""
-    # MLS still names itself: it shares the section with the rest of the
-    # soccer, where the competition is the thing worth knowing.
-    if label in REASON_LEAGUES and not is_event_round(game, game.get("_league")):
-        chase = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
-        if chase:
-            return "%s - Playoff Race" % label
+        # nothing to say beyond the two teams.
+        return ""
     return label
 
 

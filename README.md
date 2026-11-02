@@ -307,11 +307,11 @@ UCL league phase Jan 28 6 of 18; UCL knockouts Mar 10 4 of 4; MLS playoffs Nov 1
 
 ## The line under the matchup
 
-**Nothing is tagged beside the matchup.** A chip on the right of a row either
-restated the section — Ranked, Big Ten, National Game — or said twice what the
-line below already says: a `Division Race` chip sat beside a caption reading
-`Playoff Race · 2 GB`. The **round** is not a tag either. It goes on a single
-line under the matchup, along with everything else about the state of the tie:
+**Nothing is tagged beside the matchup.** A chip on the right of a row only
+ever restated something — the section (Ranked, Big Ten, National Game), or the
+line below it. A race is said once now, as the gap on its own: `2 GB`. The
+**round** is not a tag either. It goes on a single line under the matchup,
+along with everything else about the state of the tie:
 
 ```
 World Series Gm 3 (LAD 2-1)
@@ -693,11 +693,10 @@ is checked before it: its knockouts are named rounds, but the competition
 belongs in the second half.
 
 It mixes sports, so every
-row here names its competition — except the four he knows on sight. An NFL,
-MLB, NBA or NHL row says nothing at all unless it is in a race, where the line
-reads `Playoff Race`; MLS keeps its name, as `MLS - Playoff Race`. A row whose
-round already names itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is
-left alone.
+row here names its competition — except the four he knows on sight, which say
+nothing at all (`QUIET_LEAGUES` in `filters.py`). MLS keeps its name, because
+it shares the section with the rest of the soccer. A row whose round already
+names itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is left alone.
 
 It holds the playoff races, the MLB/NBA/NHL/MLS postseasons, unranked college
 football and basketball, the minor bowls, the NCAA hockey tournament, the
@@ -805,11 +804,11 @@ MoneyPuck is the obvious NHL source and **explicitly asks not to be scraped**,
 so it is not used. Odds are cached for 12 hours — they move once a day at most,
 and FanGraphs is somebody else's bandwidth.
 
-The page reports the odds only while a race is live, in one quiet line: **"Detroit Lions 68% to
-make the playoffs"** when the race is live, or **"MLB race hidden - Detroit
-Tigers at 5% to make the playoffs (floor 20%)"** when it is not — so a blank Key
-opponents section never reads as a breakage. Leagues without a source say
-nothing at all rather than implying a number they do not have.
+**The page never shows the odds.** It used to carry a line under the date —
+"Detroit Lions 66% to make the playoffs" — every day of a live race, which is
+months of a number nothing is done with. The floor is the only consumer now, so
+the odds are fetched only for a league that sets one: the NBA and NHL set none
+and no longer pay for the request.
 
 `race_until_season_end` ends the window at the **real end of the regular
 season**, read from ESPN (NBA 2027-04-12, NHL 2027-04-18) rather than guessed at

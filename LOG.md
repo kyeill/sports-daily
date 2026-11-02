@@ -1,3 +1,37 @@
+## 2026-11-02 — a race says one thing now: the gap
+
+Second pass, same afternoon, and it finishes what the entry below started. The
+`Playoff Race` caption is gone from the detail line, and the odds line is gone
+from under the date. A race row now reads `Lions 19 · Vikings 15 · 1 GB` and
+nothing else.
+
+**The caption.** `label_for` printed plain `Playoff Race` for the four quiet
+leagues and `MLS - Playoff Race` for MLS. Both branches went, which left
+`CHASE_NOTES` with no reader at all and `REASON_LEAGUES` used by nothing — MLS
+was the only league that ever reached it, and it now just gets its own name.
+
+**The odds line.** `race.status()` put `Detroit Lions 66% to make the
+playoffs` under the date for every day of a live race: November through
+February for the NFL, March to April for the NBA and NHL. Months of a number
+with nothing to do. With it gone the `league["_race"]` bookkeeping inside
+`derive` was dead too.
+
+That turned out to be worth a request a day. `odds.odds_for` was called for
+every league with a live race so that the line would have a number; the only
+other consumer is the `race_min_odds` floor, which the NBA and NHL do not set.
+It is now fetched only where a floor exists — NFL and MLB — so two leagues
+stopped paying ESPN and FanGraphs for a figure nobody reads.
+
+**Two dead stamps went with them.** `game["watch_notes"]` lost its last reader
+when the captions went, and `game["watch_note"]` had not had one for longer:
+the singular drives `keep` as a local, but the copy on the game was read by
+nothing. `watch_context` stays — it is the `1 GB`.
+
+Documentation: the README's own description of the odds line was half
+invented. It promised **"MLB race hidden - Detroit Tigers at 5% to make the
+playoffs (floor 20%)"** for a suppressed race; `status()` returned an empty
+string in that case and always had.
+
 ## 2026-11-02 — the race chips go, the race stays
 
 The `Division Race` / `Wild Card Race` chips beside a matchup are gone. The

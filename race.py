@@ -98,13 +98,11 @@ def _seeded(rows):
 
 def derive(config, league, today=None):
     """-> [{team, note}] for the league, or [] when the race is not live."""
-    league["_race"] = {"active": False, "percent": None, "team": ""}
     if not league.get("playoff_race"):
         return []
     favorites = filters.favorites_for(config, league["key"])
     if not favorites:
         return []
-    league["_race"]["team"] = favorites[0]
 
     today = today or date.today()
     if not _in_window(league, today):
@@ -124,14 +122,15 @@ def derive(config, league, today=None):
     # A playoff-odds floor, where a source exists. ESPN's elimination flag
     # arrives far too late to be the only test -- a team can be mathematically
     # alive and practically finished for weeks.
-    percent = odds.odds_for(league, favorites)
-    league["_race"]["percent"] = percent
-    floor = league.get("race_min_odds")
     # No source (the NHL) means the floor cannot be applied; standings position
-    # is the fallback, and ignoring the floor beats showing nothing.
-    if floor and percent is not None and percent < floor:
-        return []
-    league["_race"]["active"] = True
+    # is the fallback, and ignoring the floor beats showing nothing. With no
+    # floor there is nothing to test, so the odds are not fetched at all --
+    # they used to be, for a line at the top of the page that has gone.
+    floor = league.get("race_min_odds")
+    if floor:
+        percent = odds.odds_for(league, favorites)
+        if percent is not None and percent < floor:
+            return []
 
     points_league = (league.get("sport") or "").lower() == "hockey"
     out, seen = [], {mine["team"]}
@@ -205,18 +204,6 @@ def snapshot(config, league):
         "gap_to_last_spot": "" if not holder or holder["team"] == mine["team"]
                             else gap(mine, holder, points_league),
     }
-
-
-def status(league):
-    """One line about the race: its odds when live, why it is quiet when not."""
-    state = league.get("_race") or {}
-    percent, team = state.get("percent"), state.get("team") or "your team"
-    if percent is None:
-        return ""
-    if state.get("active"):
-        return "%s %.0f%% to make the playoffs" % (team, percent)
-    # A suppressed race says nothing worth reading every day for months.
-    return ""
 
 
 def merge_into(config, today=None):

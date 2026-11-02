@@ -708,9 +708,6 @@ def build(config, days=8, out=SITE):
     # machine at home being switched on.
     for line in sports_daily.record_history(config, today, tz):
         print("  history: %s" % line)
-    info = [line for line in (race.status(lg) for lg in config.get("leagues", []))
-            if line]
-
     # Yesterday is kept as an extra tab -- last night's finals are the thing
     # you most want on waking -- so the run covers `days` from today, plus one
     # behind it. Today stays the tab the app opens on; it is now the second.
@@ -718,10 +715,10 @@ def build(config, days=8, out=SITE):
     for offset in range(-1, days):
         day = today + timedelta(days=offset)
         games, _ = sports_daily.collect(config, day, tz)
-        today_info = list(info) if offset == 0 else None
+        today_info = None
         if offset == 0 and espn.FAILURES:
-            today_info.append("Some data could not be loaded today: %s"
-                              % ", ".join(sorted(espn.FAILURES)))
+            today_info = ["Some data could not be loaded today: %s"
+                          % ", ".join(sorted(espn.FAILURES))]
         body = render.day_body(day, games, config, info=today_info)
         ident = "d%s" % day.isoformat()
         label = "Today" if offset == 0 else day.strftime("%a")
