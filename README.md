@@ -305,15 +305,13 @@ Measured on real match days: Wed Dec 3 midweek round 6 of 6; Sat Jan 17 5 of 7;
 UCL league phase Jan 28 6 of 18; UCL knockouts Mar 10 4 of 4; MLS playoffs Nov 1
 5 of 5; Leagues Cup quarter-finals 4 of 4.
 
-## Tags
+## The line under the matchup
 
-Deliberately narrow. A row carries at most two, and only when they say
-something the row does not:
-
-* **`Division Chase`, `Wild Card Chase`, `Playoff Spot Chase`** — the
-  standings-derived teams, alongside the gap ("2 GB", "6 pts back")
-The **round** is not a tag. It goes on a single line under the matchup, along
-with everything else about the state of the tie:
+**Nothing is tagged beside the matchup.** A chip on the right of a row either
+restated the section — Ranked, Big Ten, National Game — or said twice what the
+line below already says: a `Division Race` chip sat beside a caption reading
+`Playoff Race · 2 GB`. The **round** is not a tag either. It goes on a single
+line under the matchup, along with everything else about the state of the tie:
 
 ```
 World Series Gm 3 (LAD 2-1)
@@ -695,9 +693,11 @@ is checked before it: its knockouts are named rounds, but the competition
 belongs in the second half.
 
 It mixes sports, so every
-row here names its competition, and the pro leagues say why they are there:
-`NBA - National TV`, `NFL - Playoff Race`. A row whose round already names
-itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is left alone.
+row here names its competition — except the four he knows on sight. An NFL,
+MLB, NBA or NHL row says nothing at all unless it is in a race, where the line
+reads `Playoff Race`; MLS keeps its name, as `MLS - Playoff Race`. A row whose
+round already names itself (`CFP Semifinal`, `NCAA Hockey - Regional Final`) is
+left alone.
 
 It holds the playoff races, the MLB/NBA/NHL/MLS postseasons, unranked college
 football and basketball, the minor bowls, the NCAA hockey tournament, the
@@ -777,7 +777,7 @@ from live standings, so tier 3 maintains itself:
   on the outside
 
 Both sides of one game can qualify: when the division leader plays the wild card
-holder, the row carries both tags.
+holder, the row carries both gaps.
 
 ### The odds floor
 
@@ -1054,8 +1054,8 @@ python showcase.py     -> output/showcase.html
 
 No real date contains an FA Cup final, a World Series game, the Frozen Four and
 a Sweet 16 tie, so `showcase.py` pulls a genuine example of each from its own
-date and lays all 36 onto one page: rounds, series scores, aggregates, tints,
-tags and networks, exactly as they render on the day. It is the fastest way to
+date and lays all 36 onto one page: rounds, series scores, aggregates, tints
+and networks, exactly as they render on the day. It is the fastest way to
 check a display change against every scenario at once.
 
 ## Automation

@@ -20,7 +20,7 @@ CSS = """
 :root {
   --bg: #16161a; --card: #1e1e23; --ink: #ececea; --muted: #9a9a95;
   --line: #2e2e35; --accent: #e0834f; --pin: #26201c; --pin-line: #4a3628;
-  --watch: #1b2029; --watch-line: #33445c; --watch-ink: #8fb0d8; --chip: #2a2a31;
+  --watch: #1b2029; --watch-line: #33445c;
   /* Ranks read better in light blue: a dark navy would vanish against the
      background the same way the black stripe does. */
   --rank: #8fb0d8;
@@ -87,8 +87,8 @@ h2 {
   column-gap: 7px; row-gap: var(--line-gap);
   /* The grid is this cell itself now, not an anchor sitting inside it, so it
      stretches to the row's full height -- and its two auto tracks would take
-     that height with it. A row whose right-hand cell is the taller of the two,
-     which any row with chips is, pushed the team names 41px apart instead of
+     that height with it. A row whose right-hand cell is the taller of the two
+     -- a network under the time -- pushed the team names 41px apart instead of
      3. start, so the pair stays at the top however tall the row gets. */
   align-content: start;
   /* minmax, not a fixed height: a name that wraps on a phone still needs the
@@ -191,14 +191,6 @@ h2 {
 /* One of his own in National, on a channel anyone can watch. Down there the
    network is the point of the row, and the muted grey read as small print. */
 .nets.mine { color: var(--ink); }
-.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
-.chip {
-  background: var(--chip); border-radius: 999px; padding: 1px 8px;
-  white-space: nowrap;
-}
-.chip.tv { color: var(--ink); }
-.chip.why { background: transparent; border: 1px solid var(--watch-line);
-  color: var(--watch-ink); }
 .empty { color: var(--muted); padding: 14px; }
 @media (max-width: 640px) {
   /* A phone has about 200px for the teams once the right-hand column is paid
@@ -431,9 +423,6 @@ def _game_html(game, show_league, config):
     shown = filters.display_networks(game, config)
     networks = "/".join(shown)
     marquee = filters.marquee_window(game, game.get("_league"), config, shown)
-    tags = "".join('<span class="chip why">%s</span>' % _esc(t)
-                   for t in game.get("tags") or [])
-    tags = ('<div class="tags">%s</div>' % tags) if tags else ""
 
     # Your team's colour when you are involved, otherwise whichever team makes
     # the game interesting; black when both sides do.
@@ -482,7 +471,7 @@ def _game_html(game, show_league, config):
     nets = ('<div class="nets%s%s">%s</div>'
             % (" marquee" if marquee else "", " mine" if mine_on_tv else "",
                _esc(networks))) if networks else ""
-    solo = " solo" if not networks and not tags else ""
+    solo = " solo" if not networks else ""
 
     scores, loser, drawn = _scores(game)
     mood = filters.score_highlight(game, config, favourite)
@@ -490,20 +479,19 @@ def _game_html(game, show_league, config):
     when = _esc(_when(game))
 
     # The right-hand column is the link, not the names: it is the whole cell
-    # behind the rule, so the time, the network and the chips all lead to the
-    # gamecast, and the names stay plain text you can read without them looking
-    # tappable.
+    # behind the rule, so the time and the network both lead to the gamecast,
+    # and the names stay plain text you can read without them looking tappable.
     return (
         '<div%s>'
         '<div class="teams">%s%s%s</div>'
-        '<a class="right%s" href="%s"><div class="when">%s</div>%s%s</a>'
+        '<a class="right%s" href="%s"><div class="when">%s</div>%s</a>'
         '</div>'
     ) % (attrs,
          _side_html(first, show_records, config, lines[order[0]],
                     scores.get(order[0]), loser == order[0], order[0], drawn, mood),
          _side_html(second, show_records, config, lines[order[1]],
                     scores.get(order[1]), loser == order[1], order[1], drawn, mood),
-         note, solo, _esc(game["link"]), when, nets, tags)
+         note, solo, _esc(game["link"]), when, nets)
 
 
 def _section(title, games, show_league, config):

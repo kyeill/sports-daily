@@ -289,9 +289,7 @@ def as_text(day, games, config, notes=None):
                 extra = ""
             return "%s%s%s" % (rank, team.get("label") or team["short"] or team["name"], extra)
 
-        tail = []
-        tail += game.get("tags") or []
-        tail += filters.display_networks(game, config)
+        tail = list(filters.display_networks(game, config))
         if config.get("show_odds", True) and game.get("spread_label"):
             tail.append(game["spread_label"])
         suffix = "  [%s]" % ", ".join(tail) if tail else ""

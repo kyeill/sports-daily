@@ -5,7 +5,7 @@
 No single real date contains an FA Cup final, a World Series game, the Frozen
 Four and a Sweet 16 tie, so this pulls a genuine example of each from its own
 date and lays them out together. It is a review tool: it shows exactly how each
-scenario renders -- rounds, series lines, aggregates, tints, tags, networks --
+scenario renders -- rounds, series lines, aggregates, tints, networks --
 without waiting a year for them all to come round.
 """
 
@@ -95,7 +95,7 @@ def main():
     config = sports_daily.load_config()
     sheets.load(config)
     tz = ZoneInfo(config.get("timezone", "America/New_York"))
-    # Put the NFL race in season so the chase tags appear on the examples.
+    # Put the NFL race in season so a race caption appears on the examples.
     race.merge_into(config, today=date(2025, 12, 14))
 
     parts = []

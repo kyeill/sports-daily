@@ -1,3 +1,31 @@
+## 2026-11-02 — the race chips go, the race stays
+
+The `Division Race` / `Wild Card Race` chips beside a matchup are gone. The
+race itself is untouched: the Vikings and the Packers are still on the
+watchlist this month, their games still show, and the gap is still on the
+detail line.
+
+The chip only ever repeated something. In National an NFL row already read
+`Playoff Race · 2 GB` under the matchup; the chip on the right said
+`Division Race` a second time. Outside National the caption is suppressed for
+the four he knows on sight, so the chip was the only mention — but "2 GB" on a
+Vikings row was written to stand alone, and does.
+
+Chases were the only thing `tags_for` could return; everything else had been
+pruned as noise years ago. So removing them emptied the whole tag channel, and
+it went with them: `tags_for`, `MAX_TAGS`, `game["tags"]`, the `.tags` and
+`.chip.why` rules, the `--watch-ink` colour, the slot in the row template and
+the `[...]` entry in the text digest. `solo` now turns on networks alone,
+which is all it was ever really asking.
+
+Three more documentation errors fell out of it. README's own Tags section
+named them `Division Chase`, `Wild Card Chase` and `Playoff Spot Chase` — none
+of which the code has ever produced. It gave the National caption as `NBA -
+National TV` and `NFL - Playoff Race`, when the four quiet leagues print no
+league name at all: plain `Playoff Race`, or nothing. And the playoff-race
+section still said a doubly-qualified row "carries both tags", which is now
+both gaps.
+
 ## 2026-10-29 — a sweep for dead weight, which mostly found none
 
 Audited every file for bloat and for documentation that had drifted. The

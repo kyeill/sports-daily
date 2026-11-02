@@ -20,16 +20,14 @@ import sheets
 
 TIERS = ("favorite", "watch", "interest")
 
-# Internal reason -> the label shown on the page. "slate" has no entry on
-# purpose: a game kept only because its whole league is shown would tag every
-# row with the same word, which is noise, not information.
-# The only notes that still earn a tag: they say something the row does not.
+# The standings-derived notes. `label_for` turns them into "Playoff Race" on
+# the detail line of a National row; nothing else reads them. The chips that
+# used to repeat them beside the matchup said the same thing twice.
 CHASE_NOTES = ("Division Race", "Wild Card Race", "Playoff Race")
 
 # Two rivals in one game has no honest answer, so the stripe takes neither
 # side. Black said that too, but said it invisibly.
 RIVAL_GREY = "9a9a95"
-MAX_TAGS = 2
 
 
 def _flat(text):
@@ -1697,7 +1695,6 @@ def evaluate(game, league, config):
     game["watch_notes"] = watch_notes
     game["watch_context"] = " · ".join(watch_context)
     game["reasons"] = reasons
-    game["tags"] = tags_for(game)
     return keep, tier, reasons
 
 
@@ -2625,18 +2622,6 @@ def round_label(game, config=None, league=None):
     if label and leg:
         return "%s - %s" % (label, leg)
     return label or leg
-
-
-def tags_for(game):
-    """The short label on a row: why you care, or which round it is.
-
-    Deliberately narrow. Tags that merely restate the section -- Ranked, Big
-    Ten, National Game, Standalone -- were noise on every row, so the only
-    survivors are the standings-derived chases and the round name.
-    """
-    # Only the standings-derived chases; the round sits beside the matchup.
-    tags = [n for n in (game.get("watch_notes") or []) if n in CHASE_NOTES]
-    return tags[:MAX_TAGS]
 
 
 def leg_of(game):
