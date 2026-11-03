@@ -224,7 +224,10 @@ APP_JS = """
   // Versioned: a stored state is only as good as the fields the code that
   // wrote it knew about, so widening what is remembered retires the old ones
   // rather than trying to interpret them.
-  var MEMORY = 'live2:' + BUILT;
+  // live3: states saved before scores were placed by team id can hold the two
+  // sides swapped (Gonzaga's 78-72 as Purdue's), and painting one back would
+  // put the swap over a build that has it right.
+  var MEMORY = 'live3:' + BUILT;
   // When the numbers below the date were last confirmed against ESPN. The
   // build writes its own time into the page; every successful poll replaces
   // it, and it is stored so a reload shows the real last update rather than
@@ -266,7 +269,7 @@ APP_JS = """
     try {
       // Only ever this build's key, so nothing accumulates day after day.
       Object.keys(localStorage).forEach(function (k) {
-        if ((k.indexOf('live:') === 0 || k.indexOf('live2:') === 0) && k !== MEMORY) {
+        if (/^live\\d?:/.test(k) && k !== MEMORY) {
           localStorage.removeItem(k);
         }
       });
