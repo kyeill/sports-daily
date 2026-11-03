@@ -177,6 +177,8 @@ APP_JS = """
   // It can never change WHICH games are listed -- the filters run at build
   // time against standings and odds. Scores and status only.
   var LIVE_MS = 60000;
+  // How long a game that finished while the page watched is still re-checked.
+  var SETTLE_MS = 30 * 60 * 1000;
   var live = null;
 
   function todayPanel() {
@@ -202,7 +204,15 @@ APP_JS = """
         // status, and a row dropped from the list the moment it went final
         // read one poll too early and kept the old caption for good. Only
         // postseason rows carry the slot, so this is a handful of games.
-        return row.dataset.state !== 'post' || !!row.querySelector('.series');
+        //
+        // Nor is a game this page watched end. The first poll to say Final
+        // used to be the last one, and it was remembered and painted back on
+        // every reload -- so a scoreboard that went final a beat before its
+        // score did, or corrected one afterwards, held the wrong result all
+        // night. It is asked about for half an hour after it ends instead.
+        var settled = Number(row.dataset.finalAt || 0);
+        return row.dataset.state !== 'post' || !!row.querySelector('.series')
+          || (settled > 0 && Date.now() - settled < SETTLE_MS);
       });
   }
 
@@ -320,6 +330,7 @@ APP_JS = """
       if (slot) { slot.textContent = ' (' + st.series + ')'; }
     }
     row.dataset.state = st.state;
+    if (st.finalAt) { row.dataset.finalAt = String(st.finalAt); }
     if (st.state === 'post' && row.parentNode) { resort(row.parentNode); }
   }
 
@@ -445,8 +456,12 @@ APP_JS = """
     // night: penalties settle a draw, and a second leg goes on aggregate.
     // ESPN marks the side that advanced, so that is read first and the
     // scores are the fallback -- the same order filters.result_of uses.
+    // Soccer only, as there: anywhere else the score already says who won,
+    // and a flag that disagreed with it would strike the side that scored more.
     var won = {};
-    (comp.competitors || []).forEach(function (c) { won[c.homeAway] = !!c.winner; });
+    if ((row.dataset.path || '').indexOf('soccer/') === 0) {
+      (comp.competitors || []).forEach(function (c) { won[c.homeAway] = !!c.winner; });
+    }
     var settled = null;
     if (state === 'post' && scores.home != null && scores.away != null) {
       settled = won.home !== won.away ? (won.home ? 'home' : 'away')
@@ -478,6 +493,12 @@ APP_JS = """
         : when.textContent,
       home: scores.home, away: scores.away,
       drawn: drawn, losing: losing, series: series,
+      // When this page first saw it final, so it is re-checked for a while
+      // rather than trusted from that one poll. Only a game seen going final
+      // live gets one; the build's own finals are settled long before.
+      finalAt: state !== 'post' ? 0
+        : (Number(row.dataset.finalAt || 0)
+           || (row.dataset.state !== 'post' ? Date.now() : 0)),
       // An upset shows while it is happening; the rest are results, so they
       // wait for the final whistle. A finished derby comes first: whoever won,
       // a rival won, so nothing about that score is worth lighting up.

@@ -1025,6 +1025,12 @@ today's standings, so a backdated run shows a race that reflects now, not then.
 - **Neutral-site games read "vs", never "at"** — `neutralSite` in the payload.
 - **Soccer is written home side first** ("Fulham vs Chelsea"); every other
   sport is away at home. ESPN's `homeAway` field is the source either way.
+- **A live "Final" is not final.** The live script once trusted the first
+  poll that said so, stopped asking, and remembered it across reloads; a
+  scoreboard a beat behind its own status kept the wrong winner all night.
+  Rows that go final on the page are re-checked for half an hour.
+- **ESPN's `winner` flag only outranks the score in soccer**, where
+  penalties and aggregates need it. Elsewhere the score decides.
 - **`%-I` is not portable on Windows**; times strip the leading zero by hand.
 
 Two more leagues' worth of plumbing is still in the code (`ranked_within`,

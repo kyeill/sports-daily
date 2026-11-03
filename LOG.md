@@ -1,3 +1,27 @@
+## 2026-11-03 — Gonzaga beat Purdue, and the page said otherwise
+
+Reported from the live page that evening. ESPN was not reachable from where
+this was fixed, so the feed for that game was never seen; both ways the live
+script could have named the wrong winner are closed, and each was reproduced
+in a browser against a faked scoreboard before and after.
+
+**The first poll to say Final was the last one.** A finished row dropped out
+of `rowsToWatch`, and its state was remembered and painted back on every
+reload, so a scoreboard that went final a beat before its score did -- or
+corrected the score afterwards -- held that result for the rest of the night.
+Faked as Purdue 70-68 Final then Gonzaga 71-70 Final, the old script struck
+Gonzaga and kept doing so through a reload. A game the page sees go final is
+now re-checked for 30 minutes (`SETTLE_MS`, its start remembered as
+`finalAt`); finals the build printed, and remembered ones from before this,
+carry no `finalAt` and are left alone as before.
+
+**The `winner` flag outranked the score in every sport.** It was added on
+10-27 for penalties and aggregates, where the scoreline names the wrong side.
+Outside soccer the scoreline cannot, so the flag adds nothing there and has
+one way to hurt: a flag set on Purdue with Gonzaga ahead 71-70 struck the
+side that scored more. `result_of` and the live script both read it for
+soccer only now; the Atletico aggregate case still lands the same way.
+
 ## 2026-11-02 — a race decides, and then says nothing
 
 Third pass. The gap is gone too, so a race is no longer written on the page in
