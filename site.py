@@ -494,6 +494,11 @@ APP_JS = """
     var calledOff = name.indexOf('POSTPONED') >= 0 || name.indexOf('CANCEL') >= 0
       || name.indexOf('SUSPEND') >= 0;
     var stopped = periodLabel(row.dataset.path || '', (comp.status || {}).period);
+    // At halftime, or between quarters, ESPN still numbers the period just
+    // finished, so "once the first half is done" read as not yet: UCLA led
+    // Arizona at the break with nothing coloured. A break counts as the next.
+    var reached = ((comp.status || {}).period || 0)
+      + (name.indexOf('HALFTIME') >= 0 || name.indexOf('END_PERIOD') >= 0 ? 1 : 0);
     if (calledOff) {
       applyState(row, {state: state, text: type.description || 'Postponed',
                        drawn: false, losing: null});
@@ -517,8 +522,8 @@ APP_JS = """
       // wait for the final whistle. A finished derby comes first: whoever won,
       // a rival won, so nothing about that score is worth lighting up.
       mood: (state === 'post' && row.dataset.derby) ? 'bad'
-        : (upsetHappening(row, scores, state, (comp.status || {}).period)
-           || rivalInTrouble(row, scores, state, (comp.status || {}).period,
+        : (upsetHappening(row, scores, state, reached)
+           || rivalInTrouble(row, scores, state, reached,
                              (comp.status || {}).clock)) ? 'good'
         : (state === 'post' ? moodFor(row, scores, settled) : '')
     };

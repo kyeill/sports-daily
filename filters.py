@@ -1091,6 +1091,16 @@ def live_upset_rule(game, config):
     return live.get((game.get("_league") or {}).get("key")) or {}
 
 
+def _period_now(game):
+    """The period being played, counting a break as the start of the next.
+
+    At halftime ESPN still says period 1, so "once the first half is done"
+    read as not yet -- UCLA led Arizona at the break with nothing coloured.
+    """
+    period = game.get("period") or 0
+    return period + 1 if game.get("period_over") else period
+
+
 def upset_happening(game, favourite, config=None):
     """Whether the favoured side is in trouble, worth colouring.
 
@@ -1119,7 +1129,7 @@ def upset_happening(game, favourite, config=None):
     rule = live_upset_rule(game, config or {})
     if not rule:
         return False
-    period = game.get("period") or 0
+    period = _period_now(game)
     if period <= (rule.get("after_period") or 0):
         return False
     return (mine - theirs) <= rule.get("within", 0)
@@ -1271,7 +1281,7 @@ def _period_reached(game, rule):
     wanted = rule.get("after_period")
     if not wanted:
         return True
-    period = game.get("period") or 0
+    period = _period_now(game)
     if period > wanted:
         return True
     limit = rule.get("after_clock")
