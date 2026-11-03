@@ -1,3 +1,23 @@
+## 2026-11-03 (later) — the scores were right, the names were swapped
+
+What the page actually showed was **Purdue 78, Gonzaga 72, Gonzaga struck
+through, the score orange for an upset** -- Gonzaga's real 78-72 win with the
+two sides exchanged. Neither fix below explains that; they were guesses made
+before the detail came in.
+
+The build and the live script both place a team by ESPN's `homeAway`, and
+they read it at different times: 6am and the evening. If ESPN changes which
+side it calls home in between -- the plausible case being a neutral-site
+game re-designated during the day; the feed itself could not be checked from
+here -- every number the live script writes lands on the other name, and the
+strikethrough and the upset colour follow it. Faked that way (Purdue home at
+the build, Gonzaga home in the evening feed), the old script reproduced the
+report exactly.
+
+Rows now carry `data-home-id` / `data-away-id`, and the live script places
+each competitor by team id, falling back to `homeAway` only when neither id
+matches.
+
 ## 2026-11-03 — Gonzaga beat Purdue, and the page said otherwise
 
 Reported from the live page that evening. ESPN was not reachable from where

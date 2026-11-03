@@ -1029,6 +1029,10 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   poll that said so, stopped asking, and remembered it across reloads; a
   scoreboard a beat behind its own status kept the wrong winner all night.
   Rows that go final on the page are re-checked for half an hour.
+- **ESPN's home/away can change after the build.** The live script read it
+  again each poll, so a re-designated neutral-site game wrote Gonzaga's
+  78-72 against Purdue's name. Live scores are placed by team id
+  (`data-home-id` / `data-away-id` on the row).
 - **ESPN's `winner` flag only outranks the score in soccer**, where
   penalties and aggregates need it. Elsewhere the score decides.
 - **`%-I` is not portable on Windows**; times strip the leading zero by hand.

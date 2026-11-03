@@ -453,6 +453,12 @@ def _game_html(game, show_league, config):
     if watch:
         attrs += ' data-mood="%s"' % _esc(
             "|".join("%s:%s:%s" % parts for parts in watch))
+    # Which team is which, by ESPN id. The live script places scores by these
+    # rather than by the feed's home/away, which can change after the build:
+    # with the labels swapped on a neutral floor, Gonzaga's 78-72 win over
+    # Purdue was written against the wrong names, the winner struck through.
+    attrs += ' data-home-id="%s" data-away-id="%s"' % (
+        _esc(game["home"].get("id") or ""), _esc(game["away"].get("id") or ""))
     attrs += ' data-game="%s" data-path="%s" data-state="%s" data-start="%s"' % (
         _esc(game.get("id") or ""), _esc(league.get("path") or ""),
         _esc(game.get("state") or ""),

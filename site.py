@@ -448,9 +448,20 @@ APP_JS = """
       ? seriesShort(((comp.series || {}).summary) || '') : '';
     var when = row.querySelector('.when');
     if (!when) { return; }
+    // Each side by the team's id, the way the build printed it, and ESPN's
+    // home/away only when an id does not match. The label can change after
+    // the build -- a neutral-site game re-designated during the day -- and
+    // read by label, the scores and the strikethrough landed on the wrong
+    // names: Gonzaga's 78-72 win over Purdue showed as Purdue's.
+    function sideOf(c) {
+      var id = String((c.team || c.athlete || {}).id || c.id || '');
+      if (id && id === row.dataset.homeId) { return 'home'; }
+      if (id && id === row.dataset.awayId) { return 'away'; }
+      return c.homeAway;
+    }
     var scores = {};
     (comp.competitors || []).forEach(function (c) {
-      scores[c.homeAway] = c.score;
+      scores[sideOf(c)] = c.score;
     });
     // Who went through, which on a cup tie is not always who won on the
     // night: penalties settle a draw, and a second leg goes on aggregate.
@@ -460,7 +471,7 @@ APP_JS = """
     // and a flag that disagreed with it would strike the side that scored more.
     var won = {};
     if ((row.dataset.path || '').indexOf('soccer/') === 0) {
-      (comp.competitors || []).forEach(function (c) { won[c.homeAway] = !!c.winner; });
+      (comp.competitors || []).forEach(function (c) { won[sideOf(c)] = !!c.winner; });
     }
     var settled = null;
     if (state === 'post' && scores.home != null && scores.away != null) {
