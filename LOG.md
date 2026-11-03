@@ -1,3 +1,18 @@
+## 2026-11-03 (later still) — halftime is the end of a half
+
+UCLA led Arizona at the break and the score stayed white. The live upset
+rule waits for `after_period` to be done, and at halftime ESPN still reports
+`period: 1` with `STATUS_HALFTIME` -- so the first half read as unfinished
+until the second tipped off. A break (`HALFTIME`, `END_PERIOD`) now counts as
+the next period, in the build (`period_over`, `_period_now`) and the live
+script alike. Rival rules use the same count, which matters most for soccer,
+where they can only wait on a period.
+
+The Gonzaga score still lit orange after the rebuild for a separate reason:
+PR #1 carried the id fix but not the retired saved states, so the browser
+painted back its pre-fix copy -- mood and all -- over a build that had it
+right.
+
 ## 2026-11-03 (later) — the scores were right, the names were swapped
 
 What the page actually showed was **Purdue 78, Gonzaga 72, Gonzaga struck

@@ -873,6 +873,10 @@ def games_for(league, date_yyyymmdd, tz, cache_minutes=30):
                               for word in ("POSTPONED", "CANCEL", "SUSPEND")),
             "status_note": status.get("description") or "",
             "period": (comp.get("status") or {}).get("period"),
+            # Halftime, or the break after a quarter: the period above is over,
+            # though ESPN still numbers it as the one being played.
+            "period_over": any(word in (status.get("name") or "").upper()
+                               for word in ("HALFTIME", "END_PERIOD")),
             # Seconds left in the period. Basketball counts halves, so "ten
             # minutes in" is only expressible as a clock, not a period.
             "clock": (comp.get("status") or {}).get("clock"),
