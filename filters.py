@@ -1139,11 +1139,16 @@ def result_of(game):
     and that is what is read here. The scores are the fallback, for a feed
     that does not carry the flag; both sides unmarked is also how it writes a
     genuine draw, which the scores then agree with.
+
+    Soccer only. Nowhere else can the scoreline name the wrong winner, so
+    there the flag has nothing to add and only one way to be wrong: trusted
+    in every sport, a flag that disagreed with the score struck the side
+    that scored more.
     """
     if (game.get("state") or "") != "post" or game.get("called_off"):
         return ""
     flags = [bool(game[s].get("winner")) for s in ("home", "away")]
-    if flags[0] != flags[1]:
+    if (game.get("sport") or "").lower() == "soccer" and flags[0] != flags[1]:
         return "home" if flags[0] else "away"
     try:
         home, away = int(game["home"].get("score")), int(game["away"].get("score"))

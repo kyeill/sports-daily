@@ -1,3 +1,47 @@
+## 2026-11-03 (later) — the scores were right, the names were swapped
+
+What the page actually showed was **Purdue 78, Gonzaga 72, Gonzaga struck
+through, the score orange for an upset** -- Gonzaga's real 78-72 win with the
+two sides exchanged. Neither fix below explains that; they were guesses made
+before the detail came in.
+
+The build and the live script both place a team by ESPN's `homeAway`, and
+they read it at different times: 6am and the evening. If ESPN changes which
+side it calls home in between -- the plausible case being a neutral-site
+game re-designated during the day; the feed itself could not be checked from
+here -- every number the live script writes lands on the other name, and the
+strikethrough and the upset colour follow it. Faked that way (Purdue home at
+the build, Gonzaga home in the evening feed), the old script reproduced the
+report exactly.
+
+Rows now carry `data-home-id` / `data-away-id`, and the live script places
+each competitor by team id, falling back to `homeAway` only when neither id
+matches.
+
+## 2026-11-03 — Gonzaga beat Purdue, and the page said otherwise
+
+Reported from the live page that evening. ESPN was not reachable from where
+this was fixed, so the feed for that game was never seen; both ways the live
+script could have named the wrong winner are closed, and each was reproduced
+in a browser against a faked scoreboard before and after.
+
+**The first poll to say Final was the last one.** A finished row dropped out
+of `rowsToWatch`, and its state was remembered and painted back on every
+reload, so a scoreboard that went final a beat before its score did -- or
+corrected the score afterwards -- held that result for the rest of the night.
+Faked as Purdue 70-68 Final then Gonzaga 71-70 Final, the old script struck
+Gonzaga and kept doing so through a reload. A game the page sees go final is
+now re-checked for 30 minutes (`SETTLE_MS`, its start remembered as
+`finalAt`); finals the build printed, and remembered ones from before this,
+carry no `finalAt` and are left alone as before.
+
+**The `winner` flag outranked the score in every sport.** It was added on
+10-27 for penalties and aggregates, where the scoreline names the wrong side.
+Outside soccer the scoreline cannot, so the flag adds nothing there and has
+one way to hurt: a flag set on Purdue with Gonzaga ahead 71-70 struck the
+side that scored more. `result_of` and the live script both read it for
+soccer only now; the Atletico aggregate case still lands the same way.
+
 ## 2026-11-02 — a race decides, and then says nothing
 
 Third pass. The gap is gone too, so a race is no longer written on the page in
