@@ -1597,7 +1597,16 @@ def evaluate(game, league, config):
 
     demoted = False
     to_national = False
-    if fav_hit and not promoted:
+    # A round that is still his team's, but not an event: the Nations League
+    # third-place match goes to Soccer -- not up to Highlights with the
+    # semis and the final, and not down to National with the group games.
+    current_round = (game.get("round") or "").lower()
+    soccer_round = bool(current_round) and any(
+        fnmatch.fnmatch(current_round, r.lower())
+        for r in league.get("soccer_section_rounds") or [])
+    if fav_hit and not promoted and soccer_round:
+        demoted = True
+    elif fav_hit and not promoted:
         for name in league.get("highlight_teams") or []:
             if any(_matches(t, name) for t in sides):
                 demoted = True
@@ -1720,7 +1729,7 @@ def _postseason_tag(game):
 # League calls its regular season "2025-26-english-premier-league", which a
 # blacklist happily turned into a tag.
 KNOCKOUT_WORDS = ("final", "semifinal", "quarterfinal", "round", "playoff",
-                  "cup", "knockout", "3rd-place")
+                  "cup", "knockout", "3rd-place", "third-place")
 
 
 def _round_tag(game):

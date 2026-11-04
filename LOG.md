@@ -1,3 +1,14 @@
+## 2026-11-04 (later) — the Nations League third-place match is Soccer
+
+The US in the third-place match is still his team, but not an event: it now
+sits in Soccer, rather than up in Highlights with the semis and the final or
+down in National with the group games. `3rd-place-match` came out of the
+league's `promote_rounds` and a new `soccer_section_rounds` names it, under
+both spellings since this competition's slug has not been seen --
+`third-place` is now a knockout word too, or the round would go unlabelled.
+On a phone it reads `Nations Lg Third`; the final was already `Nations Lg
+Final`.
+
 ## 2026-11-04 — Nations League in phone shorthand
 
 On a phone the detail line now reads `Nations Lg Qtrs - 1st Leg` and
