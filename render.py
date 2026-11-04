@@ -145,6 +145,9 @@ h2 {
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
   margin-top: 1px; }
+/* A league's `phone_detail` shorthand: both wordings are in the page, and the
+   width picks one -- a build cannot know the screen it will be read on. */
+.s-note .phone { display: none; }
 /* Time and networks sit against the two team lines, not centred on the row:
    a competition line underneath would otherwise push them out of line with
    the teams they belong to. */
@@ -220,12 +223,31 @@ h2 {
   .s-spread { display: inline; }
   .s-rec { font-size: 11.5px; }
   .when, .nets { font-size: 12.5px; }
+  .s-note .wide { display: none; }
+  .s-note .phone { display: inline; }
 }
 """
 
 
 def _esc(text):
     return html.escape(str(text or ""))
+
+
+def _phone_wording(text, game):
+    """The detail line, escaped, with a shorter form for phones if it has one.
+
+    A league's `phone_detail` maps phrases to what a phone shows instead --
+    "Concacaf Nations League Quarterfinals" reads "Nations Lg Qtrs" there.
+    Both are written out and CSS picks by width.
+    """
+    short = text
+    for phrase, brief in ((game.get("_league") or {}).get("phone_detail") or {}).items():
+        if not phrase.startswith("_"):
+            short = short.replace(phrase, brief)
+    if short == text:
+        return _esc(text)
+    return ('<span class="wide">%s</span><span class="phone">%s</span>'
+            % (_esc(text), _esc(short)))
 
 
 def _logo(team, config):
@@ -416,9 +438,10 @@ def _game_html(game, show_league, config):
         body = body.replace(" " + series, "", 1)
     if detail and game.get("postseason"):
         note = ('<span class="s-note">%s<span class="series">%s</span></span>'
-                % (_esc(body), _esc(" " + series) if series else ""))
+                % (_phone_wording(body, game), _esc(" " + series) if series else ""))
     else:
-        note = ('<span class="s-note">%s</span>' % _esc(detail)) if detail else ""
+        note = (('<span class="s-note">%s</span>' % _phone_wording(detail, game))
+                if detail else "")
 
     shown = filters.display_networks(game, config)
     networks = "/".join(shown)
