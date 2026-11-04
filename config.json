@@ -1057,6 +1057,12 @@
       "label": "Concacaf Nations League",
       "sport": "Soccer",
       "enabled": true,
+      "phone_detail": {
+        "_comment": "What a phone shows in place of each phrase on the detail line. Desktop keeps the full wording.",
+        "Concacaf Nations League": "Nations Lg",
+        "Quarterfinals": "Qtrs",
+        "Semifinals": "Semis"
+      },
       "team_group": "usmnt",
       "include": {
         "favorites": true,

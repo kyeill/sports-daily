@@ -1,3 +1,11 @@
+## 2026-11-04 — Nations League in phone shorthand
+
+On a phone the detail line now reads `Nations Lg Qtrs - 1st Leg` and
+`Nations Lg Semis`; desktop keeps `Concacaf Nations League Quarterfinals`.
+A league can carry `phone_detail`, phrase -> shorter phrase, and the row
+writes both wordings with CSS choosing by width -- the build cannot know the
+screen. Only the Nations League uses it so far.
+
 ## 2026-11-03 (later still) — halftime is the end of a half
 
 UCLA led Arizona at the break and the score stayed white. The live upset
