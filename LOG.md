@@ -1,3 +1,42 @@
+## 2026-11-05 — the upsets the filters threw away
+
+A ranked team's November cupcake is dropped by `max_spread` -- and that is
+exactly the game that becomes news when the cupcake wins. Three parts, for
+CFB and CBB, and only where the favourite is RANKED (`upset_side`, so his own
+rules about rivals and too-close rankings still hold); a betting favourite
+alone never counts.
+
+1. **Hidden rows.** `collect(..., lurkers=True)` -- the app build only; the
+   console and `--text` never see them -- adds every dropped game with a
+   ranked favourite, flagged `_lurk`. It renders in its usual section as
+   `.row.lurk`, hidden, with `data-reveal`. A heading or card holding nothing
+   else is wrapped `.lurk-sect` and hides with it. The game count ignores them.
+2. **The live script reveals one** when the favourite loses, or earlier at a
+   point from `upset_watch.reveal`: CBB, underdog leading or tied at the half
+   (and so at any point after), or within 3 from the 10:00 mark of the second
+   half; CFB, underdog leading or tied at the half (and after), or within 8 in
+   the fourth.
+   Once shown it stays shown, through a reload, even if the favourite pulls
+   away -- a row that came and went would read as a fault.
+3. **The next morning's build** puts back any dropped game whose ranked
+   favourite lost, so it is on yesterday's tab as an ordinary result. A
+   comeback that was revealed live but ended in a favourite's win is not.
+
+**The live scoreboard request now falls back to the build's `groups`.** The
+script asked ESPN with no `groups`, and a dropped game is the likeliest kind
+to be missing from what ESPN features by default. It still asks that way
+first, and repeats the request with `groups` only when a row it is watching
+is missing -- with them a college scoreboard is every Division I game, so
+asking that way every minute would cost a phone real data. Never checked
+against ESPN from here: it may be that the default already includes every
+ranked team's game, in which case the second request simply never fires.
+
+Tested by faking ESPN in a browser: a Kentucky-Lipscomb row stayed hidden
+with Lipscomb up 10 in the first half and with Kentucky up 1 at the break,
+appeared at 35-35 at the half, stayed when Kentucky went up 15, and survived
+a reload; on a day with no other basketball, the heading appeared with it
+and the "No games match" line went.
+
 ## 2026-11-04 (later) — the Nations League third-place match is Soccer
 
 The US in the third-place match is still his team, but not an event: it now

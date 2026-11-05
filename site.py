@@ -334,6 +334,16 @@ APP_JS = """
     }
     row.dataset.state = st.state;
     if (st.finalAt) { row.dataset.finalAt = String(st.finalAt); }
+    // A filtered-out upset, shown -- and kept shown, even if the favourite
+    // recovers: a row that came and went would read as a fault.
+    if (st.revealed && row.classList.contains('lurk')) {
+      row.classList.remove('lurk');
+      var wrap;
+      while ((wrap = row.parentNode && row.parentNode.closest
+              ? row.parentNode.closest('.lurk-sect') : null)) {
+        wrap.classList.remove('lurk-sect');
+      }
+    }
     if (st.state === 'post' && row.parentNode) { resort(row.parentNode); }
   }
 
@@ -437,6 +447,27 @@ APP_JS = """
     return who ? who[1] + ' ' + score[0] : score[0];
   }
 
+  // Whether a hidden row's upset is on: the ranked favourite lost, or the row
+  // names a point in the game -- "period:clock:within", comma-separated --
+  // that has been reached with the favourite leading by no more than that.
+  // The same test filters.upset_revealed makes for the build.
+  function upsetRevealed(row, scores, state, period, clock, onBreak) {
+    var fav = row.dataset.upset;
+    if (!fav || !row.dataset.reveal) { return false; }
+    var other = fav === 'home' ? 'away' : 'home';
+    if (scores[fav] == null || scores[other] == null) { return false; }
+    var lead = Number(scores[fav]) - Number(scores[other]);
+    if (state === 'post') { return lead < 0; }
+    if (state !== 'in') { return false; }
+    return row.dataset.reveal.split(',').some(function (part) {
+      var bits = part.split(':').map(Number);
+      if (bits.length !== 3) { return false; }
+      var reached = period !== bits[0] ? period > bits[0]
+        : onBreak || (typeof clock === 'number' && clock <= bits[1]);
+      return reached && lead <= bits[2];
+    });
+  }
+
   function paint(row, event) {
     var comp = (event.competitions || [])[0];
     if (!comp) { return; }
@@ -527,6 +558,13 @@ APP_JS = """
                              (comp.status || {}).clock)) ? 'good'
         : (state === 'post' ? moodFor(row, scores, settled) : '')
     };
+    if (row.dataset.reveal) {
+      st.revealed = row.dataset.revealed === '1'
+        || upsetRevealed(row, scores, state, (comp.status || {}).period || 0,
+                         (comp.status || {}).clock,
+                         name.indexOf('HALFTIME') >= 0 || name.indexOf('END_PERIOD') >= 0);
+      if (st.revealed) { row.dataset.revealed = '1'; }
+    }
     applyState(row, st);
     // A game still to start has nothing worth remembering: the build's own
     // time is already the right answer.
@@ -600,16 +638,35 @@ APP_JS = """
     var when = new Date();
     var stamp = when.getFullYear()
       + ('0' + (when.getMonth() + 1)).slice(-2) + ('0' + when.getDate()).slice(-2);
-    Object.keys(byPath).forEach(function (path) {
+    function ask(path, groups) {
       var url = 'https://site.api.espn.com/apis/site/v2/sports/' + path
-        + '/scoreboard?dates=' + stamp + '&limit=400';
-      fetch(url, { headers: { Accept: 'application/json' } })
-        .then(function (r) { return r.ok ? r.json() : null; })
+        + '/scoreboard?dates=' + stamp + '&limit=400'
+        + (groups ? '&groups=' + encodeURIComponent(groups) : '');
+      return fetch(url, { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.ok ? r.json() : null; });
+    }
+    Object.keys(byPath).forEach(function (path) {
+      var rows = byPath[path];
+      var byId = {};
+      function take(data) {
+        (data && data.events || []).forEach(function (ev) { byId[ev.id] = ev; });
+      }
+      // Without the build's `groups` ESPN may answer with only its featured
+      // games -- a ranked team's November opponent is not always one -- so a
+      // row it left out is asked about again with them. Only then: with
+      // them, a college scoreboard is every Division I game of the day.
+      ask(path, '')
         .then(function (data) {
-          if (!data) { return; }
-          var byId = {};
-          (data.events || []).forEach(function (ev) { byId[ev.id] = ev; });
-          byPath[path].forEach(function (row) {
+          take(data);
+          var groups = '';
+          rows.forEach(function (row) {
+            if (!byId[row.dataset.game] && row.dataset.groups) { groups = row.dataset.groups; }
+          });
+          return groups ? ask(path, groups).then(take, function () {}) : null;
+        })
+        .then(function () {
+          if (!Object.keys(byId).length) { return; }
+          rows.forEach(function (row) {
             var ev = byId[row.dataset.game];
             if (ev) { paint(row, ev); }
           });
@@ -754,7 +811,7 @@ def build(config, days=8, out=SITE):
     tabs, panels = [], []
     for offset in range(-1, days):
         day = today + timedelta(days=offset)
-        games, _ = sports_daily.collect(config, day, tz)
+        games, _ = sports_daily.collect(config, day, tz, lurkers=True)
         today_info = None
         if offset == 0 and espn.FAILURES:
             today_info = ["Some data could not be loaded today: %s"

@@ -213,9 +213,15 @@ def record_history(config, day, tz):
     return written
 
 
-def collect(config, day, tz, only=None):
-    """Fetch every enabled league and keep the games that pass its filters."""
-    kept, stats = [], []
+def collect(config, day, tz, only=None, lurkers=False):
+    """Fetch every enabled league and keep the games that pass its filters.
+
+    A ranked team that lost to someone the filters dropped is put back,
+    finished or in trouble at build time. With `lurkers`, the rest of those
+    games -- the ones still to be decided -- come along too, flagged
+    `_lurk`, for the live page to keep hidden until the favourite slips.
+    """
+    kept, stats, upsets, lurking = [], [], [], []
     date_key = day.strftime("%Y%m%d")
     for league in config.get("leagues", []):
         if not league.get("enabled", True):
@@ -234,6 +240,17 @@ def collect(config, day, tz, only=None):
         torvik.mark_projected(games, league, date_key,
                               config.get("cache_minutes_projection", 720))
         passed = [g for g in games if filters.evaluate(g, league, config)[0]]
+        for game in games:
+            if game in passed:
+                continue
+            favourite = filters.lurking_upset(game, config)
+            if not favourite:
+                continue
+            if filters.upset_revealed(game, favourite, config):
+                upsets.append(game)
+            elif lurkers and game.get("state") != "post":
+                game["_lurk"] = True
+                lurking.append(game)
         # Soccer shows a chosen team's price rather than the favourite's, which
         # needs the three-way market. Asked for only on games being kept, so it
         # costs a handful of requests rather than one per fixture on the card.
@@ -246,6 +263,9 @@ def collect(config, day, tz, only=None):
     # Decided across the whole day rather than game by game: a national
     # broadcast earns its row by being the only thing on.
     kept, dropped = filters.drop_crowded_national(kept, config)
+    # After the crowding rule, which is about what is on national TV: an
+    # upset is on the page because it happened, not for its channel.
+    kept.extend(upsets)
     # Which named events have more than one row on the page. Counted on what
     # survives rather than on the whole slate: a tournament the page shows one
     # game of is, to a reader, a one-off with a title, and the town is the
@@ -255,6 +275,8 @@ def collect(config, day, tz, only=None):
         gone = collections.Counter(g.get("league_label") for g in dropped)
         stats = [(label, passed - gone.get(label, 0), total)
                  for label, passed, total in stats]
+    # Last, so a hidden row never counts towards an event being shared.
+    kept.extend(lurking)
     return kept, stats
 
 
