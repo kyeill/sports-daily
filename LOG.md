@@ -14,7 +14,8 @@ alone never counts.
 2. **The live script reveals one** when the favourite loses, or earlier at a
    point from `upset_watch.reveal`: CBB, underdog leading or tied at the half
    (and so at any point after), or within 3 from the 10:00 mark of the second
-   half; CFB, underdog leading after the half, or within 8 in the fourth.
+   half; CFB, underdog leading or tied at the half (and after), or within 8 in
+   the fourth.
    Once shown it stays shown, through a reload, even if the favourite pulls
    away -- a row that came and went would read as a fault.
 3. **The next morning's build** puts back any dropped game whose ranked

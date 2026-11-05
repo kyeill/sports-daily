@@ -1540,7 +1540,7 @@
         {"_note": "Within 3 from the 10:00 mark of the second half", "period": 2, "clock": 600, "within": 3}
       ],
       "college-football": [
-        {"_note": "Underdog leading after the half", "period": 2, "clock": 0, "within": -1},
+        {"_note": "Underdog leading or tied at the half", "period": 2, "clock": 0, "within": 0},
         {"_note": "Within one score in the fourth", "period": 4, "clock": 900, "within": 8}
       ]
     },
