@@ -1035,6 +1035,9 @@ today's standings, so a backdated run shows a race that reflects now, not then.
   (`data-home-id` / `data-away-id` on the row).
 - **ESPN's `winner` flag only outranks the score in soccer**, where
   penalties and aggregates need it. Elsewhere the score decides.
+- **The live scoreboard is asked twice when it has to be.** Without the
+  build's `groups` ESPN may leave a game out; with them, college is every
+  Division I game. So `groups` is added only when a watched row is missing.
 - **`%-I` is not portable on Windows**; times strip the leading zero by hand.
 
 Two more leagues' worth of plumbing is still in the code (`ranked_within`,

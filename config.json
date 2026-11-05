@@ -1533,6 +1533,17 @@
         "after_period": 1
       }
     },
+    "reveal": {
+      "_comment": "A game the filters dropped, with a RANKED favourite, is built into the page hidden and shown once the favourite loses -- or earlier, once any of these points is reached with the favourite leading by no more than `within` (0 = tied, -1 = trailing). `clock` is seconds left in `period`; halftime is period 1 (CBB) or 2 (CFB) at clock 0. Later periods count too. Once shown it stays shown.",
+      "mens-college-basketball": [
+        {"_note": "Underdog leading or tied at the half", "period": 1, "clock": 0, "within": 0},
+        {"_note": "Within 3 from the 10:00 mark of the second half", "period": 2, "clock": 600, "within": 3}
+      ],
+      "college-football": [
+        {"_note": "Underdog leading after the half", "period": 2, "clock": 0, "within": -1},
+        {"_note": "Within one score in the fourth", "period": 4, "clock": 900, "within": 8}
+      ]
+    },
     "too_close": [
       {
         "_comment": "Both sides ranked inside one of these bands, and no further apart than `within`, is not an upset either way. A band with no `within` is close at any gap.",

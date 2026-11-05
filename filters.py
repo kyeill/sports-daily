@@ -1135,6 +1135,63 @@ def upset_happening(game, favourite, config=None):
     return (mine - theirs) <= rule.get("within", 0)
 
 
+def reveal_rules(game, config):
+    """The in-game points at which a filtered-out upset earns its row.
+
+    [{'period': p, 'clock': c, 'within': w}, ...] from `upset_watch.reveal`:
+    once period p has reached clock c -- or any later period -- a favourite
+    leading by no more than w is enough. Halftime is period 1 at clock 0.
+    """
+    reveal = ((config.get("upset_watch") or {}).get("reveal") or {})
+    rules = reveal.get((game.get("_league") or {}).get("key")) or []
+    return [r for r in rules if isinstance(r, dict)]
+
+
+def lurking_upset(game, config):
+    """The ranked favourite's side in a game the filters dropped, or ''.
+
+    Such a game is still built into the page, hidden, so the live script can
+    show it the moment the favourite is in trouble -- the 25-point line that
+    keeps a ranked team's November cupcake off the page is exactly what makes
+    it news when the cupcake wins. Favourites must be RANKED: `upset_side`
+    already insists on that, and keeps his own rules about rivals.
+    """
+    if not reveal_rules(game, config):
+        return ""
+    if game.get("called_off") or is_exhibition(game):
+        return ""
+    return upset_side(game, config)
+
+
+def _reached(game, rule):
+    period = game.get("period") or 0
+    want = rule.get("period") or 0
+    if period != want:
+        return period > want
+    clock = game.get("clock")
+    return bool(game.get("period_over")) or (
+        isinstance(clock, (int, float)) and clock <= (rule.get("clock") or 0))
+
+
+def upset_revealed(game, favourite, config):
+    """Whether a lurking upset should be on show: lost, or in trouble enough."""
+    if not favourite or game.get("called_off"):
+        return False
+    state = game.get("state") or ""
+    other = "away" if favourite == "home" else "home"
+    try:
+        mine = int(game[favourite].get("score"))
+        theirs = int(game[other].get("score"))
+    except (TypeError, ValueError):
+        return False
+    if state == "post":
+        return mine < theirs
+    if state != "in":
+        return False
+    return any(_reached(game, r) and mine - theirs <= r.get("within", 0)
+               for r in reveal_rules(game, config))
+
+
 def result_of(game):
     """'home', 'away', 'draw' or '' -- who won a finished game.
 

@@ -148,6 +148,10 @@ h2 {
 /* A league's `phone_detail` shorthand: both wordings are in the page, and the
    width picks one -- a build cannot know the screen it will be read on. */
 .s-note .phone { display: none; }
+/* A filtered-out game kept in reserve for an upset; see `lurking_upset`. */
+.row.lurk, .lurk-sect { display: none; }
+/* ...and an empty day stops saying so once one of them is shown. */
+.day:has(.row:not(.lurk)) .no-games { display: none; }
 /* Time and networks sit against the two team lines, not centred on the row:
    a competition line underneath would otherwise push them out of line with
    the teams they belong to. */
@@ -467,6 +471,19 @@ def _game_html(game, show_league, config):
     rival = filters.rival_live_watch(game, config)
     if rival:
         attrs += ' data-rival="%s"' % _esc(rival)
+    # A game the filters dropped, built in hidden for the live script to show
+    # if the ranked favourite gets into trouble: "period:clock:within" per
+    # point at which it would.
+    if game.get("_lurk"):
+        attrs = attrs.replace(' class="row', ' class="row lurk', 1)
+        attrs += ' data-reveal="%s"' % _esc(",".join(
+            "%d:%d:%d" % (r.get("period") or 0, r.get("clock") or 0, r.get("within", 0))
+            for r in filters.reveal_rules(game, config)))
+    # The scoreboard query the build used. The live script asks without it
+    # first, and only repeats the request with it when a row is missing.
+    groups = (league.get("params") or {}).get("groups")
+    if groups:
+        attrs += ' data-groups="%s"' % _esc(groups)
     # Two rivals against each other: grey once it is over, whoever won, so the
     # live script needs no score comparison -- just the fact of the pairing.
     if filters.rival_derby(game, config):
@@ -523,11 +540,18 @@ def _game_html(game, show_league, config):
          note, solo, _esc(game["link"]), when, nets)
 
 
+def _all_lurking(games):
+    return bool(games) and all(g.get("_lurk") for g in games)
+
+
 def _section(title, games, show_league, config):
     if not games:
         return ""
     rows = "".join(_game_html(g, show_league, config) for g in games)
-    return '<h2>%s</h2><div class="card">%s</div>' % (_esc(title), rows)
+    html = '<h2>%s</h2><div class="card">%s</div>' % (_esc(title), rows)
+    # Nothing but hidden rows: the heading and card hide with them, and the
+    # live script lifts this when one is shown.
+    return '<div class="lurk-sect">%s</div>' % html if _all_lurking(games) else html
 
 
 def _national(block, config):
@@ -560,9 +584,12 @@ def _national(block, config):
         # The gap belongs between the halves, so it is only asked for once
         # there is something above to separate from.
         cls = "card second" if cards else "card"
+        if _all_lurking(group):
+            cls += " lurk-sect"
         cards.append('<div class="%s">%s</div>'
                      % (cls, "".join(_game_html(g, True, config) for g in group)))
-    return "<h2>National</h2>" + "".join(cards)
+    html = "<h2>National</h2>" + "".join(cards)
+    return '<div class="lurk-sect">%s</div>' % html if _all_lurking(block) else html
 
 
 def sections_for(games, config):
@@ -610,6 +637,7 @@ def day_body(day, games, config, notes=None, info=None):
 
 def summary(games):
     """'12 games - 3 for your teams - 2 other highlights'."""
+    games = [g for g in games if not g.get("_lurk")]
     pinned = [g for g in games if g.get("tier") == "favorite"]
     watching = [g for g in games if g.get("tier") == "watch"]
     counts = "%d game%s" % (len(games), "" if len(games) == 1 else "s")
@@ -654,8 +682,8 @@ def _body(games, config, notes=None, info=None):
         cls = wrapper.get(name)
         parts.append('<div class="%s">%s</div>' % (cls, html) if cls else html)
 
-    if not games:
-        parts.append('<div class="card"><div class="empty">'
+    if not [g for g in games if not g.get("_lurk")]:
+        parts.append('<div class="card no-games"><div class="empty">'
                      'No games match your filters today.</div></div>')
     return "".join(parts)
 
