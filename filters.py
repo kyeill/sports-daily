@@ -2775,9 +2775,16 @@ def _where(game):
     # Fame Game is a name for a single night, and "Cedar Park" says more
     # about where it is than its own title does.
     event = (game.get("note") or "").split(" - ")[0].strip()
+    # "The Greenbrier Tip-Off" is the Greenbrier Tip-Off: the article is
+    # width the line cannot spare and says nothing.
+    if event[:4].lower() == "the ":
+        event = event[4:].strip()
+    place = game.get("venue_city") or game.get("venue") or ""
     if event and game.get("_event_shared"):
+        # The town, for a screen too narrow for the event's name.
+        game["_where_alt"] = (event, place)
         return event
-    return game.get("venue_city") or game.get("venue") or ""
+    return place
 
 
 def label_for(game, section):

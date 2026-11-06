@@ -1,3 +1,21 @@
+## 2026-11-06 — a detail line is one line
+
+Northwestern-Virginia Tech on 11/20 wrapped its event name onto a second
+line on his phone. Now:
+
+- A leading "The" is dropped from event names ("Greenbrier Tip-Off").
+- A row naming a multi-game event also carries the town (`data-alts`), and
+  the page measures the line on the reader's own screen -- after the webfont,
+  on a tab change, on resize, after each live update -- and falls back to the
+  town when the name does not fit. Built for `_where`; any other line can
+  offer shorter forms the same way.
+- Anything still too long is cut with an ellipsis rather than wrapped
+  (`.s-note` is `nowrap` with `min-width: 0`, without which a grid item will
+  not shrink to cut at all).
+
+The real 11/20 event name was not visible from here; tested with stand-ins
+at 320, 375, 430 and 1000px.
+
 ## 2026-11-05 — the upsets the filters threw away
 
 A ranked team's November cupcake is dropped by `max_spread` -- and that is
