@@ -1,6 +1,7 @@
 """Render the day's games as a single self-contained HTML page."""
 
 import html
+import json
 from datetime import datetime
 
 import filters
@@ -144,7 +145,10 @@ h2 {
 /* Third row of the same grid, starting at the name column, so it lines up
    with the names above however the columns are sized. */
 .s-note { grid-column: 3 / -1; color: var(--muted); font-size: 12px;
-  margin-top: 1px; }
+  margin-top: 1px;
+  /* One line, always. A row's longer forms fall back to shorter ones in the
+     page (data-alts); whatever still does not fit is cut, never wrapped. */
+  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* A league's `phone_detail` shorthand: both wordings are in the page, and the
    width picks one -- a build cannot know the screen it will be read on. */
 .s-note .phone { display: none; }
@@ -235,6 +239,21 @@ h2 {
 
 def _esc(text):
     return html.escape(str(text or ""))
+
+
+def _alternatives(text, game):
+    """' data-alts=...' -- shorter lines to fall back to if this one does not
+    fit on one line on the reader's screen, or ''.
+
+    The event's name is the first thing to go, for the town it is played in:
+    "Greenbrier Tip-Off" becomes "White Sulphur Springs". Which one fits is
+    measured in the page, never guessed here -- the build cannot know the
+    screen.
+    """
+    event, place = game.get("_where_alt") or ("", "")
+    if not (event and place and event in text) or event == place:
+        return ""
+    return " data-alts=\"%s\"" % _esc(json.dumps([text.replace(event, place, 1)]))
 
 
 def _phone_wording(text, game):
@@ -444,7 +463,8 @@ def _game_html(game, show_league, config):
         note = ('<span class="s-note">%s<span class="series">%s</span></span>'
                 % (_phone_wording(body, game), _esc(" " + series) if series else ""))
     else:
-        note = (('<span class="s-note">%s</span>' % _phone_wording(detail, game))
+        note = (('<span class="s-note"%s>%s</span>'
+                 % (_alternatives(detail, game), _phone_wording(detail, game)))
                 if detail else "")
 
     shown = filters.display_networks(game, config)

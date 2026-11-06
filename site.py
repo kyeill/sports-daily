@@ -71,6 +71,32 @@ APP_JS = """
   var BUILT = '%%BUILT%%';
   var bar = document.getElementById('days');
   var days = Array.prototype.slice.call(document.querySelectorAll('.day'));
+  // A detail line is one line, always. A row with shorter forms of it
+  // (data-alts, e.g. an event's town for its name) takes the first that fits
+  // on this screen; CSS cuts whatever still does not. Only visible lines can
+  // be measured -- a hidden tab or row has no width -- so this runs again
+  // whenever something comes into view.
+  function fitNotes() {
+    Array.prototype.forEach.call(document.querySelectorAll('.s-note[data-alts]'),
+      function (el) {
+        if (el.offsetParent === null) { return; }
+        if (el.dataset.full === undefined) { el.dataset.full = el.innerHTML; }
+        var alts = [];
+        try { alts = JSON.parse(el.dataset.alts) || []; } catch (e) {}
+        el.innerHTML = el.dataset.full;
+        for (var i = 0; i < alts.length && el.scrollWidth > el.clientWidth; i++) {
+          el.textContent = alts[i];
+        }
+      });
+  }
+  var fitTimer = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitNotes, 150);
+  });
+  // Measured before the webfont lands, the line describes the fallback font.
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fitNotes); }
+
   function show(id) {
     days.forEach(function (d) { d.classList.toggle('on', d.id === id); });
     Array.prototype.forEach.call(bar.children, function (b) {
@@ -78,6 +104,7 @@ APP_JS = """
     });
     try { localStorage.setItem('day', id); } catch (e) {}
     window.scrollTo(0, 0);
+    fitNotes();
   }
   bar.addEventListener('click', function (e) {
     var b = e.target.closest('button');
@@ -673,6 +700,8 @@ APP_JS = """
           setStamp(Date.now(), true);
           var panel = todayPanel();
           if (panel) { resortWindows(panel); sinkSoccer(panel); }
+          // A revealed upset brings a detail line that has never been measured.
+          fitNotes();
         })
         // Silence is the right failure: the page keeps the build's numbers,
         // which is exactly what it showed before any of this existed.
