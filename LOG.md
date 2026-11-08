@@ -1,3 +1,19 @@
+## 2026-11-08 — the day strip was sized for the wrong week
+
+Sixteen tabs spilled onto a second row. The strip had been measured once, on a
+day whose dates happened to be short, and the note in the CSS recorded that
+measurement as if it were the answer.
+
+Tabs are not all the same width: "Nov 7" is 43.2px and "Nov 10" is 48.6px, so
+the bar grows through the month as the single-digit days fall off the front of
+it. The worst case is every tab two-digit, which is every day from the 10th
+onward — 876px against an 860px column at the old 8px padding. It had been
+over the line since 2026-11-02 and nobody was looking at the right week.
+
+Now sized for that worst case and not for today: 7px padding, 5px gap, 829px,
+31px in hand. Measured in the browser rather than estimated, on the real page
+with the real font. `flex-wrap` stays as the net if `--days` ever grows.
+
 ## 2026-11-06 — a detail line is one line
 
 Northwestern-Virginia Tech on 11/20 wrapped its event name onto a second

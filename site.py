@@ -53,12 +53,19 @@ APP_CSS = """
 .days button[aria-current="true"] small { color: rgba(255,255,255,.85); }
 /* On a phone the bar is a scroller and the last tab is reached by swiping.
    On a desktop there is no swipe to suggest, so a tab half off the edge just
-   looks broken -- 16 days come to 908px against the 860px column. Tighter
-   tabs fit them all on one row, and wrapping catches it anyway if the day
-   count ever grows. */
+   looks broken, and a tab on a second row looks worse.
+
+   The strip has to hold 16 tabs in 860px. They are not all the same width:
+   "Nov 7" measures 43.2px and "Nov 10" 48.6px, so the bar grows through the
+   month as the single-digit days fall off the front of it. Sized for the
+   worst case instead of for today -- all 16 two-digit, which happens from the
+   10th of any month -- that is 876px at the old 8px padding, and it wrapped
+   on 2026-11-08. At 7px padding and a 5px gap the same 16 come to 829px, so
+   there is 31px in hand. `flex-wrap` stays as the net if the day count ever
+   grows. */
 @media (min-width: 769px) {
-  .days { flex-wrap: wrap; overflow-x: visible; }
-  .days button { padding: 7px 8px; }
+  .days { flex-wrap: wrap; overflow-x: visible; gap: 5px; }
+  .days button { padding: 7px 7px; }
 }
 .day { display: none; }
 .day.on { display: block; }
