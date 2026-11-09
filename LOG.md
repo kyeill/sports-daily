@@ -1,3 +1,36 @@
+## 2026-11-08 — an event is a tournament, not a title
+
+A college neutral-site row names the event when it is really an event, and the
+town otherwise. Two tests now, where there was one.
+
+The old test was "more than one game shares this name today". That let the
+ACC/SEC Men's Challenge put its title on a row in Chapel Hill — eleven games
+on eleven campuses, which is a scheduling agreement, not a place anyone is
+going. So a multi-team event now has to be in **one town** as well as in more
+than one game. That also drops the Hall of Fame Series, which plays Boston and
+Phoenix on the same night.
+
+The other half is the one he actually asked for, and ESPN hands it over: when
+a game sits in a bracket, the note says so after the dash — "Magic Bracket",
+"Palms Division", "Fifth Place", "3rd Place Game". **A named bracket counts on
+its own**, without a second game to back it up, which is what rescues a day
+the ESPN Events Invitational has thinned to a single tie. "Kissimmee" was a
+poor answer to what that game was.
+
+Two tails look like brackets and are not. "Campus Game" is ESPN saying this
+one is *not* at the event's site, and "Hall of Fame Series - Orlando" is a
+town. Neither contains a bracket word, so neither matches — which is why the
+test is a word list rather than "has a suffix".
+
+**Counted on the whole day's fixtures now, not on the games kept.** The page
+keeping one game of a tournament does not make it less of a tournament, and
+that game is usually the best one in it. The function's own docstring had said
+this all along; the call site had been passing `kept` and quietly winning.
+
+Measured across Thanksgiving week and the December window, five neutral games
+change: the Magic Bracket tie and the Players Era championship gain their
+event's name, and three Hall of Fame Series rows give theirs up.
+
 ## 2026-11-08 — the day strip was sized for the wrong week
 
 Sixteen tabs spilled onto a second row. The strip had been measured once, on a

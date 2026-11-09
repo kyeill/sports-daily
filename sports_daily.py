@@ -221,7 +221,7 @@ def collect(config, day, tz, only=None, lurkers=False):
     games -- the ones still to be decided -- come along too, flagged
     `_lurk`, for the live page to keep hidden until the favourite slips.
     """
-    kept, stats, upsets, lurking = [], [], [], []
+    kept, stats, upsets, lurking, slate = [], [], [], [], []
     date_key = day.strftime("%Y%m%d")
     for league in config.get("leagues", []):
         if not league.get("enabled", True):
@@ -233,6 +233,7 @@ def collect(config, day, tz, only=None, lurkers=False):
         # ESPN answers by UTC date; a late West-coast game lands on the next
         # UTC day, so trust our own local-day comparison instead.
         games = [g for g in games if g["start_local"].date() == day]
+        slate.extend(games)
         mark_standalone(games)
         # A projected line for the leagues whose real one arrives too late to
         # be any use when the page is built. Before evaluate, which is where
@@ -266,16 +267,15 @@ def collect(config, day, tz, only=None, lurkers=False):
     # After the crowding rule, which is about what is on national TV: an
     # upset is on the page because it happened, not for its channel.
     kept.extend(upsets)
-    # Which named events have more than one row on the page. Counted on what
-    # survives rather than on the whole slate: a tournament the page shows one
-    # game of is, to a reader, a one-off with a title, and the town is the
-    # more useful half of what it could say.
-    filters.mark_shared_events(kept)
+    # Which named events are multi-team events, judged on the whole day's
+    # fixtures rather than on the handful that survive. The one Players Era
+    # tie good enough for the page is still a Players Era tie, and saying
+    # "Las Vegas" of it was the page forgetting what it was watching.
+    filters.mark_shared_events(slate)
     if dropped:
         gone = collections.Counter(g.get("league_label") for g in dropped)
         stats = [(label, passed - gone.get(label, 0), total)
                  for label, passed, total in stats]
-    # Last, so a hidden row never counts towards an event being shared.
     kept.extend(lurking)
     return kept, stats
 

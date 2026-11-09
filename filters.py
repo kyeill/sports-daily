@@ -2325,18 +2325,64 @@ def window_titles(config):
     return titles
 
 
-def mark_shared_events(games):
-    """Flag the games whose event name covers more than one of them.
+def _event_name(game):
+    """"Fort Myers Tip-Off - Beach Division" -> "Fort Myers Tip-Off".
 
-    Counted over the whole slate rather than the kept games: one Players Era
-    tie worth keeping is still part of the Players Era, and the event is what
-    it is there for.
+    The bracket is a detail about a detail. The article goes too: "The
+    Greenbrier Tip-Off" is the Greenbrier Tip-Off, and ESPN files that one
+    both ways, so stripping it also stops the same event counting twice.
     """
-    counts = collections.Counter((g.get("note") or "").split(" - ")[0].strip()
-                                 for g in games)
+    name = (game.get("note") or "").split(" - ")[0].strip()
+    return name[4:].strip() if name[:4].lower() == "the " else name
+
+
+# What ESPN writes after the dash when a game sits in a bracket: "Magic
+# Bracket", "Palms Division", "Fifth Place", "3rd Place Game". It is the
+# event declaring itself a tournament, and that holds on a day the page has
+# room for only one of its games. "Campus Game" and "Hall of Fame Series -
+# Orlando" are the other kind of tail and match nothing here, which is the
+# point: one is explicitly away from the event's site and the other is a town.
+BRACKET_WORDS = ("bracket", "division", "championship", "final", "semifinal",
+                 "quarterfinal", "consolation", "place", "round")
+
+
+def _in_bracket(game):
+    """True when ESPN has filed this game under a bracket or a round."""
+    parts = (game.get("note") or "").split(" - ", 1)
+    tail = parts[1].strip().lower() if len(parts) > 1 else ""
+    return any(word in tail for word in BRACKET_WORDS)
+
+
+def mark_shared_events(games):
+    """Flag the games that belong to a multi-team event on the page.
+
+    A shared name is not by itself an event. The ACC/SEC Men's Challenge puts
+    eleven games on eleven campuses under one title, and a row in Chapel Hill
+    wants the town rather than the title. A multi-team event is the other
+    shape: more than one game, all of them in one place. The Battle 4 Atlantis
+    is in Nassau or it is nothing.
+
+    A named bracket counts on its own, without the second game. The ESPN
+    Events Invitational spreads its Magic Bracket thinly enough that a day
+    can hold one tie of it, and "Kissimmee" is a poor answer to what that
+    game is.
+
+    Counted over the whole day's fixtures rather than the kept ones, because
+    the page keeping only one game of a tournament does not make it less of a
+    tournament -- and that game is usually the best one in it.
+    """
+    counts = collections.Counter()
+    towns = collections.defaultdict(set)
     for game in games:
-        name = (game.get("note") or "").split(" - ")[0].strip()
-        game["_event_shared"] = bool(name) and counts[name] > 1
+        name = _event_name(game)
+        if not name:
+            continue
+        counts[name] += 1
+        towns[name].add(game.get("venue_city") or game.get("venue") or "")
+    for game in games:
+        name = _event_name(game)
+        game["_event_shared"] = bool(name) and (
+            (counts[name] > 1 and len(towns[name]) == 1) or _in_bracket(game))
 
 
 def join_soccer_section(buckets, config):
@@ -2761,24 +2807,19 @@ def _where(game):
     odd", and the town carries that where the building does not -- nobody can
     place the Rock Hill Sports & Event Center, everybody can place Rock Hill.
 
-    An event named by ESPN is better than either: a game at the Players Era
-    is there for the Players Era, and the town is incidental. Only the bracket
-    is dropped from it -- "Fort Myers Tip-Off - Beach Division" is a detail
-    about a detail.
+    An event named by ESPN is better than either, but only when it is really
+    an event: a game at the Players Era is there for the Players Era and the
+    town is incidental, while an ACC/SEC Men's Challenge tie in Chapel Hill is
+    a home game with a title on it. `mark_shared_events` draws that line --
+    several games, one town -- and the US Hockey Hall of Fame Game, a name for
+    a single night, falls on the near side of it with "Cedar Park".
 
     A real tournament never reaches here: a named round becomes the caption
     and the location is dropped, which is why this needs no test for one.
     """
     if (game.get("league_label") or "") not in COLLEGE_LABELS:
         return game.get("venue") or ""
-    # Only when the event is more than this one game: the US Hockey Hall of
-    # Fame Game is a name for a single night, and "Cedar Park" says more
-    # about where it is than its own title does.
-    event = (game.get("note") or "").split(" - ")[0].strip()
-    # "The Greenbrier Tip-Off" is the Greenbrier Tip-Off: the article is
-    # width the line cannot spare and says nothing.
-    if event[:4].lower() == "the ":
-        event = event[4:].strip()
+    event = _event_name(game)
     place = game.get("venue_city") or game.get("venue") or ""
     if event and game.get("_event_shared"):
         # The town, for a screen too narrow for the event's name.

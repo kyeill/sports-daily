@@ -463,6 +463,23 @@ the order carries that meaning: away team first, except in soccer, which is
 written home side first. A neutral site says so on the detail line, but only
 when nothing else would -- bowls and tournament rounds already name themselves.
 
+**A college neutral site names the event when it is really an event, and the
+town otherwise.** The test is in `mark_shared_events`, and it is two tests.
+Either the event has more than one game that day and all of them are in one
+place -- the Battle 4 Atlantis is in Nassau or it is nothing -- or ESPN has
+filed the game under a bracket, which is "Magic Bracket", "Palms Division" or
+"Fifth Place" after the dash. The second is what covers a day the ESPN Events
+Invitational has thinned to a single tie: "Kissimmee" is a poor answer to what
+that game is. Judged on the whole day's fixtures rather than the handful kept,
+because the page showing one game of a tournament does not make it less of a
+tournament, and that game is usually the best one in it.
+
+What this deliberately leaves as a town: the ACC/SEC Men's Challenge, eleven
+games on eleven campuses under one title; the Hall of Fame Series, which plays
+Boston and Phoenix on the same night; a "Campus Game" tagged onto an event by
+ESPN precisely because it is not at the event's site; and a one-off with a
+name, like the Dick Vitale Invitational or college hockey's Frozen Apple.
+
 Both columns take their line height from one custom property, `--line-h`, and
 the time and network are laid out identically -- blocks whose line box is one
 team line tall. That is what keeps them level with the records beside them:
