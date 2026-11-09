@@ -844,9 +844,9 @@ def build(config, days=8, out=SITE):
     # Yesterday is kept as an extra tab -- last night's finals are the thing
     # you most want on waking -- so the run covers `days` from today, plus one
     # behind it. Today stays the tab the app opens on; it is now the second.
-    # One reading of the brackets for the whole build: an event is a bracket
-    # or it is not, and every day's rows should agree about which.
-    brackets = sports_daily.bracket_events_for(
+    # One reading of the brackets for the whole build, so no two tabs can
+    # disagree about a game.
+    brackets = sports_daily.bracket_games_for(
         config, today, tz, offsets=range(-1 - sports_daily.BRACKET_SPAN,
                                          days + sports_daily.BRACKET_SPAN))
     tabs, panels = [], []

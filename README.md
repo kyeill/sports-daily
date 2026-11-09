@@ -481,7 +481,13 @@ town, and no more than `MTE_GAP` days between games there. That is what an MTE
 is and what a season-long series never is, and it makes the answer independent
 of the window -- which a flat count was not.
 
-`bracket_events_for` reads a window either side of the day being built
+**And the answer is per game, not per name**, because one name covers both
+shapes. The Greenbrier Tip-Off is a six-team draw on 20 and 22 November -- and
+also Xavier at Mississippi State on the 13th, in the same hall, by itself.
+That Friday is a game at a resort rather than a round, so it says White
+Sulphur Springs while the following week says Greenbrier Tip-Off.
+
+`bracket_games_for` reads a window either side of the day being built
 (`BRACKET_SPAN`, four days); the site build reads its whole range once, so
 every tab agrees.
 

@@ -218,8 +218,8 @@ def record_history(config, day, tz):
 BRACKET_SPAN = 4
 
 
-def bracket_events_for(config, day, tz, offsets=None, only=None):
-    """Which named college events are brackets, read from the days around `day`.
+def bracket_games_for(config, day, tz, offsets=None, only=None):
+    """Which college games sit in a bracket, read from the days around `day`.
 
     Only the college leagues are asked, and only for days the build is
     fetching anyway or has in cache, so this costs reading rather than
@@ -238,7 +238,7 @@ def bracket_events_for(config, day, tz, offsets=None, only=None):
             when = (day + timedelta(days=offset)).strftime("%Y%m%d")
             slates.append(espn.games_for(league, when, tz,
                                          cache_minutes=config.get("cache_minutes", 30)))
-    return filters.bracket_events(slates)
+    return filters.bracket_games(slates)
 
 
 def collect(config, day, tz, only=None, lurkers=False, brackets=None):
@@ -295,12 +295,12 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None):
     # After the crowding rule, which is about what is on national TV: an
     # upset is on the page because it happened, not for its channel.
     kept.extend(upsets)
-    # Which named events are brackets. Judged on the whole day's fixtures
+    # Which games sit in a bracket. Judged on the whole day's fixtures
     # rather than on the handful that survive: the one Players Era tie good
     # enough for the page is still a Players Era tie, and saying "Las Vegas"
     # of it was the page forgetting what it was watching.
     if brackets is None:
-        brackets = bracket_events_for(config, day, tz, only=only)
+        brackets = bracket_games_for(config, day, tz, only=only)
     filters.mark_shared_events(slate, brackets)
     if dropped:
         gone = collections.Counter(g.get("league_label") for g in dropped)

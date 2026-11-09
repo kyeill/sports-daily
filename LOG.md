@@ -1,3 +1,29 @@
+## 2026-11-09 — one name, two different things
+
+He pointed at Mississippi State–Xavier on the Friday, which was reading
+**Greenbrier Tip-Off**. It should say White Sulphur Springs, and the week
+after it should not.
+
+The Greenbrier Tip-Off is two events under one name at one address. On 20 and
+22 November it is a six-team draw in Colonial Hall — three games a day, every
+team playing twice. On the 13th it is Xavier at Mississippi State, in the same
+hall, by itself. The first is a bracket; the second is a game at a resort.
+
+Yesterday's test answered **per event name**, so the draw a week later pulled
+the Friday game in with it. The test now answers **per game**: `bracket_games`
+returns the ids of the games that sit inside a run with a repeat in it, and
+`mark_shared_events` flags by id. The Friday says White Sulphur Springs, the
+following Friday and Sunday say Greenbrier Tip-Off, and both are right.
+
+Swept over 45 days: 259 of 384 named-event games are inside a bracket. Maui
+12/12, Battle 4 Atlantis 8/8, Players Era 25/25, Friendship Four 4/4; Bad Boy
+Mowers Series 0/12, ACC/SEC Men's Challenge 0/16.
+
+Third pass on this rule in two days. Each test was right about the case in
+front of it and wrong about the next one along: a shared name, then a shared
+name in one town, then a team playing twice, then a team playing twice in one
+sitting — and now, the games that sitting actually contains.
+
 ## 2026-11-08 — a repeat only counts in one sitting
 
 He pointed at Syracuse/Indiana on the Monday and the page was calling it the

@@ -2356,78 +2356,78 @@ def _event_draw(game):
 MTE_GAP = 2
 
 
-def bracket_events(slates):
-    """The event names that are brackets, from several days of fixtures.
+def bracket_games(slates):
+    """The ids of the games that sit inside a bracket.
 
     A bracket is a draw, and a draw means somebody plays twice: Duke opens the
     Maui Invitational on Monday and is in the final on Wednesday. Everything
     else wearing a title is a game, or a set of games, that happens to be
     sponsored. Those get their town.
 
-    It has to be read across days, because within one day every team in a
-    tournament plays once, which is exactly what makes it look like the things
-    it is not. But "plays twice" on its own is not enough either. The Bad Boy
-    Mowers Series is twelve games from November to December, and Indiana is in
-    three of them -- Indianapolis in November, New York a week later,
-    Bloomington in December. Counted flat, one television series reads as a
-    draw, and how wrong it reads depends on how many days you happened to
-    look at.
+    It has to be read across days, because inside any one day every team in a
+    tournament plays once -- which is exactly what makes a bracket look like
+    the things it is not. But "plays twice" alone is not enough either. The
+    Bad Boy Mowers Series is twelve games from November to December and
+    Indiana is in three of them, in Indianapolis, New York and Bloomington;
+    counted flat, a television series reads as a draw, and how wrong it reads
+    depends on how many days you happen to look at. So the repeat has to be in
+    one sitting: same town, and no more than `MTE_GAP` days between games
+    there.
 
-    So the repeat has to happen in one sitting: same town, and no more than
-    `MTE_GAP` days between consecutive games there. That is what an MTE is and
-    what a season-long series never is, and it makes the answer independent of
-    the window, which a flat count was not.
+    And the answer is per game rather than per name, because one name can
+    cover both. The Greenbrier Tip-Off is a six-team draw on 20 and 22
+    November -- and also Xavier at Mississippi State on the 13th, in the same
+    hall, by itself. That Friday is a game at a resort, not a round, and it
+    says White Sulphur Springs.
     """
     by_event = collections.defaultdict(list)
-    seen_games = set()
+    seen = set()
     for games in slates:
         for game in games:
             # A late game comes back on two UTC dates, and counted twice it
             # looks like a team playing itself into the second round.
             ident = game.get("id")
-            if ident in seen_games:
+            if ident is None or ident in seen:
                 continue
-            seen_games.add(ident)
+            seen.add(ident)
             name = _event_name(game)
             if name and game.get("start_local"):
-                by_event[name].append(game)
+                town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
+                by_event[(name, town)].append(game)
 
-    brackets = set()
-    for name, games in by_event.items():
-        towns = collections.defaultdict(list)
-        for game in games:
-            town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
-            teams = [((game.get(side) or {}).get("name") or "").strip().lower()
-                     for side in ("home", "away")]
-            towns[town].append((game["start_local"].date(), teams))
-        for here in towns.values():
-            playing, previous = collections.Counter(), None
-            for day, teams in sorted(here):
-                if previous is not None and (day - previous).days > MTE_GAP:
-                    playing.clear()          # a different occasion entirely
-                previous = day
-                for team in teams:
-                    if team:
-                        playing[team] += 1
+    inside = set()
+    for here in by_event.values():
+        here.sort(key=lambda g: g["start_local"])
+        run, playing, previous = [], collections.Counter(), None
+        for game in here + [None]:
+            day = game["start_local"].date() if game else None
+            if game is None or (previous is not None and (day - previous).days > MTE_GAP):
+                # A gap ends the occasion. Keep the run only if it was a draw.
                 if any(n > 1 for n in playing.values()):
-                    brackets.add(name)
-                    break
-            if name in brackets:
+                    inside |= {g.get("id") for g in run}
+                run, playing = [], collections.Counter()
+            if game is None:
                 break
-    return brackets
+            previous = day
+            run.append(game)
+            for side in ("home", "away"):
+                team = ((game.get(side) or {}).get("name") or "").strip().lower()
+                if team:
+                    playing[team] += 1
+    return inside
 
 
 def mark_shared_events(games, brackets):
     """Flag the games whose event earns its name on the row.
 
-    `brackets` comes from `bracket_events`, which is the whole of the test:
-    the event is a draw somebody plays twice in. A shared name was the old
-    test and it was the wrong one -- the ACC/SEC Men's Challenge puts eleven
-    games on eleven campuses under one title, and a row in Chapel Hill wants
-    the town.
+    `brackets` is the id set from `bracket_games`, which is the whole of the
+    test: this game sits in a draw somebody plays twice in. A shared name was
+    the old test and it was the wrong one -- the ACC/SEC Men's Challenge puts
+    eleven games on eleven campuses under one title, and a row in Chapel Hill
+    wants the town.
     """
     for game in games:
-        game["_event_shared"] = _event_name(game) in brackets
+        game["_event_shared"] = game.get("id") in brackets
 
 
 def join_soccer_section(buckets, config):
