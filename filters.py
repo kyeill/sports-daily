@@ -2336,53 +2336,58 @@ def _event_name(game):
     return name[4:].strip() if name[:4].lower() == "the " else name
 
 
-# What ESPN writes after the dash when a game sits in a bracket: "Magic
-# Bracket", "Palms Division", "Fifth Place", "3rd Place Game". It is the
-# event declaring itself a tournament, and that holds on a day the page has
-# room for only one of its games. "Campus Game" and "Hall of Fame Series -
-# Orlando" are the other kind of tail and match nothing here, which is the
-# point: one is explicitly away from the event's site and the other is a town.
-BRACKET_WORDS = ("bracket", "division", "championship", "final", "semifinal",
-                 "quarterfinal", "consolation", "place", "round")
+def _event_draw(game):
+    """"Fort Myers Tip-Off - Beach Division" -> "Beach Division".
 
+    Named apart from `is_event_round`, soccer's knockout test, which this has
+    nothing to do with.
 
-def _in_bracket(game):
-    """True when ESPN has filed this game under a bracket or a round."""
-    parts = (game.get("note") or "").split(" - ", 1)
-    tail = parts[1].strip().lower() if len(parts) > 1 else ""
-    return any(word in tail for word in BRACKET_WORDS)
-
-
-def mark_shared_events(games):
-    """Flag the games that belong to a multi-team event on the page.
-
-    A shared name is not by itself an event. The ACC/SEC Men's Challenge puts
-    eleven games on eleven campuses under one title, and a row in Chapel Hill
-    wants the town rather than the title. A multi-team event is the other
-    shape: more than one game, all of them in one place. The Battle 4 Atlantis
-    is in Nassau or it is nothing.
-
-    A named bracket counts on its own, without the second game. The ESPN
-    Events Invitational spreads its Magic Bracket thinly enough that a day
-    can hold one tie of it, and "Kissimmee" is a poor answer to what that
-    game is.
-
-    Counted over the whole day's fixtures rather than the kept ones, because
-    the page keeping only one game of a tournament does not make it less of a
-    tournament -- and that game is usually the best one in it.
+    Whatever ESPN files after the dash: a round on the closing day, a bracket
+    or a division before it. Printed with the event rather than dropped, so a
+    row says which half of the draw it is and how far in.
     """
-    counts = collections.Counter()
-    towns = collections.defaultdict(set)
+    parts = (game.get("note") or "").split(" - ", 1)
+    return parts[1].strip() if len(parts) > 1 else ""
+
+
+def bracket_events(slates):
+    """The event names that are brackets, from several days of fixtures.
+
+    A bracket is a draw, and a draw means somebody plays twice: Duke opens the
+    Maui Invitational on Monday and is in the final on Wednesday. Everything
+    else wearing a title is a game, or a set of games, that happens to be
+    sponsored -- the ACC/SEC Men's Challenge, the Dick Vitale Invitational,
+    a Thanksgiving doubleheader on one campus. Those get their town.
+
+    It has to be read across days because within one day every team in a
+    tournament plays once, which is exactly what makes it look like the
+    things it is not.
+    """
+    appearances = collections.defaultdict(collections.Counter)
+    for games in slates:
+        for game in games:
+            name = _event_name(game)
+            if not name:
+                continue
+            for side in (game.get("home") or {}, game.get("away") or {}):
+                team = (side.get("name") or "").strip().lower()
+                if team:
+                    appearances[name][team] += 1
+    return {name for name, teams in appearances.items()
+            if any(n > 1 for n in teams.values())}
+
+
+def mark_shared_events(games, brackets):
+    """Flag the games whose event earns its name on the row.
+
+    `brackets` comes from `bracket_events`, which is the whole of the test:
+    the event is a draw somebody plays twice in. A shared name was the old
+    test and it was the wrong one -- the ACC/SEC Men's Challenge puts eleven
+    games on eleven campuses under one title, and a row in Chapel Hill wants
+    the town.
+    """
     for game in games:
-        name = _event_name(game)
-        if not name:
-            continue
-        counts[name] += 1
-        towns[name].add(game.get("venue_city") or game.get("venue") or "")
-    for game in games:
-        name = _event_name(game)
-        game["_event_shared"] = bool(name) and (
-            (counts[name] > 1 and len(towns[name]) == 1) or _in_bracket(game))
+        game["_event_shared"] = _event_name(game) in brackets
 
 
 def join_soccer_section(buckets, config):
@@ -2807,25 +2812,31 @@ def _where(game):
     odd", and the town carries that where the building does not -- nobody can
     place the Rock Hill Sports & Event Center, everybody can place Rock Hill.
 
-    An event named by ESPN is better than either, but only when it is really
-    an event: a game at the Players Era is there for the Players Era and the
-    town is incidental, while an ACC/SEC Men's Challenge tie in Chapel Hill is
-    a home game with a title on it. `mark_shared_events` draws that line --
-    several games, one town -- and the US Hockey Hall of Fame Game, a name for
-    a single night, falls on the near side of it with "Cedar Park".
+    An event's name beats both, but only where there is a bracket to name --
+    somebody playing twice, which `bracket_events` is the test for. A game at
+    the Players Era is there for the Players Era; an ACC/SEC Men's Challenge
+    tie in Chapel Hill is a home game with a title on it, and the US Hockey
+    Hall of Fame Game is one night in Cedar Park. Those take the town.
+
+    Where the name is shown the round goes with it: which half of the draw
+    and how far in is the whole of what a bracket has to say, and "Fort Myers
+    Tip-Off" on three different days running says none of it.
 
     A real tournament never reaches here: a named round becomes the caption
     and the location is dropped, which is why this needs no test for one.
     """
     if (game.get("league_label") or "") not in COLLEGE_LABELS:
         return game.get("venue") or ""
-    event = _event_name(game)
     place = game.get("venue_city") or game.get("venue") or ""
-    if event and game.get("_event_shared"):
-        # The town, for a screen too narrow for the event's name.
-        game["_where_alt"] = (event, place)
-        return event
-    return place
+    event = _event_name(game)
+    if not (event and game.get("_event_shared")):
+        return place
+    draw = _event_draw(game)
+    shown = "%s - %s" % (event, draw) if draw else event
+    # The town, for a screen too narrow for the event's name. The round
+    # survives the swap: it is the half worth keeping.
+    game["_where_alt"] = (shown, "%s - %s" % (place, draw) if draw else place)
+    return shown
 
 
 def label_for(game, section):

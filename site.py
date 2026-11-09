@@ -844,10 +844,16 @@ def build(config, days=8, out=SITE):
     # Yesterday is kept as an extra tab -- last night's finals are the thing
     # you most want on waking -- so the run covers `days` from today, plus one
     # behind it. Today stays the tab the app opens on; it is now the second.
+    # One reading of the brackets for the whole build: an event is a bracket
+    # or it is not, and every day's rows should agree about which.
+    brackets = sports_daily.bracket_events_for(
+        config, today, tz, offsets=range(-1 - sports_daily.BRACKET_SPAN,
+                                         days + sports_daily.BRACKET_SPAN))
     tabs, panels = [], []
     for offset in range(-1, days):
         day = today + timedelta(days=offset)
-        games, _ = sports_daily.collect(config, day, tz, lurkers=True)
+        games, _ = sports_daily.collect(config, day, tz, lurkers=True,
+                                        brackets=brackets)
         today_info = None
         if offset == 0 and espn.FAILURES:
             today_info = ["Some data could not be loaded today: %s"

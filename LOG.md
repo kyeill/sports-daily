@@ -1,3 +1,40 @@
+## 2026-11-08 — a bracket is somebody playing twice
+
+Supersedes this morning's entry below, which had the right target and the
+wrong test. His rule: locations, unless there is actually a bracket — and a
+bracket means multiple games per team. Plus the round, always.
+
+**So the test is appearances, not titles.** `bracket_events` counts how often
+each team turns up in each named event; one team twice makes it a draw. Duke
+opens the Maui Invitational on Monday and plays the final on Wednesday, so
+Maui is a bracket. The CBS Sports Classic is two games and four teams, so it
+is a doubleheader with a sponsor, and its rows say New York.
+
+**It has to be read across days.** Inside any one day every team in a
+tournament plays once, which is precisely what made a bracket indistinguishable
+from the things it is not. `bracket_events_for` reads four days either side;
+the site build reads its whole range once and hands the same set to every tab,
+so no two days can disagree about an event.
+
+Measured over Thanksgiving week and the December window: **35 named events are
+brackets, 13 are not.** The thirteen are the ones you would name yourself —
+ACC/SEC Men's Challenge, CBS Sports Classic, Hall of Fame Series, Indy
+Classic, NABC Hall of Fame Classic, Bad Boy Mowers Series, A10/American
+Showcase, Jacksonville Hoops Showdown. Every one is a game, or a set of games,
+where nobody plays twice.
+
+**The round is now always printed with the name**: "Battle 4 Atlantis -
+Championship Bracket", "Fort Myers Tip-Off - Beach Division". Three days of
+"Fort Myers Tip-Off" said nothing about which half of the draw or how far in.
+The narrow-screen fallback swaps the event for the town and keeps the round:
+"Nassau - Championship Bracket".
+
+Gone with the old test: the one-town rule and `BRACKET_WORDS`, both of which
+were this morning's approximations of a signal ESPN does not reliably give.
+Worth recording that ESPN's `round` field is "regular-season" on every college
+basketball game all season, and that only an MTE's closing day carries a round
+in its note — openers carry a division, or nothing.
+
 ## 2026-11-08 — an event is a tournament, not a title
 
 A college neutral-site row names the event when it is really an event, and the

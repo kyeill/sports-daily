@@ -463,22 +463,31 @@ the order carries that meaning: away team first, except in soccer, which is
 written home side first. A neutral site says so on the detail line, but only
 when nothing else would -- bowls and tournament rounds already name themselves.
 
-**A college neutral site names the event when it is really an event, and the
-town otherwise.** The test is in `mark_shared_events`, and it is two tests.
-Either the event has more than one game that day and all of them are in one
-place -- the Battle 4 Atlantis is in Nassau or it is nothing -- or ESPN has
-filed the game under a bracket, which is "Magic Bracket", "Palms Division" or
-"Fifth Place" after the dash. The second is what covers a day the ESPN Events
-Invitational has thinned to a single tie: "Kissimmee" is a poor answer to what
-that game is. Judged on the whole day's fixtures rather than the handful kept,
-because the page showing one game of a tournament does not make it less of a
-tournament, and that game is usually the best one in it.
+**A college neutral site names its event only where there is a bracket, and
+shows the town otherwise.** A bracket is a draw, and a draw means somebody
+plays twice: Duke opens the Maui Invitational on the Monday and is in the
+final on the Wednesday. That is the whole test, in `bracket_events` -- not the
+title, not the venue, and not ESPN's own round tag, which for college
+basketball is the string "regular-season" on every game of the season.
 
-What this deliberately leaves as a town: the ACC/SEC Men's Challenge, eleven
-games on eleven campuses under one title; the Hall of Fame Series, which plays
-Boston and Phoenix on the same night; a "Campus Game" tagged onto an event by
-ESPN precisely because it is not at the event's site; and a one-off with a
-name, like the Dick Vitale Invitational or college hockey's Frozen Apple.
+It has to be read across days, because inside any one day every team in a
+tournament plays once, which is exactly what makes a bracket look like the
+things it is not. `bracket_events_for` reads a window either side of the day
+being built (`BRACKET_SPAN`, four days) and the site build reads its whole
+range once, so every tab agrees about which events are brackets.
+
+**Where the name is shown, the round goes with it**: `Battle 4 Atlantis -
+Championship Bracket`, `Fort Myers Tip-Off - Beach Division`. Which half of
+the draw and how far in is what a bracket has to say, and "Fort Myers Tip-Off"
+three days running says none of it. On a screen too narrow for the name, the
+town takes its place and the round stays: `Nassau - Championship Bracket`.
+
+What this leaves as a town: the ACC/SEC Men's Challenge, eleven games on
+eleven campuses under one title; the CBS Sports Classic and the Hall of Fame
+Series, doubleheaders where nobody plays twice; and a one-off with a name,
+like the Dick Vitale Invitational or college hockey's Frozen Apple. Measured
+over Thanksgiving week and the December window, 35 named events are brackets
+and 13 are not.
 
 Both columns take their line height from one custom property, `--line-h`, and
 the time and network are laid out identically -- blocks whose line box is one
