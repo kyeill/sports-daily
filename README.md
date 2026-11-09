@@ -481,6 +481,13 @@ town, and no more than `MTE_GAP` days between games there. That is what an MTE
 is and what a season-long series never is, and it makes the answer independent
 of the window -- which a flat count was not.
 
+**A draw that has not been made yet counts too**, and it is the better signal
+of the two: you only get a `TBD` when the fixture depends on a result. Maui on
+23 November is four real ties and then eight TBDs across the Tuesday and the
+Wednesday -- nobody has played twice yet and it is unmistakably a bracket. A
+single day of TBD does not count, because an unannounced line-up is not a
+draw: the Big 5 Classic puts three of them in one Philadelphia evening.
+
 **And the answer is per game, not per name**, because one name covers both
 shapes. The Greenbrier Tip-Off is a six-team draw on 20 and 22 November -- and
 also Xavier at Mississippi State on the 13th, in the same hall, by itself.

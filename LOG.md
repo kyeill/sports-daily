@@ -1,3 +1,36 @@
+## 2026-11-09 — TBD is not a team, but it is a tell
+
+Auditing the surviving event names turned up a false positive and, chasing it,
+a hole that would have been much worse.
+
+The **Big 5 Classic** was being named. Its 5 December tripleheader at the
+Wells Fargo Center is filed with both sides `TBD`, and "tbd" lowercased is a
+team playing six times — a draw all by itself. Six other events carried the
+same placeholder.
+
+The obvious fix, not counting TBD as a team, would have broken the real ones.
+**Maui is four genuine ties on the Monday and then eight TBDs**: nobody has
+played twice, so with TBD discarded it would have shown "Maui" until the
+tournament was half over. Players Era 16 and 8, the Paradise Jam, the Cancun
+Challenge and the Baha Mar Championship are all the same shape.
+
+So TBD is read as what it actually means. **You only get a TBD when the
+fixture depends on a result**, which is the definition of a draw — so an
+undecided slot makes the run a bracket on its own, provided the run spans more
+than one day. One evening of TBD is an unannounced line-up, not a bracket,
+which is exactly the Big 5 and now exactly what it gets: nine games, all
+towns.
+
+After it: 270 named games from 9 November to the end of the year, 241 of them
+neutral and so able to reach a footer at all. Maui 12/12, Players Era 25/25
+and 12/12, Battle 4 Atlantis 8/8, Paradise Jam 12/12; Big 5 Classic 0/9, Bad
+Boy Mowers 0/14, ACC/SEC Men's Challenge 0/16, Greenbrier Tip-Off 6/7.
+
+Known and left alone: college hockey's **Governor's Cup** is Alaska Anchorage
+and Alaska Fairbanks twice in each city, which is a home-and-home and not a
+tournament, and the rule calls it a bracket. Every one of those four games is
+a home game, so none of them reaches a footer and none of them can be seen.
+
 ## 2026-11-09 — one name, two different things
 
 He pointed at Mississippi State–Xavier on the Friday, which was reading

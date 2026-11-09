@@ -2356,31 +2356,40 @@ def _event_draw(game):
 MTE_GAP = 2
 
 
+# ESPN fills a side it does not know yet with one of these. They are not
+# teams, and counted as teams they are a draw all by themselves.
+UNDECIDED = ("tbd", "tba", "")
+
+
 def bracket_games(slates):
     """The ids of the games that sit inside a bracket.
 
-    A bracket is a draw, and a draw means somebody plays twice: Duke opens the
-    Maui Invitational on Monday and is in the final on Wednesday. Everything
-    else wearing a title is a game, or a set of games, that happens to be
-    sponsored. Those get their town.
+    A bracket is a draw, and a draw shows itself two ways.
 
-    It has to be read across days, because inside any one day every team in a
-    tournament plays once -- which is exactly what makes a bracket look like
-    the things it is not. But "plays twice" alone is not enough either. The
-    Bad Boy Mowers Series is twelve games from November to December and
-    Indiana is in three of them, in Indianapolis, New York and Bloomington;
-    counted flat, a television series reads as a draw, and how wrong it reads
-    depends on how many days you happen to look at. So the repeat has to be in
-    one sitting: same town, and no more than `MTE_GAP` days between games
-    there.
+    Somebody plays twice: Duke opens the Maui Invitational on Monday and is in
+    the final on Wednesday. It has to be read across days, because inside any
+    one day every team in a tournament plays once -- which is what makes a
+    bracket look like the things it is not. And "plays twice" alone is not
+    enough: the Bad Boy Mowers Series is fourteen games from November to
+    December with Indiana in three of them, in three cities, so the repeat has
+    to be in one sitting -- same town, no more than `MTE_GAP` days between
+    games there. Otherwise a television series reads as a draw, and how wrong
+    it reads depends on how many days you happen to look at.
 
-    And the answer is per game rather than per name, because one name can
-    cover both. The Greenbrier Tip-Off is a six-team draw on 20 and 22
-    November -- and also Xavier at Mississippi State on the 13th, in the same
-    hall, by itself. That Friday is a game at a resort, not a round, and it
-    says White Sulphur Springs.
+    Or the draw has not been made yet, which is the better signal of the two,
+    because you only get a TBD when the fixture depends on a result. Maui on
+    23 November is four real ties and then eight TBDs across the Tuesday and
+    the Wednesday; nobody has played twice yet and it is unmistakably a
+    bracket. A day's worth of TBD on its own does not count -- the Big 5
+    Classic puts three unannounced games in one Philadelphia evening, and an
+    unannounced line-up is not a draw.
+
+    The answer is per game rather than per name, because one name covers both
+    shapes. The Greenbrier Tip-Off is a six-team draw on 20 and 22 November --
+    and also Xavier at Mississippi State on the 13th, in the same hall, by
+    itself. That Friday is a game at a resort, not a round.
     """
-    by_event = collections.defaultdict(list)
+    by_site = collections.defaultdict(list)
     seen = set()
     for games in slates:
         for game in games:
@@ -2393,27 +2402,34 @@ def bracket_games(slates):
             name = _event_name(game)
             if name and game.get("start_local"):
                 town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
-                by_event[(name, town)].append(game)
+                by_site[(name, town)].append(game)
 
     inside = set()
-    for here in by_event.values():
+
+    def settle(run, playing, days, undecided):
+        if run and (any(n > 1 for n in playing.values())
+                    or (undecided and len(days) > 1)):
+            inside.update(game.get("id") for game in run)
+
+    for here in by_site.values():
         here.sort(key=lambda g: g["start_local"])
-        run, playing, previous = [], collections.Counter(), None
-        for game in here + [None]:
-            day = game["start_local"].date() if game else None
-            if game is None or (previous is not None and (day - previous).days > MTE_GAP):
-                # A gap ends the occasion. Keep the run only if it was a draw.
-                if any(n > 1 for n in playing.values()):
-                    inside |= {g.get("id") for g in run}
-                run, playing = [], collections.Counter()
-            if game is None:
-                break
+        run, playing, days = [], collections.Counter(), set()
+        undecided, previous = False, None
+        for game in here:
+            day = game["start_local"].date()
+            if previous is not None and (day - previous).days > MTE_GAP:
+                settle(run, playing, days, undecided)      # a different occasion
+                run, playing, days, undecided = [], collections.Counter(), set(), False
             previous = day
             run.append(game)
+            days.add(day)
             for side in ("home", "away"):
                 team = ((game.get(side) or {}).get("name") or "").strip().lower()
-                if team:
+                if team in UNDECIDED:
+                    undecided = True
+                else:
                     playing[team] += 1
+        settle(run, playing, days, undecided)
     return inside
 
 
