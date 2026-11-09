@@ -1,3 +1,32 @@
+## 2026-11-08 — a repeat only counts in one sitting
+
+He pointed at Syracuse/Indiana on the Monday and the page was calling it the
+**Bad Boy Mowers Series** instead of Indianapolis. This morning's test — a
+team playing twice in a named event — was right about tournaments and wrong
+about television.
+
+The Bad Boy Mowers Series is twelve games from 2 November to 12 December.
+Indiana is in three of them: Indianapolis on the 9th, New York on the 17th,
+Bloomington on 12 December. BYU and Nebraska repeat too. Counted flat that is
+a draw, so the series got named like Maui does.
+
+Worse, **the answer depended on how many days you looked at.** A single-day
+run reads four days either side and saw one Indiana game, so it said
+Indianapolis. The site build reads its whole range and caught two, so it said
+Bad Boy Mowers Series. The same code, the same fixture, two different rows —
+and the README had claimed this design made every tab agree.
+
+So a repeat now has to happen **in one sitting**: the same town, and no more
+than `MTE_GAP` (two) days between consecutive games there. An MTE is played
+off Monday to Wednesday in one building; a sponsored series is the same name
+in a different city a fortnight later. Swept over 45 days — far wider than any
+build window — 39 events are brackets and the series is not one of them, and
+the width no longer changes a single answer.
+
+One more trap handled while in there: a late game comes back on two UTC dates,
+and counted twice it looks like a team playing itself into the second round.
+Games are now deduplicated by id before any of this.
+
 ## 2026-11-08 — a bracket is somebody playing twice
 
 Supersedes this morning's entry below, which had the right target and the

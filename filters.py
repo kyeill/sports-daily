@@ -2350,31 +2350,71 @@ def _event_draw(game):
     return parts[1].strip() if len(parts) > 1 else ""
 
 
+# A multi-team event is played off in one sitting: Monday, Tuesday, Wednesday,
+# or with one day's rest in the middle. Two games more than this far apart are
+# two occasions, whatever the sponsor calls them.
+MTE_GAP = 2
+
+
 def bracket_events(slates):
     """The event names that are brackets, from several days of fixtures.
 
     A bracket is a draw, and a draw means somebody plays twice: Duke opens the
     Maui Invitational on Monday and is in the final on Wednesday. Everything
     else wearing a title is a game, or a set of games, that happens to be
-    sponsored -- the ACC/SEC Men's Challenge, the Dick Vitale Invitational,
-    a Thanksgiving doubleheader on one campus. Those get their town.
+    sponsored. Those get their town.
 
-    It has to be read across days because within one day every team in a
-    tournament plays once, which is exactly what makes it look like the
-    things it is not.
+    It has to be read across days, because within one day every team in a
+    tournament plays once, which is exactly what makes it look like the things
+    it is not. But "plays twice" on its own is not enough either. The Bad Boy
+    Mowers Series is twelve games from November to December, and Indiana is in
+    three of them -- Indianapolis in November, New York a week later,
+    Bloomington in December. Counted flat, one television series reads as a
+    draw, and how wrong it reads depends on how many days you happened to
+    look at.
+
+    So the repeat has to happen in one sitting: same town, and no more than
+    `MTE_GAP` days between consecutive games there. That is what an MTE is and
+    what a season-long series never is, and it makes the answer independent of
+    the window, which a flat count was not.
     """
-    appearances = collections.defaultdict(collections.Counter)
+    by_event = collections.defaultdict(list)
+    seen_games = set()
     for games in slates:
         for game in games:
-            name = _event_name(game)
-            if not name:
+            # A late game comes back on two UTC dates, and counted twice it
+            # looks like a team playing itself into the second round.
+            ident = game.get("id")
+            if ident in seen_games:
                 continue
-            for side in (game.get("home") or {}, game.get("away") or {}):
-                team = (side.get("name") or "").strip().lower()
-                if team:
-                    appearances[name][team] += 1
-    return {name for name, teams in appearances.items()
-            if any(n > 1 for n in teams.values())}
+            seen_games.add(ident)
+            name = _event_name(game)
+            if name and game.get("start_local"):
+                by_event[name].append(game)
+
+    brackets = set()
+    for name, games in by_event.items():
+        towns = collections.defaultdict(list)
+        for game in games:
+            town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
+            teams = [((game.get(side) or {}).get("name") or "").strip().lower()
+                     for side in ("home", "away")]
+            towns[town].append((game["start_local"].date(), teams))
+        for here in towns.values():
+            playing, previous = collections.Counter(), None
+            for day, teams in sorted(here):
+                if previous is not None and (day - previous).days > MTE_GAP:
+                    playing.clear()          # a different occasion entirely
+                previous = day
+                for team in teams:
+                    if team:
+                        playing[team] += 1
+                if any(n > 1 for n in playing.values()):
+                    brackets.add(name)
+                    break
+            if name in brackets:
+                break
+    return brackets
 
 
 def mark_shared_events(games, brackets):

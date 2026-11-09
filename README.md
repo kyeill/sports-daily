@@ -471,10 +471,19 @@ title, not the venue, and not ESPN's own round tag, which for college
 basketball is the string "regular-season" on every game of the season.
 
 It has to be read across days, because inside any one day every team in a
-tournament plays once, which is exactly what makes a bracket look like the
-things it is not. `bracket_events_for` reads a window either side of the day
-being built (`BRACKET_SPAN`, four days) and the site build reads its whole
-range once, so every tab agrees about which events are brackets.
+tournament plays once -- which is exactly what makes a bracket look like the
+things it is not. But "plays twice" on its own is not enough either. The Bad
+Boy Mowers Series is twelve games from November to December and Indiana is in
+three of them, in Indianapolis, New York and Bloomington; counted flat, a
+television series reads as a draw, and *how* wrong it reads depends on how
+many days you happen to look at. So the repeat has to be in one sitting: same
+town, and no more than `MTE_GAP` days between games there. That is what an MTE
+is and what a season-long series never is, and it makes the answer independent
+of the window -- which a flat count was not.
+
+`bracket_events_for` reads a window either side of the day being built
+(`BRACKET_SPAN`, four days); the site build reads its whole range once, so
+every tab agrees.
 
 **Where the name is shown, the round goes with it**: `Battle 4 Atlantis -
 Championship Bracket`, `Fort Myers Tip-Off - Beach Division`. Which half of
