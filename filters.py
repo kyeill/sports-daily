@@ -1929,7 +1929,7 @@ def worth_splitting(early, late, config):
 
 
 def national_bucket(game, config):
-    """Which part of National a game is in: 1 early, 2 late, 3 his own.
+    """Which part of National a game is in: 0 washed, 1 early, 2 late, 3 hockey.
 
     The clock and nothing else. Mon-Fri the evening starts at six, Sunday at
     one -- the afternoon is the day there -- and Saturday is one card, because
@@ -1942,11 +1942,13 @@ def national_bucket(game, config):
     start = game.get("start_local")
     if not start:
         return 2
-    # The foot of the section, whatever the hour: his own teams out of the
-    # regular season, and the college hockey. Reading the evening meant
-    # stepping over them, and they are the rows he goes looking for rather
-    # than scans past.
-    if row_washed(game, config) or (game.get("league_label") or "") in NATIONAL_SECOND:
+    # The top of the section, whatever the hour: the washed rows -- his own
+    # teams out of the regular season, the highlights that moved here. Asked
+    # for on 2026-11-09; they used to sit at the foot.
+    if row_washed(game, config):
+        return 0
+    # The foot, whatever the hour: the college hockey.
+    if (game.get("league_label") or "") in NATIONAL_SECOND:
         return 3
     cut = rules.get(start.strftime("%a"), rules.get("default"))
     if not cut:
@@ -2156,10 +2158,19 @@ def undated(game):
 def sort_key_for(section, config):
     """How one section orders its games.
 
-    Finished games sink to the bottom of every section, in the order they
-    started; the rest is the section's own business. The third element only
-    ever separates two games kicking off the same minute.
+    The blue-washed rows come first, whenever they start -- they are the
+    highlights that moved out of Highlights, and the rows he looks for.
+    Then, in each half, finished games sink to the bottom in the order they
+    started; the rest is the section's own business.
     """
+    inner = _sort_key_for(section, config)
+    if section == "National":
+        # Its own way: the washed rows are a card of their own at the top.
+        return inner
+    return lambda g: (not row_washed(g, config),) + tuple(inner(g))
+
+
+def _sort_key_for(section, config):
     if section == "National":
         return lambda g: national_order(g, config)
     if section == "Highlights":

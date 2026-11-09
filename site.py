@@ -315,17 +315,27 @@ APP_JS = """
   // started -- the same rule the build sorts by, so a reload changes nothing.
   // Rows are direct children of the card, and the two halves of National are
   // separate cards, so a final never crosses the gap between them.
+  //
+  // The blue-washed rows stay above everything else, finished or not -- the
+  // same two halves the build sorts by -- so a final sinks only within its
+  // own half.
   function resort(card) {
     var rows = Array.prototype.slice.call(card.children);
-    var done = rows.filter(function (r) { return r.dataset.state === 'post'; });
-    if (!done.length || done.length === rows.length) { return; }
-    done.sort(function (a, b) {
+    if (!rows.some(function (r) { return r.dataset.state === 'post'; })) { return; }
+    function byStart(a, b) {
       var x = a.dataset.start || '', y = b.dataset.start || '';
       return x < y ? -1 : x > y ? 1 : 0;
+    }
+    var order = [];
+    [true, false].forEach(function (washed) {
+      var half = rows.filter(function (r) { return r.classList.contains('washed') === washed; });
+      var done = half.filter(function (r) { return r.dataset.state === 'post'; });
+      // Still to come keeps the order the build gave it.
+      order = order.concat(half.filter(function (r) { return r.dataset.state !== 'post'; }),
+                           done.sort(byStart));
     });
-    // Re-appending in order leaves everything still to come untouched and in
-    // the order the build gave it.
-    done.forEach(function (r) { card.appendChild(r); });
+    var same = order.every(function (r, i) { return r === rows[i]; });
+    if (!same) { order.forEach(function (r) { card.appendChild(r); }); }
   }
 
   function applyState(row, st) {

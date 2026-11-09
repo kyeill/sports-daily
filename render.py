@@ -582,6 +582,8 @@ def _national(block, config):
     first. Split by the time itself the gap says something the reader is
     already looking for: here is the afternoon, here is tonight.
     """
+    # The washed rows lead, in a card of their own, whatever the clock says.
+    top = [g for g in block if filters.national_bucket(g, config) == 0]
     parts = [[g for g in block if filters.national_bucket(g, config) == n]
              for n in (1, 2, 3)]
     # The gap says "here is the afternoon, here is tonight", which is worth
@@ -597,6 +599,7 @@ def _national(block, config):
         at = next((i for i, group in enumerate(parts)
                    if group and filters.all_background(group, config)), len(parts))
         parts.insert(at, mine)
+    parts.insert(0, top)
     cards = []
     for group in parts:
         if not group:

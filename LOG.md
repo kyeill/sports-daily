@@ -1,3 +1,18 @@
+## 2026-11-09 — the blue rows lead their section
+
+The washed rows -- highlights that moved out of Highlights into their own
+sport, Atlanta in National, the soccer he watches for -- now come first in
+every section whatever time they start, in start order among themselves;
+the plain rows follow. Finished games still sink, but only within their own
+half, so a blue final stays above a plain game still to come. Saturday's
+windows are each their own heading, so the blue rows lead each window
+rather than being pulled across them.
+
+National put them at the FOOT until now ("the rows he goes looking for
+rather than scans past"); they are a card of their own at the top instead
+(`national_bucket` 0). College hockey keeps bucket 3. The live script's
+`resort` keeps the same two halves when a game ends with the page open.
+
 ## 2026-11-09 — twenty towns nobody could place
 
 A neutral college row names its town, and for about twenty of them the town
