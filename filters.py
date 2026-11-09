@@ -2861,7 +2861,7 @@ def competition_label(game):
 COLLEGE_LABELS = ("College Football", "College Basketball", "College Hockey")
 
 
-def _where(game):
+def _where(game, config=None):
     """The place a neutral game names: a college town, an arena otherwise.
 
     A neutral college game is really saying "this is being played somewhere
@@ -2884,6 +2884,11 @@ def _where(game):
     if (game.get("league_label") or "") not in COLLEGE_LABELS:
         return game.get("venue") or ""
     place = game.get("venue_city") or game.get("venue") or ""
+    # A town nobody can place is no better than the arena it was standing in
+    # for. `city_names` in config.json trades it for whatever a reader would
+    # actually recognise: the metropolis it is a suburb of, the state, the
+    # country, or now and then the building itself.
+    place = ((config or {}).get("city_names") or {}).get(place, place)
     event = _event_name(game)
     if not (event and game.get("_event_shared")):
         return place
@@ -2970,6 +2975,6 @@ def detail_of(game, config=None, league=None):
     # A named round already says where you are; a bowl game does not also need
     # the stadium, nor a regional final its arena.
     if game.get("neutral") and game.get("venue") and not lead:
-        parts.append(_where(game))
+        parts.append(_where(game, config))
     return " · ".join(p for p in parts if p)
 

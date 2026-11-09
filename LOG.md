@@ -1,3 +1,37 @@
+## 2026-11-09 — twenty towns nobody could place
+
+A neutral college row names its town, and for about twenty of them the town
+was the least useful true thing available. `city_names` in `config.json` now
+trades them, and `_where` takes `config` so it can.
+
+Three kinds of swap, all his calls:
+
+**A suburb becomes the place it is a suburb of.** Southaven is Memphis,
+Highland Heights is Cincinnati, Oceanside is San Diego, Everett is Seattle,
+Sunrise is Fort Lauderdale, Cedar Park is Austin, Frisco is Dallas, North
+Little Rock is Little Rock, San Juan Capistrano is Orange County, Elmont and
+Stony Brook are both Long Island, and Rock Hill is Charlotte.
+
+**A town whose own name misleads becomes its state or country.** Canton is in
+Illinois, not Ohio — it is Spoon River College. Rome is the one in Italy,
+which the row had been reading as Georgia. Ruston is Louisiana, Rapid City is
+South Dakota, Biloxi is Mississippi, Stateline is Nevada.
+
+**Twice the building wins.** Uncasville is Mohegan Sun, which is how anyone
+would say where that game is.
+
+Left alone on his instruction: East Rutherford, Foxborough and Arlington carry
+their stadiums well enough.
+
+Over the season it turns 90 distinct places into 72, and 176 games keep their
+footer. Verified by sweeping 26 September to 27 April: none of the twenty old
+names survives anywhere.
+
+One thing to watch, and he should decide rather than me: **Glens Falls was set
+to New York**, so one game in upstate New York now sits in the same bucket as
+eight in New York City. That is what "state name" means for that state, and it
+is the only state where it collides with a city already in the list.
+
 ## 2026-11-09 — TBD is not a team, but it is a tell
 
 Auditing the surviving event names turned up a false positive and, chasing it,
