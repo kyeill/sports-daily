@@ -509,11 +509,13 @@ town takes its place and the round stays: `Nassau - Championship Bracket`.
 place it is a suburb of: Southaven is Memphis, Highland Heights is Cincinnati,
 Elmont and Stony Brook are Long Island, Rock Hill is Charlotte. A town whose
 own name misleads becomes its state or country: Canton is in Illinois, not
-Ohio; Rome is the one in Italy; Biloxi is Mississippi and Stateline is Nevada.
+Ohio; Rome is the one in Italy; Biloxi is Mississippi, Stateline is Nevada and
+White Sulphur Springs is West Virginia.
 And twice the building wins outright, because Mohegan Sun is how anyone would
 say where that game is. East Rutherford, Foxborough and Arlington are left
-alone -- they carry their stadiums well enough. Measured over a season it
-turns 90 distinct places into 72.
+alone -- they carry their stadiums well enough, and so is Glens Falls, since
+New York is the one state whose name is already a city on this page. Measured
+over a season it turns 90 distinct places into 72.
 
 What this leaves as a town: the ACC/SEC Men's Challenge, eleven games on
 eleven campuses under one title; the CBS Sports Classic and the Hall of Fame

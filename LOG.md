@@ -27,10 +27,11 @@ Over the season it turns 90 distinct places into 72, and 176 games keep their
 footer. Verified by sweeping 26 September to 27 April: none of the twenty old
 names survives anywhere.
 
-One thing to watch, and he should decide rather than me: **Glens Falls was set
-to New York**, so one game in upstate New York now sits in the same bucket as
-eight in New York City. That is what "state name" means for that state, and it
-is the only state where it collides with a city already in the list.
+**Glens Falls stays Glens Falls.** "State name" would have made it New York,
+which is the one state whose name is already a city on this page -- an upstate
+game would have sat in the same bucket as eight in Manhattan. His call, made
+the moment it was put to him. **White Sulphur Springs is West Virginia**,
+which follows the same pattern as Biloxi and Stateline.
 
 ## 2026-11-09 — TBD is not a team, but it is a tell
 
