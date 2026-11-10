@@ -1,3 +1,14 @@
+## 2026-11-10 — the Beanpot by one name
+
+ESPN files it as "Beanpot Tournament" on semi-final night and "Beanpot -
+Championship" a week later, so the page said both. `event_names` in
+`config.json` is a rename map for events, read before `always_name_events`, so
+a renamed event is listed once under the name that gets printed.
+
+The Beanpot now reads Beanpot on the first Monday and Beanpot - Championship
+or Beanpot - Consolation on the second — the same name throughout, with the
+round still carried where there is one.
+
 ## 2026-11-10 — a short list that overrides the bracket test
 
 `always_name_events` in `config.json`: events that print their own name

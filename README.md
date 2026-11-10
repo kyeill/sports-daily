@@ -521,7 +521,10 @@ over a season it turns 90 distinct places into 72.
 `config.json` is the exception to the bracket test, for the two cases it
 cannot see. The Beanpot is a genuine four-team draw whose semi-finals and
 final are a week apart, so the one-sitting rule splits it in two and neither
-half has a repeat in it. The Lake Tahoe Classic has nobody playing twice at
+half has a repeat in it. ESPN also files it as "Beanpot Tournament" on
+semi-final night and "Beanpot - Championship" a week later, which `event_names`
+settles: that map is read first, so a renamed event is listed once, under the
+name you want to see. The Lake Tahoe Classic has nobody playing twice at
 all, but "Lake Tahoe Classic" beats the town it would otherwise print, which
 is Stateline, Nevada. Keep the list short: most named events really are better
 as a town, and the rule that would catch these two automatically also catches

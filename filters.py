@@ -2901,6 +2901,10 @@ def _where(game, config=None):
     # country, or now and then the building itself.
     place = ((config or {}).get("city_names") or {}).get(place, place)
     event = _event_name(game)
+    # ESPN files the Beanpot as "Beanpot Tournament" on semi-final night and
+    # "Beanpot - Championship" a week later. `event_names` settles that, and
+    # anything else whose filed name is not the one to print.
+    event = ((config or {}).get("event_names") or {}).get(event, event)
     # A handful of events are worth their name without a bracket to earn it --
     # the Beanpot is a real draw whose two rounds are a week apart, and the
     # Lake Tahoe Classic beats "Nevada" on any screen. Named in config rather
