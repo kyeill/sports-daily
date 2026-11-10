@@ -24,6 +24,9 @@ TIERS = ("favorite", "watch", "interest")
 # side. Black said that too, but said it invisibly.
 RIVAL_GREY = "9a9a95"
 
+# Black that can be seen on a black page. Overridable as `black_substitute`.
+VISIBLE_BLACK = "45454e"
+
 
 def _flat(text):
     """Lowercase, alphanumerics and '+' -- 'SEC Network' -> 'secnetwork'.
@@ -594,6 +597,22 @@ def invisible_colour(value):
     return blue > red and blue > green and green >= red
 
 
+def near_black(value):
+    """True when a colour is black or a dark grey -- no hue left to show.
+
+    The first half of `invisible_colour`, on its own. A dark navy is also
+    invisible on this page but it is still navy, and swapping it for grey
+    would throw away the one thing it was telling you.
+    """
+    parts = _rgb(value)
+    if not parts:
+        return False
+    red, green, blue = parts
+    if 0.2126 * red + 0.7152 * green + 0.0722 * blue >= 55:
+        return False
+    return max(parts) - min(parts) < 40
+
+
 def washed_out(value):
     """True when a colour reads as white on the page: white itself, or a
     light grey with no colour left in it.
@@ -652,11 +671,15 @@ def _colour(team, config, league=None):
     used unless it would read as black, in which case the alternate stands in:
     the Steelers become gold rather than a stripe you cannot see.
     """
-    overrides = config.get("team_colors") or {}
+    # A league's own overrides first: Michigan is maize in football and in
+    # basketball and navy on the ice, and the name is the same all three
+    # times. Then the shared list behind them.
     name = (team.get("name") or "").lower()
-    for label, value in overrides.items():
-        if label.lower() in name:
-            return value.lstrip("#")
+    for overrides in ((league or {}).get("team_colors") or {},
+                      config.get("team_colors") or {}):
+        for label, value in overrides.items():
+            if label.lower() in name:
+                return value.lstrip("#")
 
     candidates = [team.get("color") or "", team.get("alt_color") or ""]
     borrowed = _borrowed_colours(config, league).get(team.get("label") or "")
@@ -678,9 +701,16 @@ def _colour(team, config, league=None):
         if not washed_out(candidate) and not invisible_colour(candidate):
             return candidate
     for candidate in candidates:
-        if not washed_out(candidate):
-            return candidate
-    return candidates[0] if candidates else ""
+        if not washed_out(candidate) and not near_black(candidate):
+            return candidate          # a dark navy still says navy
+    # Nothing here will show. Rather than print a black stripe on a black page
+    # -- which is how seven clubs came to be written into `team_colors` by
+    # hand, one at a time -- black and dark grey fall back to a grey that can
+    # be seen. Newcastle, Fulham, Sunderland and Bournemouth were all this.
+    chosen = candidates[0] if candidates else ""
+    if chosen and near_black(chosen):
+        return (config.get("black_substitute") or VISIBLE_BLACK).lstrip("#")
+    return chosen
 
 
 def _conference_of(league, team):

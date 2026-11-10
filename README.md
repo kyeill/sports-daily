@@ -385,6 +385,10 @@ in `color-mix`, which is all a dark page will take. Maize at a quarter
 strength is olive; at a tenth it is a warm cast that says "this row goes with
 that one" and leaves the stripe to do the colour.
 
+**Your teams take the same wash**, each row its own colour. The amber card
+they used to sit on said the same thing about all of them at once, and said it
+in a colour none of them play in.
+
 It replaced one blue for every highlighted row. A row with no colour of its
 own, or a page with `show_colors` off, falls back to `--watch` and lands on
 `#202229`, which is within a shade of the blue it used to be -- so nothing
@@ -395,6 +399,18 @@ The eight it was chosen against, mixed onto the card at ten per cent: maize
 `#301d23`, black `#1b1b20`.
 
 ## The colour stripe
+
+**Black is never printed.** A colour with no hue left in it -- black, or a
+dark grey -- is swapped for `#45454e`, a grey that can be seen on a dark page.
+`near_black()` is the test and `black_substitute` the override. This used to
+be done by hand, one club at a time: Newcastle, Fulham, Sunderland and
+Bournemouth are all still written into `team_colors` from when it was. A dark
+*navy* keeps its colour, because navy is still telling you something; only the
+achromatic ones are traded.
+
+**A league can override the shared list.** `team_colors` on a league is read
+before the one in `config.json`, which is how Michigan is maize in football
+and basketball and navy on the ice under the same name.
 
 **White is a last resort, never a preference.** A team with any colour at all
 shows it: a white stripe says nothing about who is playing, and a page of them

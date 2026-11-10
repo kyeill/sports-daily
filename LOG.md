@@ -1,3 +1,33 @@
+## 2026-11-10 — no more black stripes, and Highlights loses its amber
+
+Two of his, and the first explains seven old entries in `team_colors`.
+
+**Black is never printed now.** A colour with no hue left — black or a dark
+grey — is swapped for `#45454e`, the grey that can be seen on a dark page.
+`near_black()` is the test; `black_substitute` overrides it. Newcastle, Fulham,
+Sunderland, Bournemouth, Iowa, Lindenwood and Los Angeles Golf Club were all
+written into `team_colors` by hand as this came up one club at a time. Over a
+fortnight of fixtures **61 teams were still coming back black**, and none is
+now. A dark navy keeps its colour — the Cowboys' #002a5c is invisible too, but
+it is still navy, and grey would throw away the one thing it says.
+
+The ordering was the subtle part. The old third pass took any colour that was
+not white, which handed back the black before the substitution could see it;
+it is gone, and the pass above it now rejects near-black while still keeping a
+navy.
+
+**A league can override the shared colour list.** Michigan is maize in
+football and basketball and navy on the ice, under the same name in all three,
+so `team_colors` on a league is read before the one in `config.json`.
+
+**Highlights loses its amber card.** `.pinned .card` painted every one of his
+teams the same brown, in a colour none of them play in; the rows now take the
+same ten-per-cent wash as everywhere else, each its own. `--pin` survives for
+the warning box, which is the only thing that was ever really amber.
+
+Added while in there: a blue for the USMNT, which had no colour anywhere and
+no fixture on the board to read one from.
+
 ## 2026-11-10 — the wash takes the row's own colour
 
 The blue behind a highlighted row is gone. It takes the colour the stripe

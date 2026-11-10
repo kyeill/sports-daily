@@ -65,7 +65,6 @@ h2 {
 /* The two halves of National, afternoon and evening. The gap matches the one
    between a heading and its card, so the break reads as deliberate. */
 .card.second { margin-top: 10px; }
-.pinned .card { background: var(--pin); border-color: var(--pin-line); }
 /* One row on the Highlights wash inside a card that is not. Saturday sends
    the rivals to the football and the rest to National, and this is what keeps
    them reading as highlights once they are there.
@@ -77,7 +76,10 @@ h2 {
    maize at a quarter strength is olive. The stripe stays at full strength and
    does the colour work; this only says which rows belong together. A row with
    no colour of its own, or a page with colours switched off, keeps the blue. */
-.row.washed {
+/* Your teams take the same wash, each row its own colour. The amber card they
+   used to sit on said the same thing about all of them at once, and said it
+   in a colour none of them play in. */
+.row.washed, .pinned .row {
   background: color-mix(in srgb, var(--tint, var(--watch)) 10%, var(--card));
 }
 /* One game is two stacked team lines sharing a four-column grid -- crest,

@@ -433,6 +433,8 @@
     },
     {
       "key": "mens-college-hockey",
+      "_team_colors_comment": "Beats the shared list for this league only. Michigan is maize in football and basketball and navy on the ice.",
+      "team_colors": { "Michigan Wolverines": "00274c" },
       "path": "hockey/mens-college-hockey",
       "label": "College Hockey",
       "sport": "Hockey",
@@ -1376,6 +1378,7 @@
     "Sunderland": "45454e",
     "Syracuse": "f76900",
     "Tottenham Hotspur": "ffffff",
+    "United States": "1c3f94",
     "Union Dutchmen": "762334"
   },
   "streaming_networks": [
