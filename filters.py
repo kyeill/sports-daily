@@ -2901,7 +2901,13 @@ def _where(game, config=None):
     # country, or now and then the building itself.
     place = ((config or {}).get("city_names") or {}).get(place, place)
     event = _event_name(game)
-    if not (event and game.get("_event_shared")):
+    # A handful of events are worth their name without a bracket to earn it --
+    # the Beanpot is a real draw whose two rounds are a week apart, and the
+    # Lake Tahoe Classic beats "Nevada" on any screen. Named in config rather
+    # than guessed at, because the test that would catch them catches the US
+    # Hockey Hall of Fame Game too, and that one wants Austin.
+    always = (config or {}).get("always_name_events") or []
+    if not (event and (game.get("_event_shared") or event in always)):
         return place
     draw = _event_draw(game)
     shown = "%s - %s" % (event, draw) if draw else event

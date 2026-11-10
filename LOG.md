@@ -1,3 +1,34 @@
+## 2026-11-10 — a short list that overrides the bracket test
+
+`always_name_events` in `config.json`: events that print their own name
+without a bracket to earn it. Three entries to start — "Beanpot", "Beanpot
+Tournament" (ESPN files it both ways) and "Lake Tahoe Classic".
+
+Two different reasons, and both are things the test cannot see.
+
+**The Beanpot is a real draw the calendar hides.** Four Boston teams, everyone
+playing twice — but the semi-finals are the first Monday in February and the
+final is the second, and the one-sitting rule splits anything more than two
+days apart. The rule that stopped a season-long television series reading as a
+draw is the same rule that loses the Beanpot, and widening it would give the
+series back. A named exception is cheaper than a worse rule.
+
+**The Lake Tahoe Classic has no bracket at all**, three games in an evening
+with nobody playing twice. It is on the list because the town it falls back to
+is Stateline, which is already renamed to Nevada, and a whole state is a poor
+answer to where a game is.
+
+The tempting general rule — prefer the event name wherever the town was weak
+enough to need renaming — was put to him and he rejected it on its own best
+counter-example: the **US Hockey Hall of Fame Game** at Cedar Park would have
+printed its name, and he wants Austin. So the list is hand-picked and stays
+short; most named events genuinely do read better as a town, and 43 of them
+sit at a single arena waiting to be let in.
+
+Verified: Lake Tahoe Classic and all three Beanpot rows now name themselves,
+while Austin, Italy, Mohegan Sun and the Jimmy V Classic's New York are all
+untouched.
+
 ## 2026-11-09 — the blue rows lead their section
 
 The washed rows -- highlights that moved out of Highlights into their own

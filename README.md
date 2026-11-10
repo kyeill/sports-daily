@@ -517,6 +517,16 @@ alone -- they carry their stadiums well enough, and so is Glens Falls, since
 New York is the one state whose name is already a city on this page. Measured
 over a season it turns 90 distinct places into 72.
 
+**A short list of events print their name anyway.** `always_name_events` in
+`config.json` is the exception to the bracket test, for the two cases it
+cannot see. The Beanpot is a genuine four-team draw whose semi-finals and
+final are a week apart, so the one-sitting rule splits it in two and neither
+half has a repeat in it. The Lake Tahoe Classic has nobody playing twice at
+all, but "Lake Tahoe Classic" beats the town it would otherwise print, which
+is Stateline, Nevada. Keep the list short: most named events really are better
+as a town, and the rule that would catch these two automatically also catches
+the US Hockey Hall of Fame Game, which wants Austin.
+
 What this leaves as a town: the ACC/SEC Men's Challenge, eleven games on
 eleven campuses under one title; the CBS Sports Classic and the Hall of Fame
 Series, doubleheaders where nobody plays twice; and a one-off with a name,
