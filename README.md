@@ -376,6 +376,24 @@ seed, which already encodes the league's tiebreakers.
 Places come from the **current** standings, so a team that has since been
 relegated has no place at all when you browse an old date.
 
+## The wash
+
+A highlighted row sits on a tint of **its own colour** -- the same one the
+stripe carries, which is already the team the row is worth watching for: one
+of his, or whoever can beat the rival. Ten per cent of it, mixed into the card
+in `color-mix`, which is all a dark page will take. Maize at a quarter
+strength is olive; at a tenth it is a warm cast that says "this row goes with
+that one" and leaves the stripe to do the colour.
+
+It replaced one blue for every highlighted row. A row with no colour of its
+own, or a page with `show_colors` off, falls back to `--watch` and lands on
+`#202229`, which is within a shade of the blue it used to be -- so nothing
+regresses where there is nothing to say.
+
+The eight it was chosen against, mixed onto the card at ten per cent: maize
+`#342f20`, white `#343439`, navy `#1d1e28`, Honolulu blue `#1b2732`, red
+`#301d23`, black `#1b1b20`.
+
 ## The colour stripe
 
 **White is a last resort, never a preference.** A team with any colour at all

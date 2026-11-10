@@ -21,7 +21,9 @@ CSS = """
 :root {
   --bg: #16161a; --card: #1e1e23; --ink: #ececea; --muted: #9a9a95;
   --line: #2e2e35; --accent: #e0834f; --pin: #26201c; --pin-line: #4a3628;
-  --watch: #1b2029; --watch-line: #33445c;
+  /* The wash's colour of last resort: a row with no team colour of its own,
+     or a page with colours switched off. */
+  --watch: #33445c;
   /* Ranks read better in light blue: a dark navy would vanish against the
      background the same way the black stripe does. */
   --rank: #8fb0d8;
@@ -64,11 +66,20 @@ h2 {
    between a heading and its card, so the break reads as deliberate. */
 .card.second { margin-top: 10px; }
 .pinned .card { background: var(--pin); border-color: var(--pin-line); }
-.watching .card { background: var(--watch); border-color: var(--watch-line); }
 /* One row on the Highlights wash inside a card that is not. Saturday sends
    the rivals to the football and the rest to National, and this is what keeps
-   them reading as highlights once they are there. */
-.row.washed { background: var(--watch); }
+   them reading as highlights once they are there.
+
+   The wash takes the row's own colour rather than one blue for all of them --
+   the same colour the stripe carries, which is already the team the row is
+   worth watching for: yours, or whoever can beat the rival. Ten per cent,
+   because a dark page turns any hue muddy long before it turns it bright:
+   maize at a quarter strength is olive. The stripe stays at full strength and
+   does the colour work; this only says which rows belong together. A row with
+   no colour of its own, or a page with colours switched off, keeps the blue. */
+.row.washed {
+  background: color-mix(in srgb, var(--tint, var(--watch)) 10%, var(--card));
+}
 /* One game is two stacked team lines sharing a four-column grid -- crest,
    rank, name, record -- so every field lines up down the page regardless of
    how long the names are. The time and networks sit in a column of their own

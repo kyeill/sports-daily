@@ -1,3 +1,27 @@
+## 2026-11-10 — the wash takes the row's own colour
+
+The blue behind a highlighted row is gone. It takes the colour the stripe
+already carries — his team's, or the rival's opponent's — at ten per cent,
+mixed into the card.
+
+The pick was never the hard part: `tint_for` has worked out which team a row
+is worth watching for since last season, and every row on the page already
+carries the answer as `--tint`. The question was only what a dark card does to
+a hue, and the answer is: ruins it long before it brightens it. Maize at 22%
+is olive, white is plain grey, and black goes darker than the card it sits on.
+He looked at eight teams across five strengths and picked **10%**, where the
+cast is a grouping signal rather than an attempt at the colour itself.
+
+Measured on the build: 51 washed rows, 25 distinct colours where there was one
+blue. An untinted row falls back to `--watch` and lands on `#202229`, a shade
+off the `#1b2029` it used to be, so nothing regresses where there is nothing
+to say.
+
+Two things went with it. `.watching .card` matched **no element on the page**
+— left over from when Highlights was a single blue card rather than a card of
+rows — and `--watch-line` had no reader once it went. `--watch` survives as
+the fallback hue, which is the only job it has left.
+
 ## 2026-11-10 — the Beanpot by one name
 
 ESPN files it as "Beanpot Tournament" on semi-final night and "Beanpot -
