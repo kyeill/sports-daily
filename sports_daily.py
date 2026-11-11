@@ -286,6 +286,40 @@ def save_shown(shown, today, path=SHOWN, keep_days=SHOWN_DAYS):
     return trimmed
 
 
+def _settle_started(kept, slate, shown, last_build):
+    """The ledger is the record for a game that has started.
+
+    Before kickoff the filters are answering a question -- is this worth
+    watching -- and may change their mind as the line moves. Once the ball is
+    up the question is settled: what was on the page stays on it, whatever a
+    poll or a crowded night says afterwards, and what was not on it does not
+    appear. ESPN deletes a line the moment a game ends, so without this a
+    played football blowout has nothing left to be judged on and walks back in.
+
+    An upset revealed tonight is exempt -- it is joining the page for the first
+    time and the ledger cannot have heard of it yet.
+
+    The safety net: if the ledger vouches for nothing on a day that plainly has
+    started games on it, it has no record of that day -- a lost file, or the
+    first run -- and it is ignored rather than believed.
+    """
+    if shown is None or not last_build:
+        return kept
+    started = lambda g: (g.get("state") or "") != "pre"
+    vouched = {g.get("id") for g in slate
+               if started(g) and shown.get(g.get("id")) == last_build}
+    if not vouched and any(started(g) for g in kept):
+        return kept
+    settled = [g for g in kept
+               if not started(g) or g.get("id") in vouched or g.get("_upset")]
+    known = {id(g) for g in settled}
+    for game in slate:
+        if started(game) and game.get("id") in vouched and id(game) not in known:
+            game["_pinned"] = True
+            settled.append(game)
+    return settled
+
+
 def collect(config, day, tz, only=None, lurkers=False, brackets=None,
             shown=None, last_build="", build_day=None):
     """Fetch every enabled league and keep the games that pass its filters.
@@ -322,6 +356,7 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None,
             if not favourite:
                 continue
             if filters.upset_revealed(game, favourite, config):
+                game["_upset"] = True
                 upsets.append(game)
             elif lurkers and game.get("state") != "post":
                 game["_lurk"] = True
@@ -333,19 +368,6 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None,
             side, label = filters.soccer_line(game, league, config)
             if side and label:
                 game["spread_side"], game["spread_label"] = side, label
-        # Once a game has been on the page while it was being played, it stays
-        # there. The filters answer a question about a fixture -- is this worth
-        # watching -- and that question stops being live at kickoff; what is
-        # left afterwards is a record of the evening, and a record that edits
-        # itself is no record. A game can still fall off BEFORE it starts,
-        # which is the line moving during the week and is the point.
-        if shown is not None:
-            for game in games:
-                if game in passed or (game.get("state") or "") == "pre":
-                    continue
-                if last_build and shown.get(game.get("id")) == last_build:
-                    game["_pinned"] = True
-                    passed.append(game)
         kept.extend(passed)
         stats.append((league["label"], len(passed), len(games)))
     # Decided across the whole day rather than game by game: a national
@@ -354,6 +376,7 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None,
     # After the crowding rule, which is about what is on national TV: an
     # upset is on the page because it happened, not for its channel.
     kept.extend(upsets)
+    kept = _settle_started(kept, slate, shown, last_build)
     # Which games sit in a bracket. Judged on the whole day's fixtures
     # rather than on the handful that survive: the one Players Era tie good
     # enough for the page is still a Players Era tie, and saying "Las Vegas"

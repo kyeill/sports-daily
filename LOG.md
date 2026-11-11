@@ -1,3 +1,39 @@
+## 2026-11-11 — the ledger is the record now, both ways
+
+It used to only add rows back. Now it also takes them away: for a game that
+has started, what the ledger vouches for is on the page and what it does not
+is off it, whatever the filters would say today.
+
+That second half is what closes football. ESPN deletes the line when a game
+ends. Basketball has Torvik, whose projection survives a played game, so the
+pre-game judgement can still be made afterwards. **Torvik is a basketball
+site**, so a finished football game has nothing left to be judged on — and
+nothing to judge means keep. That was five games in a week, Merrimack 0-77
+Wake Forest the worst of them. With the ledger as the record they are gone:
+22 rows on 7 November become 20, and both of the ones that should not have
+been there are the two that went.
+
+Proven the other way too: a basketball row the ledger does not vouch for is
+dropped even though the filters still want it.
+
+Two exemptions, both necessary. An **upset revealed tonight** is joining the
+page for the first time and the ledger cannot have heard of it yet, so it is
+exempt. And the safety net: if the ledger vouches for nothing at all on a day
+that plainly has started games on it, it has no record of that day — a lost
+file, or a first run — and it is ignored rather than believed. Verified by
+deleting the file: yesterday's tab is the same seven rows cold as warm.
+
+**Q1 was answered by not doing it.** A hidden upset row that the live script
+showed in the second half, where the favourite then recovered and won, is on
+the page in the browser and nowhere the build can see. His call: if the upset
+does not happen, dropping it is right. So the one hole in "a row that has been
+played is a row that stays" is deliberate, and the reconstruction from
+half-by-half scores was not built.
+
+His other point is worth recording, because it is the reason none of this is
+frightening: **the page only ever shows one day of history.** Whatever the
+ledger gets wrong, it gets wrong about yesterday, and is right again tomorrow.
+
 ## 2026-11-11 — a forecast, not a result, and not nothing either
 
 He asked whether all of yesterday's basketball rows were really inside the

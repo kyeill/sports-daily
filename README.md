@@ -390,6 +390,14 @@ same kind of thing -- a fact about what was shown, which cannot be worked out
 again later. It holds the date of the build that last kept each game, plus the
 date of that build.
 
+**For a started game the ledger is the record, both ways.** What it vouches
+for is on the page; what it does not is not, whatever the filters would say
+today. That second half is what stops a played football blowout walking back
+in: ESPN deletes the line when a game ends, and Torvik -- which still has a
+projection for a played basketball game -- is a basketball site, so a finished
+football game has nothing left to be judged on and nothing to judge means
+keep. Merrimack 0-77 Wake Forest was the worst of five in a week.
+
 A started game is pinned back onto the page if the ledger says it **survived
 the last build before it started**. That qualifier is the whole design. A
 fixture that lost its place during the week -- the line moved, which is
@@ -398,8 +406,18 @@ stays off. A fixture that was still there when the ball went up was on the
 page while it was played, and nothing after the fact can remove it: not a
 rank that changed on Monday, not a crowded night, not the final score.
 
-`drop_crowded_national` skips a pinned row for the same reason. Entries older
-than `SHOWN_DAYS` are dropped, being older than any tab can reach.
+Two exemptions. An **upset revealed tonight** is joining the page for the
+first time and the ledger cannot have heard of it, so it is never removed for
+being unvouched. And if the ledger vouches for **nothing** on a day that
+plainly has started games on it, it has no record of that day -- a lost file,
+or the first run -- so it is ignored rather than believed, and the day falls
+back to the filters. Entries older than `SHOWN_DAYS` are dropped, being older
+than any tab can reach.
+
+**What this does not catch**: a hidden upset row that the live script showed
+mid-game and that the favourite then recovered from. It was on the page, but
+only in the browser, and the next build cannot know. Left alone deliberately
+-- if the upset does not happen, dropping it is right.
 
 **A game can still arrive late.** The upset rules already put back a ranked
 team that lost to someone the filters dropped; once that row is on the page it
