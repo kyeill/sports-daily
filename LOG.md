@@ -1,3 +1,37 @@
+## 2026-11-11 — a row that has been played is a row that stays
+
+His rule, and it is a better one than anything the filters had: if a game is
+ever on the page for more than zero seconds of its own playing time, it lives
+there forever. The only way a fixture may vanish is by losing its
+qualification **before** it starts — the line moving during the week, which is
+the whole point of having a line.
+
+The build is stateless, so this needed a ledger. `output/history/shown.json`
+sits beside the games-back history because it is the same kind of thing: a
+fact about what was shown, which cannot be reconstructed afterwards. It holds
+the build that last kept each game, and the date of that build. The workflow
+already commits everything under `output/history`, so it survives between
+runs with no change to the pipeline.
+
+**The qualifier is the whole design.** A started game is pinned back only if
+the ledger says it survived the LAST build before it started. Recording "this
+was on the page once" would have been wrong in the other direction: a fixture
+dropped on the Tuesday would have come back the moment it kicked off on the
+Saturday. Checking it against the previous build separates the two cases
+exactly, and it is robust to a missed build, because a skipped day just leaves
+the previous stamp two days old and still matching.
+
+Proven both ways on 10 November. Delaware State 78-83 Georgetown is not on the
+page; with the ledger saying it survived the last build it comes back pinned,
+and with a stale entry from 1 November it stays off. An unstarted game is
+never pinned at all — the loop skips `pre` before it looks at anything else.
+
+`drop_crowded_national` now skips a pinned row too; it was the one pass that
+could still take a game off after `evaluate` had kept it.
+
+This also subsumes yesterday's blowout question. A finished game cannot be
+dropped for its score because a finished game cannot be dropped at all.
+
 ## 2026-11-11 — a line is only a forecast until the ball is thrown up
 
 Kansas beat Kentucky by twenty and the row vanished off yesterday's tab. The

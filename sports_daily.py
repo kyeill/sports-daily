@@ -241,7 +241,53 @@ def bracket_games_for(config, day, tz, offsets=None, only=None):
     return filters.bracket_games(slates)
 
 
-def collect(config, day, tz, only=None, lurkers=False, brackets=None):
+# Games that have been on the page at some point. Lives beside the games-back
+# history because it is the same kind of thing: a fact about what was shown,
+# which cannot be worked out again afterwards. The build commits it back.
+SHOWN = os.path.join(HERE, "output", "history", "shown.json")
+
+# Long enough to cover the page's own window several times over. A row older
+# than this cannot be reached from any tab, so remembering it costs and buys
+# nothing.
+SHOWN_DAYS = 45
+
+
+def load_shown(path=SHOWN):
+    """({game id: the build that last kept it}, the build before this one).
+
+    The second half is what makes the ledger mean anything. A row is pinned
+    only if it survived the LAST build before it started -- so a fixture that
+    lost its qualification during the week, which is the line moving and is
+    allowed, was already off the page by then and stays off. A row that was
+    still there when the ball went up was on the page while it was played, and
+    that is the thing that cannot be taken back.
+    """
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        if isinstance(data, dict) and isinstance(data.get("games"), dict):
+            return data["games"], data.get("build") or ""
+    except (OSError, ValueError):
+        pass
+    return {}, ""
+
+
+def save_shown(shown, today, path=SHOWN, keep_days=SHOWN_DAYS):
+    """Write the ledger back, dropping what has scrolled out of reach."""
+    cutoff = (today - timedelta(days=keep_days)).isoformat()
+    trimmed = {k: v for k, v in shown.items() if v >= cutoff}
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump({"build": today.isoformat(), "games": trimmed},
+                      fh, indent=1, sort_keys=True)
+    except OSError as problem:
+        print("  ! could not write %s: %s" % (os.path.basename(path), problem))
+    return trimmed
+
+
+def collect(config, day, tz, only=None, lurkers=False, brackets=None,
+            shown=None, last_build="", build_day=None):
     """Fetch every enabled league and keep the games that pass its filters.
 
     A ranked team that lost to someone the filters dropped is put back,
@@ -287,6 +333,19 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None):
             side, label = filters.soccer_line(game, league, config)
             if side and label:
                 game["spread_side"], game["spread_label"] = side, label
+        # Once a game has been on the page while it was being played, it stays
+        # there. The filters answer a question about a fixture -- is this worth
+        # watching -- and that question stops being live at kickoff; what is
+        # left afterwards is a record of the evening, and a record that edits
+        # itself is no record. A game can still fall off BEFORE it starts,
+        # which is the line moving during the week and is the point.
+        if shown is not None:
+            for game in games:
+                if game in passed or (game.get("state") or "") == "pre":
+                    continue
+                if last_build and shown.get(game.get("id")) == last_build:
+                    game["_pinned"] = True
+                    passed.append(game)
         kept.extend(passed)
         stats.append((league["label"], len(passed), len(games)))
     # Decided across the whole day rather than game by game: a national
@@ -306,6 +365,14 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None):
         gone = collections.Counter(g.get("league_label") for g in dropped)
         stats = [(label, passed - gone.get(label, 0), total)
                  for label, passed, total in stats]
+    # Written before the lurkers join: a hidden row has not been on the page.
+    if shown is not None:
+        # The build's own date, not the day being built: one run covers
+        # sixteen tabs and they all belong to the same build.
+        stamp = (build_day or day).isoformat()
+        for game in kept:
+            if game.get("id"):
+                shown[game["id"]] = stamp
     kept.extend(lurking)
     return kept, stats
 
@@ -421,7 +488,11 @@ def main(argv=None):
             print("All names resolve.")
         return 1 if problems else 0
 
-    games, stats = collect(config, day, tz, only=only)
+    ledger, last_build = load_shown()
+    build_day = datetime.now(tz).date()
+    games, stats = collect(config, day, tz, only=only, shown=ledger,
+                           last_build=last_build, build_day=build_day)
+    save_shown(ledger, build_day)
     if espn.FAILURES:
         info.append("Some data could not be loaded today: %s"
                     % ", ".join(sorted(espn.FAILURES)))

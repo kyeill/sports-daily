@@ -376,6 +376,35 @@ seed, which already encodes the league's tiebreakers.
 Places come from the **current** standings, so a team that has since been
 relegated has no place at all when you browse an old date.
 
+## A row that has been played is a row that stays
+
+**Once a game has been on the page while it was being played, it is never
+taken off.** The filters answer a question about a fixture -- is this worth
+watching -- and that question stops being live at kickoff. What is left
+afterwards is a record of the evening, and a record that edits itself is not
+one.
+
+The build is otherwise stateless, so this needs a ledger:
+`output/history/shown.json`, beside the games-back history because it is the
+same kind of thing -- a fact about what was shown, which cannot be worked out
+again later. It holds the date of the build that last kept each game, plus the
+date of that build.
+
+A started game is pinned back onto the page if the ledger says it **survived
+the last build before it started**. That qualifier is the whole design. A
+fixture that lost its place during the week -- the line moved, which is
+allowed and is the point -- was already off the page at that build, so it
+stays off. A fixture that was still there when the ball went up was on the
+page while it was played, and nothing after the fact can remove it: not a
+rank that changed on Monday, not a crowded night, not the final score.
+
+`drop_crowded_national` skips a pinned row for the same reason. Entries older
+than `SHOWN_DAYS` are dropped, being older than any tab can reach.
+
+**A game can still arrive late.** The upset rules already put back a ranked
+team that lost to someone the filters dropped; once that row is on the page it
+is in the ledger, and from then on it keeps its place like any other.
+
 ## The wash
 
 A highlighted row sits on a tint of **its own colour** -- the same one the

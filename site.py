@@ -859,11 +859,15 @@ def build(config, days=8, out=SITE):
     brackets = sports_daily.bracket_games_for(
         config, today, tz, offsets=range(-1 - sports_daily.BRACKET_SPAN,
                                          days + sports_daily.BRACKET_SPAN))
+    # What has already been on the page. Read once and handed to every day, so
+    # a row that has been seen through a game cannot be taken off any tab.
+    shown, last_build = sports_daily.load_shown()
     tabs, panels = [], []
     for offset in range(-1, days):
         day = today + timedelta(days=offset)
         games, _ = sports_daily.collect(config, day, tz, lurkers=True,
-                                        brackets=brackets)
+                                        brackets=brackets, shown=shown,
+                                        last_build=last_build, build_day=today)
         today_info = None
         if offset == 0 and espn.FAILURES:
             today_info = ["Some data could not be loaded today: %s"
@@ -883,6 +887,8 @@ def build(config, days=8, out=SITE):
             '<section class="day" id="%s"><h1>%s</h1>%s%s</section>'
             % (ident, day.strftime("%A, %B %d").replace(" 0", " "), stamp, body))
         print("  %s  %d games" % (day.isoformat(), len(games)))
+
+    sports_daily.save_shown(shown, today)
 
     page = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'

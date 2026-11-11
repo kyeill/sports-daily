@@ -2616,7 +2616,10 @@ def drop_crowded_national(games, config):
             break
     if not busy:
         return games, []
-    dropped = [g for g in games if _only_on_national_tv(g)]
+    # A row that has already been on the page through a game is not taken off
+    # it again, whatever else the night turned out to hold.
+    dropped = [g for g in games
+               if _only_on_national_tv(g) and not g.get("_pinned")]
     if not dropped:
         return games, []
     keep = [g for g in games if g not in dropped]
