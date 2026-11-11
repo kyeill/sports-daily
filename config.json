@@ -1819,17 +1819,6 @@
       ]
     }
   ],
-  "tint_pairs": [
-    {
-      "_comment": "Two of these clubs meeting takes this stripe, in any competition.",
-      "teams": [
-        "Liverpool",
-        "Manchester City",
-        "Manchester United"
-      ],
-      "color": "38b2ff"
-    }
-  ],
   "football_windows": {
     "_comment": "Headings inside the Football section, by kickoff, on these days and in these months -- and only once the day is within split_within_days. College kickoffs are settled two Mondays out and reach ESPN the Tuesday after, which is ELEVEN days before a Saturday, not twelve: on the Monday the card is still all TBD. `from` is inclusive, `before` exclusive, both local 24h.",
     "months": [

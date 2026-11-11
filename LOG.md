@@ -1,3 +1,20 @@
+## 2026-11-11 — the last of the category stripes
+
+`tint_pairs` is gone: two of Liverpool, Manchester City and Manchester United
+meeting took a light blue `#38b2ff`, in any competition. It was the same idea
+as the Big Ten stripe and the Thursday/Sunday/Monday night ones, and the last
+of them still standing — a colour that said what *kind* of game it was rather
+than who was playing. Those rows now fall through to the ordinary rules and
+take a club's colour like everything else.
+
+One row on the current build used it.
+
+For the record, what is left is not the same thing. `RIVAL_GREY` is what two
+rivals get because there is no honest answer between them, and
+`tint_grey_unless` greys a row with nothing to say for itself. Both are about
+how much a game is worth, not what category it belongs to, and neither invents
+a colour to label a matchup with.
+
 ## 2026-11-10 — no more black stripes, and Highlights loses its amber
 
 Two of his, and the first explains seven old entries in `team_colors`.
