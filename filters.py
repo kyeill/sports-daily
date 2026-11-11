@@ -1442,16 +1442,6 @@ def score_highlight(game, config, favourite):
     return outcome_colour(game, config)
 
 
-def _final_margin(game):
-    """How far apart a finished game ended, or None if it did not finish."""
-    if (game.get("state") or "") != "post" or game.get("called_off"):
-        return None
-    try:
-        return abs(int(game["home"].get("score")) - int(game["away"].get("score")))
-    except (TypeError, ValueError):
-        return None
-
-
 def _spread_limit(game, league):
     """How lopsided is too lopsided here, which depends on the matchup.
 
@@ -1472,20 +1462,17 @@ def is_blowout(game, league):
     """A game nobody expects to be competitive, and no reason to keep it.
 
     Only ever applied to the ordinary sections: your own teams and the
-    highlights are never dropped for being lopsided.
+    highlights are never dropped for being lopsided -- and only to a game that
+    has not started. A line is a forecast, and a forecast is only worth acting
+    on while the game is still a question. Once it has tipped off the row has
+    earned its place and keeps it, however the thing turns out.
     """
+    if (game.get("state") or "") != "pre":
+        return False
     limit = _spread_limit(game, league)
     if not limit:
         return False
     points = _spread_points(game)
-    if points is None:
-        # ESPN deletes the odds the moment a game goes final, so on any day
-        # already played the line is simply gone and this rule would never
-        # fire -- which is how three games that finished by 40 or more came
-        # back onto yesterday's tab after being filtered out on the day. The
-        # final margin answers the same question, with better evidence: before
-        # the game the line is a forecast, after it the score is the fact.
-        points = _final_margin(game)
     if points is None:
         # College basketball is not priced until the day before, so most of
         # the card has no line at all when the page is built. A projection

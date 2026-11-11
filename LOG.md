@@ -1,3 +1,30 @@
+## 2026-11-11 — a line is only a forecast until the ball is thrown up
+
+Kansas beat Kentucky by twenty and the row vanished off yesterday's tab. The
+blowout rule had been reading the **final margin** where the line used to be,
+because ESPN deletes the odds the moment a game ends. His call: thresholds are
+for unstarted games. `is_blowout` now returns False for anything that has
+tipped off, and `_final_margin` is gone with its only caller.
+
+Kansas-Kentucky was never a blowout by any pre-game measure — Torvik had it at
+7.4 against a limit of 15. It only failed the test after the fact.
+
+**The cost, measured, and he should see it before deciding he likes it.** Over
+the seven days to 10 November, 45 finished games that used to drop now stay:
+40 in college basketball, 5 in football. Yesterday's tab went from seven rows
+to thirteen, and the six are Bucknell 61-95 Virginia, Northern Arizona 59-90
+Arizona, NJIT 64-101 Rutgers, **Fairfield 42-89 Wisconsin**, Queens 82-98 BYU
+and Memphis 81-105 Vanderbilt. The comment that has just been deleted was put
+there for exactly this: three games finishing by forty or more coming back
+onto a tab they had been correctly filtered off.
+
+There is a one-line middle that was not chosen, and is worth writing down in
+case it is wanted later: prefer the **pre-game projection** over the final
+margin rather than dropping the test outright. Torvik still has a number for a
+played game, so Kansas-Kentucky keeps its place at 7.4 and Coastal Carolina
+52-113 Duke stays out at 31.5. It would not help football, which Torvik does
+not cover, so the five there would return either way.
+
 ## 2026-11-11 — the last of the category stripes
 
 `tint_pairs` is gone: two of Liverpool, Manchester City and Manchester United
