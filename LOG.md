@@ -1,3 +1,39 @@
+## 2026-11-11 — a forecast, not a result, and not nothing either
+
+He asked whether all of yesterday's basketball rows were really inside the
+spread threshold. They were not. **Six of the twelve were blowouts before tip
+-- Bucknell at Virginia was projected by 40.4 against a limit of 10** -- and
+they were on the page only because this morning's change had `is_blowout`
+return False for anything that had started. That fixed Kansas-Kentucky by
+breaking the rule in the other direction: six games that were correctly off
+the page on the day appeared on it after they had been played.
+
+So the test is not skipped. It is answered on **what was known before the
+game**, always: the line while there is one, and Torvik's projection after
+ESPN deletes it. The final margin never answers it again. A result is not a
+forecast and this rule is about forecasts.
+
+Yesterday's tab is seven rows instead of thirteen. Kansas-Kentucky keeps its
+place at 7.4, and the six blowouts are gone.
+
+**What is left, measured over the seven days to 10 November: nine.** Four in
+basketball, and all four are right -- Wake Forest-Vanderbilt at 10.9, Arkansas
+-Virginia at 4.1, California-Houston at 12.0, Kansas-Kentucky at 7.4. Games
+that were a real proposition and turned into a thrashing are exactly what he
+asked to keep.
+
+The other five are football, and they are not right: Merrimack 0-77 Wake
+Forest is the worst of them. **Torvik is a basketball site**, so once ESPN
+takes the line away a played football game has nothing left to be judged on,
+and nothing to judge means it is kept. The ledger does not close this, because
+it only ever adds a row back; it never takes one away. Closing it means making
+the ledger authoritative for a started game -- keep what it vouches for, drop
+what it does not -- which is a real change and not one to make in passing.
+
+The ledger was regenerated after the fix. The version committed this morning
+had the six blowouts written into it as rows that had been shown, which would
+have pinned them permanently.
+
 ## 2026-11-11 — a row that has been played is a row that stays
 
 His rule, and it is a better one than anything the filters had: if a game is

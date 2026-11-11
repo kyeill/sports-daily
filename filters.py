@@ -1462,13 +1462,15 @@ def is_blowout(game, league):
     """A game nobody expects to be competitive, and no reason to keep it.
 
     Only ever applied to the ordinary sections: your own teams and the
-    highlights are never dropped for being lopsided -- and only to a game that
-    has not started. A line is a forecast, and a forecast is only worth acting
-    on while the game is still a question. Once it has tipped off the row has
-    earned its place and keeps it, however the thing turns out.
+    highlights are never dropped for being lopsided.
+
+    Judged on what was known BEFORE the game, always. ESPN deletes the odds
+    the moment a game ends, and the final margin was standing in for them --
+    which took Kansas-Kentucky off the page for finishing by twenty when it
+    had been priced at four and a half. A result is not a forecast, and this
+    rule is about forecasts. Torvik's projection survives a played game and
+    says what was expected of it, so that is what answers here.
     """
-    if (game.get("state") or "") != "pre":
-        return False
     limit = _spread_limit(game, league)
     if not limit:
         return False
