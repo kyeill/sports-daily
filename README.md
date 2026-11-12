@@ -585,6 +585,14 @@ the draw and how far in is what a bracket has to say, and "Fort Myers Tip-Off"
 three days running says none of it. On a screen too narrow for the name, the
 town takes its place and the round stays: `Nassau - Championship Bracket`.
 
+**A professional neutral site names its town too**, not the building: Munich
+rather than FC Bayern Munich Stadium, Mexico City rather than Estadio Banorte.
+`stadium_cities` is the exception, and holds **London** alone -- the NFL plays
+Tottenham Hotspur Stadium and Wembley in the same autumn, and which one it is
+in is the only thing that row has left to say. Tennis has no town in the
+payload at all and falls through to the venue, which is where it keeps "New
+York, USA".
+
 **A town that says nothing is traded for one that does.** `city_names` in
 `config.json` swaps about twenty of them, in three kinds. A suburb becomes the
 place it is a suburb of: Southaven is Memphis, Highland Heights is Cincinnati,

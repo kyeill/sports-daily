@@ -29,6 +29,10 @@
   "event_names": {
     "Beanpot Tournament": "Beanpot"
   },
+  "_stadium_cities_comment": "Towns where the building beats the town, because there is more than one of them and which it is matters. London only: the NFL plays Tottenham Hotspur Stadium and Wembley in the same autumn.",
+  "stadium_cities": [
+    "London"
+  ],
   "_city_names_comment": "The town a neutral game names, where the town on its own says nothing. Three kinds of swap: a suburb for the place it is a suburb of (Southaven is Memphis, Elmont is Long Island), a town for its state or country where even the state is more recognisable than the name (Canton is in Illinois, not Ohio; Rome is the one in Italy), and twice a town for the building, because Mohegan Sun is how anyone would say where that game is. Left alone on purpose: East Rutherford, Foxborough and Arlington, which carry their stadiums well enough -- and Glens Falls, because New York is the one state whose name is already a city on this page.",
   "city_names": {
     "Uncasville": "Mohegan Sun",
@@ -44,6 +48,7 @@
     "San Juan Capistrano": "Orange County",
     "Frisco": "Dallas",
     "Rock Hill": "Charlotte",
+    "Saint-Denis": "Paris",
     "Canton": "Illinois",
     "Ruston": "Louisiana",
     "Rapid City": "South Dakota",

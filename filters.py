@@ -2675,6 +2675,14 @@ def section_of(game, config):
     # ones sent down by name.
     if ((game.get("_league") or {}).get("sport") or "") == "Soccer"             and not game.get("_to_national"):
         return "Soccer"
+    # Sent down by name. The branch above has always done this for the soccer;
+    # for a team in any other sport the sport-shaped rules below answered
+    # first, so `national_teams` was read and then quietly ignored -- which is
+    # why Cornell's football sat in the Football section with the Power Four
+    # for a season, where an Ivy League Saturday is the smallest thing on the
+    # page. It goes to National, with the college hockey.
+    if game.get("_to_national"):
+        return "National"
     if game.get("highlight"):
         if not moved_from_highlights(game, config):
             return "Soccer"
@@ -2905,9 +2913,17 @@ def _where(game, config=None):
     A real tournament never reaches here: a named round becomes the caption
     and the location is dropped, which is why this needs no test for one.
     """
-    if (game.get("league_label") or "") not in COLLEGE_LABELS:
-        return game.get("venue") or ""
     place = game.get("venue_city") or game.get("venue") or ""
+    if (game.get("league_label") or "") not in COLLEGE_LABELS:
+        # The town, like everywhere else -- Munich says more than FC Bayern
+        # Munich Stadium, and Mexico City more than Estadio Banorte. London is
+        # the exception the NFL makes for itself: three games a year in two
+        # buildings, and which one it is in is the only thing the row has left
+        # to say. Tennis has no town in the payload and falls through to the
+        # venue, which is where it keeps "New York, USA".
+        if place in ((config or {}).get("stadium_cities") or []):
+            return game.get("venue") or place
+        return ((config or {}).get("city_names") or {}).get(place, place)
     # A town nobody can place is no better than the arena it was standing in
     # for. `city_names` in config.json trades it for whatever a reader would
     # actually recognise: the metropolis it is a suburb of, the state, the

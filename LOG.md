@@ -1,3 +1,34 @@
+## 2026-11-12 — Cornell's football finds its section, and the NFL finds its towns
+
+**Cornell's football was in the Football section and should not have been.**
+`national_teams` on the league names it, and has for a season: "still yours,
+still kept, but it belongs with the ordinary sections rather than up in
+Highlights". The flag was being set and then ignored. `section_of` answered
+the soccer with it and then fell through to rules shaped by sport, which send
+College Football to the football — so an Ivy League Saturday sat among the
+Power Four, which is the smallest thing on the page in the largest company it
+could find. The check now sits before the sport rules and applies to every
+sport. It goes to National, where Cornell's hockey already was, which is what
+he suggested and what the config had been asking for all along.
+
+Nothing in the soccer moved: Atlanta and the USMNT were already reaching
+National or Highlights by the right path, and both still do.
+
+**A professional neutral site names its town.** Nine NFL games this season are
+at one: Melbourne, Rio De Janeiro, Madrid, Munich, Mexico City and three in
+London. They were printing the stadium, so a row said "FC Bayern Munich
+Stadium" where "Munich" is the whole of what a reader wants.
+
+London is the exception he asked for and it earns it: **Tottenham Hotspur
+Stadium twice and Wembley once in the same autumn**, so the building is the
+only thing that row has left to say. `stadium_cities` holds it, and holds
+nothing else.
+
+Two more fell out of it. **Saint-Denis is Paris** — the Stade de France game
+was naming a suburb nobody outside France places. And tennis, which has no
+town in the payload at all, falls through to the venue exactly as before and
+keeps "New York, USA".
+
 ## 2026-11-11 — the ledger is the record now, both ways
 
 It used to only add rows back. Now it also takes them away: for a game that
