@@ -188,6 +188,14 @@ Saturday is a tune-up, and nothing else can see it -- Vegas does not price
 these, so there is no line for the blowout rule to read. Over a season it
 takes 852 football games off.
 
+**`never_drop` is the end of the argument.** A team named there cannot be
+taken off the page by any rule: below the top division, an FCS bracket, an
+exhibition, a blowout, a crowded night, or the ledger. It holds **Cornell**,
+whose whole schedule is Ivy League and therefore sits underneath rules written
+for other people's cupcakes. It is deliberately not every favourite -- the
+same exemption would put thirteen Lions, Pistons and Red Wings preseason games
+back, and preseason is what `exclude_exhibitions` was written for.
+
 **His own teams are exempt, and have to be.** Cornell's football is an Ivy
 League side playing Ivy League sides: every game it has is below the top
 division, so without the exemption the rule would take the whole schedule

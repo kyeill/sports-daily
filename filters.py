@@ -52,6 +52,27 @@ def _matches(team, entry):
         or entry in (team.get("short") or "").lower()
 
 
+def never_dropped(game, config):
+    """Whether a team here is one no rule may take off the page.
+
+    `never_drop` in config.json. A favourite is already spared most of this by
+    being a favourite, but "most" is not the promise: Cornell's football is an
+    Ivy League side, so a run in the FCS bracket would meet
+    `postseason_top_division_only`, and an exhibition would meet
+    `exclude_exhibitions`. Naming the team says it once instead of guarding
+    each rule and hoping the next one is remembered.
+
+    Deliberately not every favourite. The same exemption would put thirteen
+    Lions, Pistons and Red Wings preseason games back on the page, and
+    preseason is what `exclude_exhibitions` was written for.
+    """
+    names = config.get("never_drop") or []
+    if not names:
+        return False
+    sides = (game.get("home") or {}, game.get("away") or {})
+    return any(_matches(team, name) for team in sides for name in names)
+
+
 def favorites_for(config, league_key):
     """Teams that drive the playoff race AND get pinned."""
     return [f for f in (config.get("favorites") or {}).get(league_key, []) if f]
@@ -1758,6 +1779,13 @@ def evaluate(game, league, config):
     if tier == "interest" and is_blowout(game, league):
         keep = False
 
+    # Named in `never_drop`, and that is the end of the argument. Last, so it
+    # answers after every rule above it rather than being undone by one.
+    if never_dropped(game, config):
+        keep, protected = True, True
+    else:
+        protected = False
+
     # Only a true favourite gets its regional feed; a "follow" team is pinned
     # but stays national-only.
     mine_side = ""
@@ -1784,6 +1812,7 @@ def evaluate(game, league, config):
     game["_league"] = league
     game["tier"] = tier
     game["is_favorite"] = fav_hit
+    game["_protected"] = protected
     game["reasons"] = reasons
     return keep, tier, reasons
 

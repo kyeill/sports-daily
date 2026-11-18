@@ -29,6 +29,10 @@
   "event_names": {
     "Beanpot Tournament": "Beanpot"
   },
+  "_never_drop_comment": "Teams no rule may take off the page, whatever it says: below the top division, an FCS bracket, an exhibition, a blowout, a crowded night. Cornell is here because its whole schedule is Ivy League and so sits under rules written for other people's cupcakes. Not a list for every favourite -- the same exemption would put thirteen Lions, Pistons and Red Wings preseason games back.",
+  "never_drop": [
+    "Cornell Big Red"
+  ],
   "_stadium_cities_comment": "Towns where the building beats the town, because there is more than one of them and which it is matters. London only: the NFL plays Tottenham Hotspur Stadium and Wembley in the same autumn.",
   "stadium_cities": [
     "London"

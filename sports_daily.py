@@ -311,7 +311,8 @@ def _settle_started(kept, slate, shown, last_build):
     if not vouched and any(started(g) for g in kept):
         return kept
     settled = [g for g in kept
-               if not started(g) or g.get("id") in vouched or g.get("_upset")]
+               if not started(g) or g.get("id") in vouched
+               or g.get("_upset") or g.get("_protected")]
     known = {id(g) for g in settled}
     for game in slate:
         if started(game) and game.get("id") in vouched and id(game) not in known:

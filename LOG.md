@@ -1,3 +1,28 @@
+## 2026-11-18 — never_drop, and Cornell on it
+
+"Keep all Cornell games for everything no matter what." Nothing of Cornell's
+was actually being dropped once yesterday's favourite exemption went in — all
+48 games across football, basketball and hockey were already surviving — but
+that was incidental rather than promised, and two rules would have bitten
+eventually.
+
+**`postseason_top_division_only`** would take an FCS bracket run, which is the
+only postseason Cornell's football can have. **`exclude_exhibitions`** would
+take a preseason game. Neither was guarded, and the next rule written would
+not have been either.
+
+So `never_drop` in config.json says it once, at the end, after every other
+rule has had its say: a team named there is kept. The ledger honours it too,
+so an unvouched row of theirs is never swept off a tab it arrived on late.
+
+**Deliberately not every favourite.** The same exemption applied to `fav_hit`
+would have put thirteen preseason games back — two Lions, seven Pistons, four
+Red Wings — and preseason is the thing `exclude_exhibitions` exists to remove.
+A named list keeps the promise exactly as wide as he asked for it.
+
+Checked: 48 Cornell games, none dropped. Pro exhibitions kept: zero, as
+before.
+
 ## 2026-11-18 — FCS off the football, and why "no spread" was the wrong test
 
 He noticed Saturday's card had football games with no line on them and guessed
