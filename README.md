@@ -619,10 +619,22 @@ is still unbeaten -- and from the end backwards that is Final, Semis, Qtrs,
 with `Cons` for a side already beaten rather than a guess at which placing it
 is playing for.
 
-Only where the shape is certain. `DRAW_SHAPES` wants a field of 4, 8 or 16
-with every team playing exactly log2 of that many games. The Lafayette Classic
-is four teams playing three each, which is everybody playing everybody, and it
-gets no round rather than an invented one.
+**The winners' path is what gets named.** `DRAW_SHAPES` says how long it is
+by the size of the field -- four teams is a semi and a final, sixteen is four
+rounds -- and a game is labelled by how many rounds are left after it: First,
+Qtrs, Semis, Final. A team that has already lost is in the other half and gets
+`Con`. Qtrs and Semis only mean anything to a side still winning, and nobody
+wants to read "Eleventh Place".
+
+`_draw_depth` is the test and it is strict in one direction: the field must
+halve cleanly, and nobody may play more games than the path is long -- the
+Lafayette Classic is four teams playing three each, one more than a four-team
+draw can hold, so it gets no round rather than an invented one. Beyond that it
+needs one sign of a real bracket, because a fixture list can halve cleanly by
+accident: somebody has reached the final, or the draw is the right size for
+the field, or ESPN names a round in it. The Texas Legends Classic is eight
+teams playing twice, fits the field, fits the limit, has no final and names no
+round, and is eight teams playing twice.
 
 **The two sources are complements.** ESPN names the closing day, where every
 team is still TBD and nothing can be counted; the count covers the earlier

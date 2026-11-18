@@ -1,3 +1,35 @@
+## 2026-11-18 — First / Qtrs / Semis / Final, counted off the winners' path
+
+He laid out the Players Era 16 by hand — Tuesday the first round, Thursday the
+quarters for whoever won, Friday the semis — and asked whether that was too
+complicated. It was not; it was what the derivation should have been doing all
+along.
+
+It had been naming rounds by counting **backwards from a total game count**,
+which only works for a draw of exactly the expected size. Now it counts the
+**winners' path**: `DRAW_SHAPES` gives its length from the field (four teams
+is two rounds, sixteen is four), and a game takes the name of how many rounds
+are left after it. A side that has already lost is in the other half and gets
+`Con`, because, in his words, Qtrs and Semis only matter for teams that keep
+winning — and nobody wants to read "Eleventh Place".
+
+Tuesday now reads **Players Era 16 - First** across all eight openers,
+including Creighton against Michigan at 5:30 in Highlights. Friday is two
+Semis, Saturday the Final.
+
+The rewrite broke three events on its first pass and the fix is worth
+recording. `Great Lakes`, `Kwik Trip` and the Battle 4 Atlantis championship
+half all went quiet, because the new test asked whether anybody had reached
+the final — and in a tournament that has not started yet, the later rounds are
+TBD and nobody has reached anything. A draw now qualifies three ways: somebody
+has walked the path, **or the draw is the right size for the field** even with
+the later rounds blank, or ESPN names a round in it. The middle one is what
+every one of these looks like before it starts.
+
+Gained on the way through: the ESPN Events Invitational's Magic Bracket, four
+teams and three games, which is a clean single-elimination without a
+third-place game and had been failing an arithmetic that assumed one.
+
 ## 2026-11-18 — the Players Era 16 is two draws, not one
 
 Asked what next week holds, and found a row reading "Players Era 16 - Final"

@@ -2419,11 +2419,14 @@ MTE_GAP = 2
 UNDECIDED = ("tbd", "tba", "")
 
 
-# A draw's own shape, which is what lets the round be worked out when ESPN
-# does not say. A field of 4, 8 or 16 where every team plays exactly log2 of
-# that many games is a bracket with its placement games: four teams playing
-# two each, eight playing three.
+# How many rounds the winners' path has, by the size of the field: four teams
+# is semis and a final, sixteen is four rounds. The losers' half is not
+# counted and does not need to be -- Qtrs and Semis only mean anything to a
+# team still winning, and nobody wants to read "Eleventh Place".
 DRAW_SHAPES = {4: 2, 8: 3, 16: 4}
+
+# What to call a round by how many are left after it, the final included.
+ROUND_BY_DEPTH = {1: "Final", 2: "Semis", 3: "Qtrs", 4: "First"}
 
 # What ESPN writes after the dash when it is naming half a draw rather than a
 # round. Two of these run side by side and each is its own bracket.
@@ -2454,6 +2457,46 @@ def _names_a_round(game):
         parts = parts[1:]
     text = " ".join(parts).lower()
     return any(word in text for word in ROUND_WORDS)
+
+
+def _draw_depth(games):
+    """How many rounds the winners' path has here, or None if it is no draw.
+
+    The field has to halve cleanly -- 4, 8 or 16 -- and nobody may play more
+    games than the path is long, which is what a round robin does: the
+    Lafayette Classic is four teams playing three each, and three is one more
+    than a four-team draw can hold.
+
+    Beyond that it needs one sign of a real bracket, because a fixture list
+    can halve cleanly by accident. Either somebody has actually reached the
+    final, or ESPN names a round somewhere in it. The Texas Legends Classic
+    is eight teams playing two games apiece: it fits the field and it fits
+    the limit, and it has no final and no round named in it, so it is eight
+    teams playing twice rather than a draw.
+    """
+    field = {n for game in games for n in _named_sides(game)}
+    depth = DRAW_SHAPES.get(len(field))
+    if not depth:
+        return None
+    played = collections.Counter()
+    for game in games:
+        for team in _named_sides(game):
+            played[team] += 1
+    if played and max(played.values()) > depth:
+        return None
+    # Somebody has reached the final, so the path is real and has been walked.
+    if max(played.values(), default=0) == depth:
+        return depth
+    # Or the draw is the right size for the field even though the later rounds
+    # are still TBD, which is how every one of these looks before it starts:
+    # four teams and four games is a semi-final, a final and the third-place
+    # game beside it.
+    if len(games) == len(field) * depth // 2:
+        return depth
+    # Or ESPN names a round in it, which is what carries the Players Era 16 --
+    # two eight-team draws and a championship, twenty-five games, a shape no
+    # arithmetic recognises.
+    return depth if any(_names_a_round(game) for game in games) else None
 
 
 def _named_sides(game):
@@ -2495,9 +2538,8 @@ def bracket_rounds(slates, brackets):
 
     for games in groups.values():
         games.sort(key=lambda g: g["start_local"])
-        field = {n for g in games for n in _named_sides(g)}
-        wanted = DRAW_SHAPES.get(len(field))
-        if not wanted or len(games) != len(field) * wanted // 2:
+        depth = _draw_depth(games)
+        if not depth:
             continue
         played = collections.Counter()
         beaten = set()
@@ -2510,14 +2552,8 @@ def bracket_rounds(slates, brackets):
                 played[team] += 1
             if any(t in beaten for t in sides):
                 label = "Con"
-            elif step == wanted:
-                label = "Final"
-            elif step == wanted - 1:
-                label = "Semis"
-            elif step == wanted - 2:
-                label = "Qtrs"
             else:
-                label = ""
+                label = ROUND_BY_DEPTH.get(depth - step + 1, "")
             if label:
                 rounds[game.get("id")] = label
             # Only a finished game can put a team in the consolation half.
@@ -2574,10 +2610,7 @@ def bracket_games(slates):
     def settle(run):
         if not run:
             return
-        field = {n for game in run for n in _named_sides(game)}
-        wanted = DRAW_SHAPES.get(len(field))
-        shaped = bool(wanted) and len(run) == len(field) * wanted // 2
-        if shaped or any(_names_a_round(game) for game in run):
+        if _draw_depth(run) or any(_names_a_round(game) for game in run):
             inside.update(game.get("id") for game in run)
 
     for here in by_site.values():
