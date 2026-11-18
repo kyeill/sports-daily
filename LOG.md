@@ -1,3 +1,44 @@
+## 2026-11-18 — round robins take the town, and the words fit after all
+
+Two of his, and the first was a width question with a happy answer.
+
+**Con / Third / Fifth / Seventh fit.** The words cost four characters over
+"3rd" and the longest string is now `Battle 4 Atlantis - Main Draw` at 29,
+against a budget of about 33. Nothing is over the line.
+
+**A round robin is not a bracket.** His rule, and the one the code was
+missing: opponents fixed in advance is a sponsored afternoon, not a draw. An
+event now has to show one of two things — **its shape** (`DRAW_SHAPES`: 4, 8
+or 16 teams each playing exactly log2 of that many games) or **a round named
+in it**, since an event with a Championship has a draw behind it however
+untidy the rest is.
+
+Named, and right to be: Players Era 8 and 16, Maui, Paradise Jam, Battle 4
+Atlantis, Cancun, Baha Mar, Friendship Four, Adirondack, Great Lakes, Kwik
+Trip, Pensacola, Rady, Sun Bowl.
+
+Now taking their town, and right to be: Greenbrier Tip-Off, Lafayette Classic,
+Texas Legends, Jacksonville Classic, Charleston Classic, Snake River, Queen
+City, Island Invitational, Resorts World, Capital Classic, Cathedral,
+Mahoney, Second Line, ESPN Events Invitational, Hall of Fame Series, ACC/SEC
+Men's Challenge — every one of them a fixture list with a sponsor on it.
+
+**The Big 5 Classic is the case that proves the second test.** Its campus
+games run from 20 November to 1 December and read Philadelphia; the
+tripleheader that closes it on the 5th is a Championship, a Third Place and a
+Fifth Place at one arena, and reads `Big 5 Classic - Final`, `- Third`,
+`- Fifth`. The same event, split correctly down the middle.
+
+Two left deliberately alone, and he should see them. **Fort Myers Tip-Off**
+runs two halves of different shapes: Beach is four teams and gets Semis and
+Final, Palms is six and gets the town. **Acrisure Series** is twenty-eight
+teams at one arena over six days, and because a Championship Game sits at the
+end of it all twenty-seven games take the name — twenty-three of which are
+pool play with fixed opponents, which by his own rule is a town.
+
+(A rewrite of `bracket_games` ate the helper block above it at one point and
+it had to go back in. No behaviour lost, but worth the note.)
+
 ## 2026-11-18 — the round, counted rather than read
 
 He asked whether the round was actually knowable. It is not, from ESPN: over

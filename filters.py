@@ -2419,109 +2419,45 @@ MTE_GAP = 2
 UNDECIDED = ("tbd", "tba", "")
 
 
-def bracket_games(slates):
-    """The ids of the games that sit inside a bracket.
-
-    A bracket is a draw, and a draw shows itself two ways.
-
-    Somebody plays twice: Duke opens the Maui Invitational on Monday and is in
-    the final on Wednesday. It has to be read across days, because inside any
-    one day every team in a tournament plays once -- which is what makes a
-    bracket look like the things it is not. And "plays twice" alone is not
-    enough: the Bad Boy Mowers Series is fourteen games from November to
-    December with Indiana in three of them, in three cities, so the repeat has
-    to be in one sitting -- same town, no more than `MTE_GAP` days between
-    games there. Otherwise a television series reads as a draw, and how wrong
-    it reads depends on how many days you happen to look at.
-
-    Or the draw has not been made yet, which is the better signal of the two,
-    because you only get a TBD when the fixture depends on a result. Maui on
-    23 November is four real ties and then eight TBDs across the Tuesday and
-    the Wednesday; nobody has played twice yet and it is unmistakably a
-    bracket. A day's worth of TBD on its own does not count -- the Big 5
-    Classic puts three unannounced games in one Philadelphia evening, and an
-    unannounced line-up is not a draw.
-
-    The answer is per game rather than per name, because one name covers both
-    shapes. The Greenbrier Tip-Off is a six-team draw on 20 and 22 November --
-    and also Xavier at Mississippi State on the 13th, in the same hall, by
-    itself. That Friday is a game at a resort, not a round.
-    """
-    by_site = collections.defaultdict(list)
-    seen = set()
-    for games in slates:
-        for game in games:
-            # A late game comes back on two UTC dates, and counted twice it
-            # looks like a team playing itself into the second round.
-            ident = game.get("id")
-            if ident is None or ident in seen:
-                continue
-            seen.add(ident)
-            name = _event_name(game)
-            if name and game.get("start_local"):
-                town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
-                by_site[(name, town)].append(game)
-
-    inside = set()
-
-    def settle(run, playing, days, undecided):
-        if run and (any(n > 1 for n in playing.values())
-                    or (undecided and len(days) > 1)):
-            inside.update(game.get("id") for game in run)
-
-    for here in by_site.values():
-        here.sort(key=lambda g: g["start_local"])
-        run, playing, days = [], collections.Counter(), set()
-        undecided, previous = False, None
-        for game in here:
-            day = game["start_local"].date()
-            if previous is not None and (day - previous).days > MTE_GAP:
-                settle(run, playing, days, undecided)      # a different occasion
-                run, playing, days, undecided = [], collections.Counter(), set(), False
-            previous = day
-            run.append(game)
-            days.add(day)
-            for side in ("home", "away"):
-                team = ((game.get(side) or {}).get("name") or "").strip().lower()
-                if team in UNDECIDED:
-                    undecided = True
-                else:
-                    playing[team] += 1
-        settle(run, playing, days, undecided)
-    return inside
-
-
 # A draw's own shape, which is what lets the round be worked out when ESPN
 # does not say. A field of 4, 8 or 16 where every team plays exactly log2 of
 # that many games is a bracket with its placement games: four teams playing
-# two each, eight playing three. Anything else -- six teams, or four playing
-# three -- is a round robin wearing a tournament's name, and has no rounds to
-# report.
+# two each, eight playing three.
 DRAW_SHAPES = {4: 2, 8: 3, 16: 4}
 
 # What ESPN writes after the dash when it is naming half a draw rather than a
 # round. Two of these run side by side and each is its own bracket.
 DIVISION_WORDS = ("bracket", "division", "series")
 
+# A round, as opposed to half a draw. An event that names one of these has a
+# bracket in it somewhere, whatever shape the rest of it is.
+ROUND_WORDS = ("championship", "final", "semi", "quarter", "consolation",
+               "place", "title")
+
 
 def _division_of(game):
-    """"Fort Myers Tip-Off - Palms Division" -> "Palms Division", else ""."""
+    """"Fort Myers Tip-Off - Palms Division" -> "Palms Division", else "".
+
+    The word has to be the last one. "Championship Bracket" is half a draw;
+    "Bracket Final" is a round in one, and reading it as a division would file
+    the Players Era's last two games under a heading of their own.
+    """
     head = _event_draw(game).split(" - ")[0].strip()
-    return head if any(w in head.lower() for w in DIVISION_WORDS) else ""
+    last = head.lower().split()[-1] if head else ""
+    return head if last in DIVISION_WORDS else ""
 
 
-def _draw_groups(games, brackets):
-    """{(event, division, town): [game]} for the games inside a bracket."""
-    groups = collections.defaultdict(list)
-    for game in games:
-        if game.get("id") not in brackets or not game.get("start_local"):
-            continue
-        town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
-        groups[(_event_name(game), _division_of(game), town)].append(game)
-    return groups
+def _names_a_round(game):
+    """Whether ESPN's suffix names a round rather than a division."""
+    parts = [p.strip() for p in _event_draw(game).split(" - ") if p.strip()]
+    if parts and _division_of(game):
+        parts = parts[1:]
+    text = " ".join(parts).lower()
+    return any(word in text for word in ROUND_WORDS)
 
 
 def _named_sides(game):
+    """The two teams, where ESPN knows who they are yet."""
     out = []
     for side in ("home", "away"):
         name = ((game.get(side) or {}).get("name") or "").strip()
@@ -2541,17 +2477,23 @@ def bracket_rounds(slates, brackets):
     there to be counted.
 
     Only where the shape is certain. `DRAW_SHAPES` is the test, and a round
-    robin fails it rather than being guessed at -- the Lafayette Classic is
-    four teams playing three games each, which is everybody playing everybody
-    and has no semi-final in it.
+    robin fails it rather than being guessed at.
 
     Reported from the end backwards, because that is what a reader wants: the
     last round is the Final, the one before it the Semis. A team that has
-    already lost is in the consolation half and gets "Cons" rather than a
-    guess at which placing it is playing for.
+    already lost is in the consolation half and gets "Con" rather than a guess
+    at which placing it is playing for.
     """
     rounds = {}
-    for games in _draw_groups([g for s in slates for g in s], brackets).values():
+    groups = collections.defaultdict(list)
+    for games in slates:
+        for game in games:
+            if game.get("id") not in brackets or not game.get("start_local"):
+                continue
+            town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
+            groups[(_event_name(game), _division_of(game), town)].append(game)
+
+    for games in groups.values():
         games.sort(key=lambda g: g["start_local"])
         field = {n for g in games for n in _named_sides(g)}
         wanted = DRAW_SHAPES.get(len(field))
@@ -2567,7 +2509,7 @@ def bracket_rounds(slates, brackets):
             for team in sides:
                 played[team] += 1
             if any(t in beaten for t in sides):
-                label = "Cons"
+                label = "Con"
             elif step == wanted:
                 label = "Final"
             elif step == wanted - 1:
@@ -2586,6 +2528,70 @@ def bracket_rounds(slates, brackets):
                 if name:
                     beaten.add(name)
     return rounds
+
+
+def bracket_games(slates):
+    """The ids of the games that sit inside a bracket.
+
+    A bracket is a draw: somebody's opponent is not known until an earlier
+    game has been played. A round robin is not one, whatever it calls itself
+    -- the Lafayette Classic is four teams playing three games each, every
+    pairing fixed in advance, and it takes its town like any other sponsored
+    afternoon.
+
+    Two ways to tell, and an event needs one of them.
+
+    **Its shape.** `DRAW_SHAPES` wants a field of 4, 8 or 16 with every team
+    playing exactly log2 of that many games: four playing two, eight playing
+    three. That is a bracket with its placement games and nothing else is.
+
+    **Or ESPN names a round in it.** The Players Era 16 is twenty-three games
+    and no tidy shape, but a Championship and a Third Place Game are in there,
+    and an event with a final has a draw behind it.
+
+    Read per event, per half of the draw, per town, and per sitting -- no more
+    than `MTE_GAP` days between games, because the Bad Boy Mowers Series is
+    twelve games from November to December with Indiana in three of them, and
+    counted loosely a television series reads as a tournament.
+    """
+    by_site = collections.defaultdict(list)
+    seen = set()
+    for games in slates:
+        for game in games:
+            # A late game comes back on two UTC dates, and counted twice it
+            # looks like a team playing itself into the second round.
+            ident = game.get("id")
+            if ident is None or ident in seen:
+                continue
+            seen.add(ident)
+            name = _event_name(game)
+            if name and game.get("start_local"):
+                town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
+                by_site[(name, _division_of(game), town)].append(game)
+
+    inside = set()
+
+    def settle(run):
+        if not run:
+            return
+        field = {n for game in run for n in _named_sides(game)}
+        wanted = DRAW_SHAPES.get(len(field))
+        shaped = bool(wanted) and len(run) == len(field) * wanted // 2
+        if shaped or any(_names_a_round(game) for game in run):
+            inside.update(game.get("id") for game in run)
+
+    for here in by_site.values():
+        here.sort(key=lambda g: g["start_local"])
+        run, previous = [], None
+        for game in here:
+            day = game["start_local"].date()
+            if previous is not None and (day - previous).days > MTE_GAP:
+                settle(run)                      # a different occasion
+                run = []
+            previous = day
+            run.append(game)
+        settle(run)
+    return inside
 
 
 def _round_label(game, config):

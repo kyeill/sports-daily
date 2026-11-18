@@ -588,12 +588,16 @@ town, and no more than `MTE_GAP` days between games there. That is what an MTE
 is and what a season-long series never is, and it makes the answer independent
 of the window -- which a flat count was not.
 
-**A draw that has not been made yet counts too**, and it is the better signal
-of the two: you only get a `TBD` when the fixture depends on a result. Maui on
-23 November is four real ties and then eight TBDs across the Tuesday and the
-Wednesday -- nobody has played twice yet and it is unmistakably a bracket. A
-single day of TBD does not count, because an unannounced line-up is not a
-draw: the Big 5 Classic puts three of them in one Philadelphia evening.
+**A round robin is not a bracket**, whatever it calls itself. The Lafayette
+Classic is four teams playing three games each, every pairing fixed in
+advance, and it takes its town like any other sponsored afternoon. An event
+has to show one of two things: **its shape** -- `DRAW_SHAPES`, a field of 4, 8
+or 16 with every team playing exactly log2 of that many games -- or **a round
+named in it**, because an event with a Championship has a draw behind it even
+when the rest is untidy. That is how the Players Era 16 keeps its name across
+twenty-three games of no tidy shape, and how the Big 5 Classic takes
+Philadelphia for its campus games and its own name for the placement night
+that ends them.
 
 **And the answer is per game, not per name**, because one name covers both
 shapes. The Greenbrier Tip-Off is a six-team draw on 20 and 22 November -- and
