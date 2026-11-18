@@ -856,7 +856,7 @@ def build(config, days=8, out=SITE):
     # behind it. Today stays the tab the app opens on; it is now the second.
     # One reading of the brackets for the whole build, so no two tabs can
     # disagree about a game.
-    brackets = sports_daily.bracket_games_for(
+    brackets, rounds = sports_daily.bracket_games_for(
         config, today, tz, offsets=range(-1 - sports_daily.BRACKET_SPAN,
                                          days + sports_daily.BRACKET_SPAN))
     # What has already been on the page. Read once and handed to every day, so
@@ -866,7 +866,8 @@ def build(config, days=8, out=SITE):
     for offset in range(-1, days):
         day = today + timedelta(days=offset)
         games, _ = sports_daily.collect(config, day, tz, lurkers=True,
-                                        brackets=brackets, shown=shown,
+                                        brackets=brackets, rounds=rounds,
+                                        shown=shown,
                                         last_build=last_build, build_day=today)
         today_info = None
         if offset == 0 and espn.FAILURES:

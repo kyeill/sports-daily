@@ -219,7 +219,7 @@ BRACKET_SPAN = 4
 
 
 def bracket_games_for(config, day, tz, offsets=None, only=None):
-    """Which college games sit in a bracket, read from the days around `day`.
+    """(games in a bracket, their rounds) from the days around `day`.
 
     Only the college leagues are asked, and only for days the build is
     fetching anyway or has in cache, so this costs reading rather than
@@ -238,7 +238,8 @@ def bracket_games_for(config, day, tz, offsets=None, only=None):
             when = (day + timedelta(days=offset)).strftime("%Y%m%d")
             slates.append(espn.games_for(league, when, tz,
                                          cache_minutes=config.get("cache_minutes", 30)))
-    return filters.bracket_games(slates)
+    brackets = filters.bracket_games(slates)
+    return brackets, filters.bracket_rounds(slates, brackets)
 
 
 # Games that have been on the page at some point. Lives beside the games-back
@@ -322,7 +323,7 @@ def _settle_started(kept, slate, shown, last_build):
 
 
 def collect(config, day, tz, only=None, lurkers=False, brackets=None,
-            shown=None, last_build="", build_day=None):
+            rounds=None, shown=None, last_build="", build_day=None):
     """Fetch every enabled league and keep the games that pass its filters.
 
     A ranked team that lost to someone the filters dropped is put back,
@@ -383,8 +384,8 @@ def collect(config, day, tz, only=None, lurkers=False, brackets=None,
     # enough for the page is still a Players Era tie, and saying "Las Vegas"
     # of it was the page forgetting what it was watching.
     if brackets is None:
-        brackets = bracket_games_for(config, day, tz, only=only)
-    filters.mark_shared_events(slate, brackets)
+        brackets, rounds = bracket_games_for(config, day, tz, only=only)
+    filters.mark_shared_events(slate, brackets, rounds)
     if dropped:
         gone = collections.Counter(g.get("league_label") for g in dropped)
         stats = [(label, passed - gone.get(label, 0), total)

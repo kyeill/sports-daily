@@ -1,3 +1,41 @@
+## 2026-11-18 — the round, counted rather than read
+
+He asked whether the round was actually knowable. It is not, from ESPN: over
+six weeks it labels 27% of the games inside a bracket, only 16% of those are a
+round rather than a half of the draw, and **"semifinal" appears nowhere at
+all** — it goes from silence straight to "Championship". His own example,
+"Players Era 8 - Semis", was not in the data.
+
+**So it is counted.** Every game of an event is already in hand for the
+bracket test, which means the field, each team's place in the order and who is
+still unbeaten are all there. From the end backwards: Final, Semis, Qtrs, and
+"Cons" for a side already beaten rather than a guess at which placing it is
+playing for.
+
+Only where the shape is certain. `DRAW_SHAPES` wants 4, 8 or 16 teams with
+everyone playing exactly log2 of that many games. The Lafayette Classic is
+four teams playing three each — everybody plays everybody — and gets nothing
+rather than an invented semi-final. Fifty games get a derived round; the round
+robins get none, correctly.
+
+**The two sources turn out to be complements, which was luck.** ESPN names the
+closing day, where every team is still TBD and nothing can be counted. The
+count covers the earlier days, where the teams are known and ESPN is silent.
+Tonight reads `Players Era 8 - Semis` twice and `Players Era 8 - Cons` once;
+Thursday's final will read `Players Era 8 - Final` off ESPN's own word.
+
+**And the width problem was real.** Measured on a phone the detail line gets
+172px — about 33 characters — and 25 of the strings were over it, the longest
+"U.S. Virgin Islands Paradise Jam - Seventh Place Game" at 53. Three levers,
+in order: `round_names` shortens ESPN's wording and the division names,
+`event_names` takes the geography out of the event ("Paradise Jam",
+"Charleston Classic", "Maui Invitational"), and a division in front of a round
+is dropped outright. **None are over the line now and the longest is 29.**
+
+That matters more than it sounds: the old fallback for a line that did not fit
+was to swap the whole event name for the town, so on a phone the Paradise Jam
+final would have read "Charlotte Amalie".
+
 ## 2026-11-18 — never_drop, and Cornell on it
 
 "Keep all Cornell games for everything no matter what." Nothing of Cornell's

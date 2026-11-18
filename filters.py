@@ -2491,7 +2491,125 @@ def bracket_games(slates):
     return inside
 
 
-def mark_shared_events(games, brackets):
+# A draw's own shape, which is what lets the round be worked out when ESPN
+# does not say. A field of 4, 8 or 16 where every team plays exactly log2 of
+# that many games is a bracket with its placement games: four teams playing
+# two each, eight playing three. Anything else -- six teams, or four playing
+# three -- is a round robin wearing a tournament's name, and has no rounds to
+# report.
+DRAW_SHAPES = {4: 2, 8: 3, 16: 4}
+
+# What ESPN writes after the dash when it is naming half a draw rather than a
+# round. Two of these run side by side and each is its own bracket.
+DIVISION_WORDS = ("bracket", "division", "series")
+
+
+def _division_of(game):
+    """"Fort Myers Tip-Off - Palms Division" -> "Palms Division", else ""."""
+    head = _event_draw(game).split(" - ")[0].strip()
+    return head if any(w in head.lower() for w in DIVISION_WORDS) else ""
+
+
+def _draw_groups(games, brackets):
+    """{(event, division, town): [game]} for the games inside a bracket."""
+    groups = collections.defaultdict(list)
+    for game in games:
+        if game.get("id") not in brackets or not game.get("start_local"):
+            continue
+        town = (game.get("venue_city") or game.get("venue") or "").strip().lower()
+        groups[(_event_name(game), _division_of(game), town)].append(game)
+    return groups
+
+
+def _named_sides(game):
+    out = []
+    for side in ("home", "away"):
+        name = ((game.get(side) or {}).get("name") or "").strip()
+        if name and name.lower() not in UNDECIDED:
+            out.append(name)
+    return out
+
+
+def bracket_rounds(slates, brackets):
+    """{game id: "Semis"} -- the round, worked out from the draw itself.
+
+    ESPN does not publish one. Over six weeks of this season it puts a round
+    after the dash on 16% of the games in a bracket, and the word "semifinal"
+    appears nowhere at all: it goes from silence straight to "Championship".
+    But the fixture list knows. Every game of an event is in hand, so the
+    field, each team's place in the order and who is still unbeaten are all
+    there to be counted.
+
+    Only where the shape is certain. `DRAW_SHAPES` is the test, and a round
+    robin fails it rather than being guessed at -- the Lafayette Classic is
+    four teams playing three games each, which is everybody playing everybody
+    and has no semi-final in it.
+
+    Reported from the end backwards, because that is what a reader wants: the
+    last round is the Final, the one before it the Semis. A team that has
+    already lost is in the consolation half and gets "Cons" rather than a
+    guess at which placing it is playing for.
+    """
+    rounds = {}
+    for games in _draw_groups([g for s in slates for g in s], brackets).values():
+        games.sort(key=lambda g: g["start_local"])
+        field = {n for g in games for n in _named_sides(g)}
+        wanted = DRAW_SHAPES.get(len(field))
+        if not wanted or len(games) != len(field) * wanted // 2:
+            continue
+        played = collections.Counter()
+        beaten = set()
+        for game in games:
+            sides = _named_sides(game)
+            if len(sides) != 2:
+                continue
+            step = max(played[t] for t in sides) + 1
+            for team in sides:
+                played[team] += 1
+            if any(t in beaten for t in sides):
+                label = "Cons"
+            elif step == wanted:
+                label = "Final"
+            elif step == wanted - 1:
+                label = "Semis"
+            elif step == wanted - 2:
+                label = "Qtrs"
+            else:
+                label = ""
+            if label:
+                rounds[game.get("id")] = label
+            # Only a finished game can put a team in the consolation half.
+            winner = result_of(game)
+            if winner in ("home", "away"):
+                loser = "away" if winner == "home" else "home"
+                name = ((game.get(loser) or {}).get("name") or "").strip()
+                if name:
+                    beaten.add(name)
+    return rounds
+
+
+def _round_label(game, config):
+    """The round to print beside an event's name, or "".
+
+    ESPN's own word first, shortened -- "Seventh Place Game" is forty pixels
+    of a phone's detail line and "7th" is nine. A division in front of it goes
+    ("Mayan Division - Championship" is a Final, and which half of the draw it
+    was does not survive the trip to a 375px screen). Where ESPN says nothing,
+    the round worked out from the draw's own shape stands in. Where neither
+    has anything and ESPN named only a division, the division is still better
+    than silence.
+    """
+    short = config.get("round_names") or {}
+    parts = [p.strip() for p in _event_draw(game).split(" - ") if p.strip()]
+    if len(parts) > 1 and any(w in parts[0].lower() for w in DIVISION_WORDS):
+        parts = parts[1:]
+    tail = " - ".join(parts)
+    if tail and not any(w in tail.lower() for w in DIVISION_WORDS):
+        return short.get(tail, tail)
+    return game.get("_round") or short.get(tail, tail)
+
+
+def mark_shared_events(games, brackets, rounds=None):
     """Flag the games whose event earns its name on the row.
 
     `brackets` is the id set from `bracket_games`, which is the whole of the
@@ -2502,6 +2620,7 @@ def mark_shared_events(games, brackets):
     """
     for game in games:
         game["_event_shared"] = game.get("id") in brackets
+        game["_round"] = (rounds or {}).get(game.get("id"), "")
 
 
 def join_soccer_section(buckets, config):
@@ -2979,7 +3098,7 @@ def _where(game, config=None):
     always = (config or {}).get("always_name_events") or []
     if not (event and (game.get("_event_shared") or event in always)):
         return place
-    draw = _event_draw(game)
+    draw = _round_label(game, config)
     shown = "%s - %s" % (event, draw) if draw else event
     # The town, for a screen too narrow for the event's name. The round
     # survives the swap: it is the half worth keeping.

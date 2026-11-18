@@ -605,11 +605,36 @@ Sulphur Springs while the following week says Greenbrier Tip-Off.
 (`BRACKET_SPAN`, four days); the site build reads its whole range once, so
 every tab agrees.
 
-**Where the name is shown, the round goes with it**: `Battle 4 Atlantis -
-Championship Bracket`, `Fort Myers Tip-Off - Beach Division`. Which half of
-the draw and how far in is what a bracket has to say, and "Fort Myers Tip-Off"
-three days running says none of it. On a screen too narrow for the name, the
-town takes its place and the round stays: `Nassau - Championship Bracket`.
+**The round is counted here, not read from ESPN.** Over six weeks of this
+season ESPN puts anything at all after the dash on 27% of the games inside a
+bracket, only 16% of those are a round rather than a half of the draw, and the
+word "semifinal" appears **nowhere**: it goes from silence straight to
+"Championship". So `bracket_rounds` counts instead. Every game of an event is
+already in hand, which gives the field, each team's place in the order and who
+is still unbeaten -- and from the end backwards that is Final, Semis, Qtrs,
+with `Cons` for a side already beaten rather than a guess at which placing it
+is playing for.
+
+Only where the shape is certain. `DRAW_SHAPES` wants a field of 4, 8 or 16
+with every team playing exactly log2 of that many games. The Lafayette Classic
+is four teams playing three each, which is everybody playing everybody, and it
+gets no round rather than an invented one.
+
+**The two sources are complements.** ESPN names the closing day, where every
+team is still TBD and nothing can be counted; the count covers the earlier
+days, where the teams are known and ESPN is silent. So a Wednesday reads
+`Players Era 8 - Semis` and the Thursday final reads `Players Era 8 - Final`.
+
+**Both halves are shortened for a phone**, which has about 172px for the
+detail line -- roughly 33 characters at 12px. `round_names` does ESPN's
+wording ("Seventh Place Game" is most of that budget, `7th` is a tenth of it)
+and the division names with it; `event_names` does the rest, which is mostly
+geography nobody needs twice -- "U.S. Virgin Islands Paradise Jam" is the
+Paradise Jam. A division in front of a round is dropped outright. There were
+25 strings over the line and the longest ran to 53 characters; there are now
+none and the longest is 29. It matters because the fallback for a line that
+will not fit is to swap the event for the town, so on a phone the Paradise Jam
+final would have read "Charlotte Amalie".
 
 **A professional neutral site names its town too**, not the building: Munich
 rather than FC Bayern Munich Stadium, Mexico City rather than Estadio Banorte.
