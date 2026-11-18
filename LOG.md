@@ -1,3 +1,30 @@
+## 2026-11-18 — FCS off the football, and why "no spread" was the wrong test
+
+He noticed Saturday's card had football games with no line on them and guessed
+FCS. He was right about the cause and the fix is a division rule rather than a
+spread one, because **a missing line does not mean a mismatch**. Twenty-eight
+FBS-against-FBS games have no spread right now and every one of them is on
+27 or 28 November — rivalry weekend, nine days out, which Vegas has not priced
+yet. Hiding on the absence of a line would have taken Michigan-Ohio State off
+the page along with Wofford at Ole Miss.
+
+So `exclude_lower_division`, which basketball has had all along, is on for
+football. Saturday goes from 26 rows to 24: Wofford at Ole Miss and
+Chattanooga at Alabama. Over the season it takes **852** games off.
+
+**The trap was Cornell.** Its football is an Ivy League side playing Ivy
+League sides, so every game it has is below the top division and the rule
+would have deleted the entire schedule — four days after he asked for it to be
+moved into National. A favourite is now exempt, which is the same exemption it
+already has from the blowout rule: both tests ask whether a game is worth
+watching, and that is settled once it is his. Ten Cornell games survive; the
+other 852 go.
+
+That exemption reaches basketball too, where the rule already lived, and adds
+back **two** rows: Keuka Storm and St. Lawrence at Cornell. Worth him knowing,
+since those are the cupcakes the rule was written for — but they are his
+cupcakes.
+
 ## 2026-11-12 — Cornell's football finds its section, and the NFL finds its towns
 
 **Cornell's football was in the Football section and should not have been.**

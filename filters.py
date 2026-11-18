@@ -1733,7 +1733,15 @@ def evaluate(game, league, config):
     # A Division II visitor is nobody's idea of a game worth a row, and no
     # other rule can see it: there is no line on it to call it a blowout, and
     # the host alone is often reason enough to keep it.
-    if rules.get("exclude_lower_division") and not both_top_division(game, league):
+    #
+    # His own teams are exempt, and have to be. Cornell's football is an Ivy
+    # League side playing Ivy League sides -- every game it has is below the
+    # top division, so the rule would take the whole season rather than the
+    # cupcakes it is aimed at. A favourite is already spared the blowout rule
+    # for the same reason: these tests ask whether a game is worth watching,
+    # and that question is already answered when it is his.
+    if (rules.get("exclude_lower_division") and not fav_hit
+            and not both_top_division(game, league)):
         keep = False
 
     # The FCS bracket rides in on the blanket postseason rule; it is not wanted.

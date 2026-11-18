@@ -182,6 +182,24 @@ typical Sunday 13 of 13 games qualify.
 A December Sunday comes out at 2 games kept from 14.
 
 **MLB** — Tigers pinned, plus the AL Central and wild card races from July.
+**Below the top division is off the page.** `exclude_lower_division` was a
+basketball rule and is now a football one too: an FCS visitor on a Power Four
+Saturday is a tune-up, and nothing else can see it -- Vegas does not price
+these, so there is no line for the blowout rule to read. Over a season it
+takes 852 football games off.
+
+**His own teams are exempt, and have to be.** Cornell's football is an Ivy
+League side playing Ivy League sides: every game it has is below the top
+division, so without the exemption the rule would take the whole schedule
+rather than the cupcakes it is aimed at. A favourite is already spared the
+blowout rule for the same reason -- these tests ask whether a game is worth
+watching, and that is settled once it is his.
+
+**A missing line is not the test.** Twenty-eight FBS-against-FBS games have no
+spread at any one time, and they are not mismatches: they are rivalry weekend,
+still too far out for Vegas to have priced. Hiding on the absence of a line
+would have taken Michigan-Ohio State with it.
+
 **No tier 2 at all**: a neutral baseball game does not earn a row. On a typical
 night that is one or two games, not fifteen.
 

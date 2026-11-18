@@ -200,6 +200,8 @@
         }
       ],
       "include": {
+        "_exclude_lower_division_comment": "An FCS visitor on a Power Four Saturday is a tune-up, and nothing else can see it: Vegas does not price these, so there is no line to call it a blowout. Cornell is exempt along with every other favourite -- its whole schedule is below the top division.",
+        "exclude_lower_division": true,
         "favorites": true,
         "all": false,
         "conferences": [
