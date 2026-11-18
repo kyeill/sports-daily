@@ -1,3 +1,23 @@
+## 2026-11-18 — the Acrisure Series is a showcase, not a tournament
+
+`never_name_events`, the other side of `always_name_events`, and the Acrisure
+Series is on it. Twenty-nine rows that read "Acrisure Series" now read **Palm
+Springs**.
+
+It passed the bracket test on a technicality: a Championship Game and a Third
+Place Game sit at the end of six days, and an event with a final has a draw
+behind it. But twenty-three of its twenty-seven games are pool play between
+twenty-eight teams with every opponent fixed in advance, which is a fixture
+list with a sponsor on it — his words, and he is right.
+
+Nothing else moved and nothing is over the width budget.
+
+The pair of lists is now the honest shape of this. The tests get it right most
+of the time; `always_name_events` covers a draw the tests cannot see (the
+Beanpot, split across two Mondays) and `never_name_events` covers a showcase
+that reads as one. Both are names in config.json rather than rules, because
+whether an event is worth naming is taste and he is the one with it.
+
 ## 2026-11-18 — round robins take the town, and the words fit after all
 
 Two of his, and the first was a width question with a happy answer.

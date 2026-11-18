@@ -3102,6 +3102,13 @@ def _where(game, config=None):
     # than guessed at, because the test that would catch them catches the US
     # Hockey Hall of Fame Game too, and that one wants Austin.
     always = (config or {}).get("always_name_events") or []
+    # And a few are not worth it however the tests read. The Acrisure Series
+    # is twenty-eight teams at one arena over six days with a championship
+    # bolted on the end; the championship makes it pass for a draw, and the
+    # twenty-three games of pool play in front of it are a fixture list with
+    # a sponsor on it. Palm Springs says more about any of them.
+    if event in ((config or {}).get("never_name_events") or []):
+        return place
     if not (event and (game.get("_event_shared") or event in always)):
         return place
     draw = _round_label(game, config)

@@ -661,6 +661,12 @@ alone -- they carry their stadiums well enough, and so is Glens Falls, since
 New York is the one state whose name is already a city on this page. Measured
 over a season it turns 90 distinct places into 72.
 
+**And a short list never print theirs.** `never_name_events` holds the
+**Acrisure Series**: twenty-eight teams at one arena over six days, with a
+championship bolted on the end. That championship is enough to pass the
+bracket test, and the twenty-three games of pool play in front of it are a
+fixture list with a sponsor on it. Palm Springs says more about any of them.
+
 **A short list of events print their name anyway.** `always_name_events` in
 `config.json` is the exception to the bracket test, for the two cases it
 cannot see. The Beanpot is a genuine four-team draw whose semi-finals and

@@ -20,6 +20,10 @@
     "tab": "Teams",
     "cache_minutes": 120
   },
+  "_never_name_events_comment": "Events that always take their location, whatever the bracket tests make of them. The Acrisure Series passes because a championship game sits at the end of six days of pool play, and it is a showcase rather than a tournament.",
+  "never_name_events": [
+    "Acrisure Series"
+  ],
   "_always_name_events_comment": "Events that print their own name even though nobody plays twice in them, so the bracket test never reaches them. Keep it short: most named events are better as a town, and a long list here would put sponsorship on half the page. ESPN files the Beanpot under both spellings.",
   "always_name_events": [
     "Beanpot",
