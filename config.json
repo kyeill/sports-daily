@@ -54,7 +54,7 @@
     "Resorts World Classic": "Resorts World",
     "Dick Vitale Invitational pres. by Belk": "Dick Vitale Invitational"
   },
-  "_round_names_comment": "ESPN's wording for a round, shortened for a phone. The detail line gets about 172px at 375px wide, and 'Seventh Place Game' alone is most of it.",
+  "_round_names_comment": "ESPN's wording for a round, shortened for a phone. \"Bracket Final\" reads as Semis on purpose: the Players Era 16 is two eight-team draws in two Las Vegas arenas, and the winner of each bracket final meets in Saturday's Championship, so they are the semi-finals of the thing as a whole -- and calling them Finals put three rows reading \"- Final\" on one page. The detail line gets about 172px at 375px wide, and 'Seventh Place Game' alone is most of it.",
   "round_names": {
     "Championship": "Final",
     "Championship Game": "Final",
@@ -74,7 +74,7 @@
     "Seventh Place Game": "Seventh",
     "Seventh Place": "Seventh",
     "7th Place Game": "Seventh",
-    "Bracket Final": "Final",
+    "Bracket Final": "Semis",
     "Championship Bracket": "Main Draw",
     "Signature Series": "Signature",
     "Adventure Bracket": "Adventure",

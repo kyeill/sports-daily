@@ -1,3 +1,30 @@
+## 2026-11-18 — the Players Era 16 is two draws, not one
+
+Asked what next week holds, and found a row reading "Players Era 16 - Final"
+three times on the same page.
+
+It is **two eight-team brackets in two Las Vegas arenas**, T-Mobile and
+Michelob ULTRA, running side by side: sixteen teams, twenty-five games, every
+placement game played twice, once in each building. ESPN names the two
+deciders "Bracket Final" and then the Saturday night meeting of their winners
+"Championship" — so `round_names` turned all three into "Final".
+
+"Bracket Final" now reads **Semis**, which is what they are for the event as a
+whole: win your bracket, play on Saturday for the thing. Friday is two Semis
+and Saturday is the Final, which is one of each instead of three of one.
+
+The duplicated Third, Fifth and Seventh survive, two apiece, because there
+genuinely are two of each — one per bracket. That is the tournament's shape
+rather than a labelling fault.
+
+**No round is derived for the earlier days**, and that is this format's doing.
+`DRAW_SHAPES` wants the field and the game count to agree, and sixteen teams
+playing twenty-five games agree with nothing; grouped by arena each half is a
+clean eight-team draw of twelve, except the Championship sits in one of the
+two buildings and makes it thirteen. So Tuesday's eight openers and Thursday's
+eight second-round games read "Players Era 16" with nothing after it. Honest,
+but the Players Era 8 next door gets Qtrs and Semis, which will look uneven.
+
 ## 2026-11-18 — the Acrisure Series is a showcase, not a tournament
 
 `never_name_events`, the other side of `always_name_events`, and the Acrisure
