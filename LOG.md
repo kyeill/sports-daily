@@ -1,3 +1,13 @@
+## 2026-11-23 — pipes, not hyphens, in the footers
+
+A detail line's spaced hyphens are pipes now: "Quarterfinals | 1st Leg",
+"NCAA Hockey | Regional Final", "Fort Myers Tip-Off | Beach Division".
+Converted once, as the line is written (`render._pipes`), so legs, draws,
+hockey regionals, ESPN's own headlines and the phone and town fallbacks all
+follow; a hyphen inside a name ("Tip-Off") has no spaces and is untouched.
+The " · " between a competition and its round is left as it was, as is the
+console output.
+
 ## 2026-11-18 — First / Qtrs / Semis / Final, counted off the winners' path
 
 He laid out the Players Era 16 by hand — Tuesday the first round, Thursday the
