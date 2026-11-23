@@ -266,7 +266,17 @@ def _alternatives(text, game):
     event, place = game.get("_where_alt") or ("", "")
     if not (event and place and event in text) or event == place:
         return ""
-    return " data-alts=\"%s\"" % _esc(json.dumps([text.replace(event, place, 1)]))
+    return " data-alts=\"%s\"" % _esc(json.dumps([_pipes(text.replace(event, place, 1))]))
+
+
+def _pipes(text):
+    """A detail line's spaced hyphens as pipes: "Quarterfinals | 1st Leg".
+
+    Done here, as the line is written, rather than wherever each part is made
+    -- legs, draws, hockey regionals and ESPN's own headlines all arrive with
+    " - " -- so every footer reads the same. "Tip-Off" has no spaces and stays.
+    """
+    return text.replace(" - ", " | ")
 
 
 def _phone_wording(text, game):
@@ -281,9 +291,9 @@ def _phone_wording(text, game):
         if not phrase.startswith("_"):
             short = short.replace(phrase, brief)
     if short == text:
-        return _esc(text)
+        return _esc(_pipes(text))
     return ('<span class="wide">%s</span><span class="phone">%s</span>'
-            % (_esc(text), _esc(short)))
+            % (_esc(_pipes(text)), _esc(_pipes(short))))
 
 
 def _logo(team, config):
