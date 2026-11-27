@@ -315,7 +315,7 @@ def _logo(team, config):
 
 
 def _side_html(team, show_records, config, line="", score=None, lost=False,
-               side="", drew=False, mood=""):
+               side="", drew=False, mood="", city=""):
     """One team as four grid cells: crest, rank, name, record.
 
     Four cells rather than one run of text, because both teams share the grid:
@@ -346,8 +346,11 @@ def _side_html(team, show_records, config, line="", score=None, lost=False,
     # data-side lets the live script find the two halves of a row without
     # depending on their order in the grid.
     at = ' data-side="%s"' % side if side else ""
-    name = '<span class="t%s%s"%s>%s</span>' % (
-        " lost" if lost else "", " drew" if drew else "", at, _esc(label))
+    # The city, for the page to fall back to if the name and its line would
+    # take two lines on this screen -- measured there, never guessed here.
+    short = (' data-short="%s"' % _esc(city)) if (line and city and city != label) else ""
+    name = '<span class="t%s%s"%s%s>%s</span>' % (
+        " lost" if lost else "", " drew" if drew else "", at, short, _esc(label))
     return (
         '<span class="s-logo">%s</span>'
         '<span class="s-rank">%s</span>'
@@ -457,6 +460,27 @@ def _game_html(game, show_league, config):
     # The line belongs against the team it is about: a point spread where the
     # sport has one, otherwise the moneyline, which espn.py labels ML.
     lines = {"home": "", "away": ""}
+    # A pro side with a line can fall back to its city on a phone too narrow
+    # for "Columbus Blue Jackets (-1.5)": the city alone is still unambiguous
+    # there. Not soccer ("Manchester"), not college (a school is named by its
+    # place already), and not when both sides share one -- the Lakers and the
+    # Clippers would both read "Los Angeles" -- or the Rangers and Islanders.
+    cities = {}
+    if ((game.get("league_label") or "") not in filters.COLLEGE_LABELS
+            and (game.get("sport") or "") in ("Football", "Basketball", "Hockey", "Baseball")):
+        places = {s: (game[s].get("location") or "").strip() for s in ("home", "away")}
+        # ESPN writes the Clippers' city "LA" and the Lakers' "Los Angeles".
+        same = {"LA": "Los Angeles", "NY": "New York"}
+        if places["home"] and places["away"] and (same.get(places["home"], places["home"])
+                                                  != same.get(places["away"], places["away"])):
+            cities = places
+        elif places["home"] and places["away"]:
+            # One city, two teams: the nickname is what tells them apart, so
+            # that is what stays -- "Rangers (-1.5)" against the Islanders.
+            for s in ("home", "away"):
+                name = (game[s].get("name") or "").strip()
+                if name.startswith(places[s] + " "):
+                    cities[s] = name[len(places[s]):].strip()
     if config.get("show_odds", True) and game.get("spread_side"):
         lines[game["spread_side"]] = game.get("spread_label") or ""
 
@@ -577,9 +601,11 @@ def _game_html(game, show_league, config):
         '</div>'
     ) % (attrs,
          _side_html(first, show_records, config, lines[order[0]],
-                    scores.get(order[0]), loser == order[0], order[0], drawn, mood),
+                    scores.get(order[0]), loser == order[0], order[0], drawn, mood,
+                    cities.get(order[0], "")),
          _side_html(second, show_records, config, lines[order[1]],
-                    scores.get(order[1]), loser == order[1], order[1], drawn, mood),
+                    scores.get(order[1]), loser == order[1], order[1], drawn, mood,
+                    cities.get(order[1], "")),
          note, solo, _esc(game["link"]), when, nets)
 
 
