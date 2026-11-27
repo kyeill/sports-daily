@@ -1312,21 +1312,25 @@ check a display change against every scenario at once.
 
 ## Automation
 
-GitHub Actions runs `site.py` **once a day at 6am Eastern**, publishes the app
-to GitHub Pages, and commits any new `output/history/` row back to the repo.
+GitHub Actions runs `site.py` **once a day, early morning Eastern**, publishes
+the app to GitHub Pages, and commits any new `output/history/` row back to the
+repo.
 
-GitHub cron is UTC only, so two schedules fire (10:00 and 11:00 UTC) and a gate
-job lets exactly one through by checking the Eastern hour. That keeps it at 6am
-year-round instead of drifting an hour with daylight saving.
+**The schedule fires every hour** (`41 * * * *`) and a gate job makes it once a
+day: the first run that lands between 5am and noon Eastern builds, and every
+later one sees today in `output/history/_last_build.txt` -- committed by the
+build itself -- and skips. The gate reads the Eastern hour, so daylight saving
+takes care of itself.
 
-Three UTC slots fire and a gate job lets exactly one through: 6am Eastern
-normally, with the 7am and 8am slots acting as **catch-ups**. They are needed:
-GitHub queues scheduled runs rather than guaranteeing them, and on the first
-real morning the 6am cron ran **64 minutes late**. A catch-up only builds if
-`output/history/_last_build.txt` -- committed by the build itself -- does not
-already show today, so the page is still built exactly once a day.
+Hourly because GitHub's scheduled runs are late by an amount that will not stay
+put. On the first real morning the 6am cron was 64 minutes late; by October
+this account's runs were 4-5 hours late; by late November 8 to 10.5 hours, so
+the eight hand-tuned slots of the time were all landing between 10am and 8pm
+and the page was not built until about ten. A slot every hour cannot be tuned
+wrong: whatever the delay, one of them lands in the early morning.
 
-In practice the page updates between 6 and 8am Eastern, usually nearer 6.
+If the page is ever late anyway, compare the newest run in the Actions tab
+against the time, and fire `Build and publish` by hand (`workflow_dispatch`).
 
 If a league or the odds feed cannot be reached, the page says so in a quiet
 line at the top of today rather than looking like a quiet day.

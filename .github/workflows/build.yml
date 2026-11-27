@@ -2,32 +2,17 @@ name: Build and publish
 
 on:
   schedule:
-    # GitHub cron is UTC only, so 6am Eastern is 10:00 UTC in summer and 11:00
-    # in winter. Both fire; the gate below lets exactly one of them through,
-    # so this really is once a day at 6am Eastern all year.
-    # Asked for hours EARLY on purpose. GitHub has been delivering this
-    # account's scheduled runs four to five hours late, in both repos, for a
-    # week -- so a slot asked for at 06:11 UTC lands around 6am Eastern, which
-    # is when the build is wanted. If GitHub ever runs them on time these fire
-    # at 1, 2 and 3am Eastern, and the gate below throws them out for being
-    # the wrong hour, so being wrong about the delay costs nothing.
-    - cron: "13 5 * * *"
-    - cron: "11 6 * * *"
-    - cron: "7 7 * * *"
-    # The honest slots: 6am Eastern in summer and winter, then catch-ups.
-    - cron: "17 10 * * *"
-    - cron: "23 11 * * *"
-    - cron: "19 12 * * *"
-    # Minutes are deliberately not :00, which is the most contended slot on
-    # Actions and the one most often dropped. On 25 and 26 September every
-    # on-the-hour slot was skipped or ran three hours late.
-    # Later catch-ups. On 25 September NEITHER morning slot fired at all --
-    # GitHub drops scheduled runs under load rather than merely delaying them --
-    # and the app sat a day stale until it was built by hand. These cover the
-    # rest of the morning in both seasons: 14:00 UTC is 10am Eastern in summer
-    # and 9am in winter, 16:00 is noon and 11am.
-    - cron: "37 14 * * *"
-    - cron: "29 16 * * *"
+    # Every hour, at :41. GitHub has been firing this account's scheduled runs
+    # hours late, and by an amount that keeps moving: 4-5 hours in October,
+    # 8 to 10.5 hours by late November (05:13 UTC landing at 15:07), which put
+    # the first build of the day near 10am Eastern. Any fixed set of slots is
+    # tuned to one delay and breaks at the next. With one every hour, whatever
+    # the delay is, some run lands in the early morning; the gate below builds
+    # on the first that lands after 5am Eastern and skips the rest, so it is
+    # still one build a day. A gate-only run is a few seconds.
+    # Not :00 -- the most contended minute on Actions and the one most often
+    # dropped.
+    - cron: "41 * * * *"
   push:
     branches: [main]
   workflow_dispatch:
@@ -54,26 +39,19 @@ jobs:
           today=$(TZ=America/New_York date +%F)
           built=$(cat output/history/_last_build.txt 2>/dev/null || echo none)
 
-          # Both UTC slots fire because GitHub cron has no timezone. 06 Eastern
-          # is the intended one; 07 is a catch-up for the days GitHub delays the
-          # earlier run past the hour, and only builds if the day has not
-          # already been built.
+          # The schedule fires every hour (see above), so the gate is what
+          # makes it once a day: the first run to land between 5am and noon
+          # Eastern builds, and every later one sees today in _last_build.txt
+          # and skips. 5am rather than 6 so that a run landing just before the
+          # hour still counts -- the page is wanted BY six. 10# forces base
+          # ten: 08 and 09 are not valid octal and would abort the arithmetic.
+          h=$(( 10#$hour ))
           if [ "${{ github.event_name }}" != "schedule" ]; then
             reason="manual or push"; go=yes
-          elif [ "$hour" = "06" ]; then
-            reason="the 6am slot"; go=yes
-          elif [ "$(( 10#$hour ))" -ge 7 ] && [ "$(( 10#$hour ))" -le 12 ]; then
-            # Catch-up slots, 7am to noon Eastern. GitHub queues scheduled runs
-            # rather than guaranteeing them -- the 6am cron ran 64 minutes late
-            # on its first real morning, and on 25 September the morning slots
-            # did not fire at all -- so later slots build only if the day has
-            # not already been done. 10# forces base ten: 08 and 09 are not
-            # valid octal and would abort the arithmetic.
-            if [ "$built" != "$today" ]; then
-              reason="catch-up at $hour: nothing built for $today yet"; go=yes
-            else
-              reason="already built for $today"; go=no
-            fi
+          elif [ "$h" -ge 5 ] && [ "$h" -le 12 ] && [ "$built" != "$today" ]; then
+            reason="first run after 5am Eastern: nothing built for $today yet"; go=yes
+          elif [ "$built" = "$today" ]; then
+            reason="already built for $today"; go=no
           else
             reason="Eastern hour $hour, last build $built"; go=no
           fi

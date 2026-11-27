@@ -1,3 +1,16 @@
+## 2026-11-27 — an hourly schedule, so the page is up by six
+
+The page was landing between 7:42 and 10:55am Eastern. Every scheduled slot
+was still firing, but 8 to 10.5 hours late (05:13 UTC ran at 15:07), so the
+first run of any day arrived around ten. The slots had been set hours early
+for the 4-5 hour delay of October, and the delay moved.
+
+The schedule is now every hour at :41, and the gate builds on the first run
+between 5am and noon Eastern that finds nothing built for today. Whatever
+GitHub's delay is, one run lands in the early morning. Gate decisions tested
+by running the gate's own script for each case: 04 skips, 05 and 06 build,
+06 after a build skips, 13 skips, push and manual always build.
+
 ## 2026-11-23 — pipes, not hyphens, in the footers
 
 A detail line's spaced hyphens are pipes now: "Quarterfinals | 1st Leg",
