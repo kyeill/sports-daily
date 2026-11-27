@@ -1,3 +1,21 @@
+## 2026-11-27 (later) — a pro team with a line drops its nickname to fit
+
+On a phone, "Columbus Blue Jackets (-1.5)" wrapped onto two lines. A pro
+side (NFL, NBA, NHL, MLB) that carries the line now carries its city too
+(`data-short`), and the page measures the name on the reader's screen --
+in `fitNotes`, so after the webfont, on a tab change, on resize and after
+each live update -- and shows "Columbus (-1.5)" when the full name would
+take two lines. When the game ends the line goes and the name comes back.
+
+- Two teams from one city keep the NICKNAME instead: "Rangers (-1.5)"
+  against the Islanders. ESPN's "LA" (Clippers) and "NY" count as Los
+  Angeles and New York for this.
+- On a 320px phone even "Minnesota (-7.5)" is too wide, and with no space
+  left to break at it ran into the record beside it; there the full name
+  stays and wraps. From 375px up every case tested fits.
+- Soccer and college are left alone. `short_name_with_spread` (Washington)
+  still applies as before.
+
 ## 2026-11-27 — an hourly schedule, so the page is up by six
 
 The page was landing between 7:42 and 10:55am Eastern. Every scheduled slot

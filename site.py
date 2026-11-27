@@ -95,6 +95,28 @@ APP_JS = """
           el.textContent = alts[i];
         }
       });
+    // A pro team carrying a line drops its nickname -- "Columbus Blue Jackets
+    // (-1.5)" to "Columbus (-1.5)" -- only where the two would otherwise take
+    // two lines: on a phone, where a long name wraps rather than being cut.
+    // Measured against the name's own first line, so the font is the one on
+    // screen. Without a line (it goes when the game ends) the name comes back.
+    var phone = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+    Array.prototype.forEach.call(document.querySelectorAll('.t[data-short]'),
+      function (t) {
+        if (t.dataset.full === undefined) { t.dataset.full = t.textContent; }
+        t.textContent = t.dataset.full;
+        var cell = t.parentNode;
+        if (!phone || !cell || cell.offsetParent === null
+            || !cell.querySelector('.s-spread')) { return; }
+        var first = t.getClientRects()[0];
+        if (first && cell.getBoundingClientRect().height > first.height * 1.5) {
+          t.textContent = t.dataset.short;
+          // On the narrowest phones even "Minnesota (-7.5)" is too wide, and
+          // with no space left to break at it runs into the record beside it
+          // instead of wrapping. Two clean lines beat an overlap.
+          if (cell.scrollWidth > cell.clientWidth + 1) { t.textContent = t.dataset.full; }
+        }
+      });
   }
   var fitTimer = null;
   window.addEventListener('resize', function () {
